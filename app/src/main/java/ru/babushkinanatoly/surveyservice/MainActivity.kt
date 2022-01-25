@@ -13,7 +13,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -128,7 +128,7 @@ private fun NavFlow(
                 val currentDestination = navBackStackEntry?.destination
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                        icon = { GetIcon(screen) },
                         label = { Text(stringResource(screen.resourceId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
                                 || currentDestination?.route == Screen.Statistics.route && screen.route == Screen.Profile.route,
@@ -180,6 +180,22 @@ private fun NavFlow(
             }
         }
     }
+}
+
+@Composable
+private fun GetIcon(screen: Screen) {
+    val iconRes = screen.getIconRes()
+    Icon(
+        painter = painterResource(iconRes.first),
+        contentDescription = stringResource(iconRes.second)
+    )
+}
+
+private fun Screen.getIconRes() = when (this) {
+    is Screen.SurveyFeed -> R.drawable.ic_feed to R.string.survey_feed
+    is Screen.UserSurveys -> R.drawable.ic_user_surveys to R.string.user_surveys
+    is Screen.Profile -> R.drawable.ic_profile to R.string.profile
+    else -> error("No resources provided for this screen: $this")
 }
 
 @Composable
