@@ -6,6 +6,7 @@
     <string name="profile">Profile</string>
     <string name="survey_details">Survey details</string>
     <string name="user_survey_details">User survey details</string>
+    <string name="navigation">Navigation</string>
     <string name="settings">Settings</string>
     <string name="statistics">Statistics</string>
     <string name="new_survey">New survey</string>
