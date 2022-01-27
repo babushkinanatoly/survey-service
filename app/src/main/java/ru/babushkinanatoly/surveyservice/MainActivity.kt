@@ -89,9 +89,9 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalMaterialApi
 @Composable
-private fun SurveyServiceApp(isLoggedIn: Boolean) {
+private fun SurveyServiceApp(loggedIn: Boolean) {
     val navController = rememberNavController()
-    val shouldShowAuth by rememberSaveable { mutableStateOf(!isLoggedIn) }
+    val shouldShowAuth by rememberSaveable { mutableStateOf(!loggedIn) }
     NavHost(
         navController,
         startDestination = if (shouldShowAuth) Screen.Auth.route else Screen.NavFlow.route,
@@ -134,7 +134,6 @@ private fun NavFlow(
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
-    // TODO: declare an event and children will consume
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -146,18 +145,15 @@ private fun NavFlow(
                         label = { Text(stringResource(screen.resId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
+                            val profileReselected =
+                                currentDestination?.route == Screen.NavFlow.ProfileFlow.route
+                                        && screen.route == Screen.NavFlow.ProfileFlow.route
+
                             navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select bottomNavItems
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                                    saveState = !profileReselected
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                // TODO: ...
                                 restoreState = true
                             }
                         }
