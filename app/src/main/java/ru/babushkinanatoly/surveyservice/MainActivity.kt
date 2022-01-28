@@ -133,18 +133,32 @@ private fun NavFlow(
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 bottomNavItems.forEach { screen ->
+                    val surveyFeedReselected = {
+                        currentDestination?.route == NavFlow.SurveyFeedFlow.route
+                                && screen.route == NavFlow.SurveyFeedFlow.route
+                    }
+                    val userSurveysReselected = {
+                        currentDestination?.route == NavFlow.UserSurveysFlow.route
+                                && screen.route == NavFlow.UserSurveysFlow.route
+                    }
+                    val profileReselected = {
+                        currentDestination?.route == NavFlow.ProfileFlow.route
+                                && screen.route == NavFlow.ProfileFlow.route
+                    }
                     BottomNavigationItem(
                         icon = { GetIcon(screen) },
                         label = { Text(stringResource(screen.resId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
-                            val profileReselected =
-                                currentDestination?.route == NavFlow.ProfileFlow.route
-                                        && screen.route == NavFlow.ProfileFlow.route
-
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = !profileReselected
+                                    saveState = when (screen) {
+                                        is NavFlow.SurveyFeedFlow -> !surveyFeedReselected()
+                                        is NavFlow.UserSurveysFlow -> !userSurveysReselected()
+                                        is NavFlow.ProfileFlow -> !profileReselected()
+                                        else -> error("Unexpected screen $screen")
+                                    }
+                                    inclusive = surveyFeedReselected()
                                 }
                                 launchSingleTop = true
                                 restoreState = true
@@ -253,7 +267,9 @@ private fun AppNavigation.Screen.getIconRes() = when (this) {
 }
 
 @Composable
-private fun AuthScreen(onLogIn: () -> Unit) {
+private fun AuthScreen(
+    onLogIn: () -> Unit
+) {
     Surface {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -498,7 +514,9 @@ private fun UserSurveyDetailsScreen(
 }
 
 @Composable
-private fun SettingsScreen(title: String) {
+private fun SettingsScreen(
+    title: String
+) {
     Surface {
         Scaffold {
             TopAppBar(
@@ -521,7 +539,9 @@ private fun SettingsScreen(title: String) {
 }
 
 @Composable
-private fun StatisticsScreen(title: String) {
+private fun StatisticsScreen(
+    title: String
+) {
     Surface {
         Scaffold {
             TopAppBar(
