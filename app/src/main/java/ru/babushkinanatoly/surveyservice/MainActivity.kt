@@ -38,31 +38,34 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.surveyservice.AppNavigation.Companion.bottomNavItems
-import ru.babushkinanatoly.surveyservice.AppNavigation.Screen
+import ru.babushkinanatoly.surveyservice.AppNavigation.Screen.*
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
 private open class AppNavigation(val route: String, @StringRes val resId: Int) {
 
     companion object {
-
         val bottomNavItems = listOf(
-            Screen.NavFlow.SurveyFeed,
-            Screen.NavFlow.UserSurveys,
-            Screen.NavFlow.ProfileFlow
+            NavFlow.SurveyFeedFlow,
+            NavFlow.UserSurveysFlow,
+            NavFlow.ProfileFlow
         )
     }
 
     sealed class Screen(screenRoute: String, screenResId: Int) : AppNavigation(screenRoute, screenResId) {
-
         object Auth : Screen("auth", R.string.auth)
         object NewSurvey : Screen("newsurvey", R.string.new_survey)
         object Settings : Screen("settings", R.string.settings)
-        object SurveyDetails : Screen("surveydetails", R.string.survey_details)
-        object UserSurveyDetails : Screen("usersurveydetails", R.string.user_survey_details)
 
         object NavFlow : Screen("navflow", R.string.navigation) {
-            object SurveyFeed : Screen("surveyfeed", R.string.survey_feed)
-            object UserSurveys : Screen("usersurveys", R.string.user_surveys)
+            object SurveyFeedFlow : Screen("surveyfeedflow", R.string.survey_feed) {
+                object SurveyFeed : Screen("surveyfeed", R.string.survey_feed)
+                object SurveyDetails : Screen("surveydetails", R.string.survey_details)
+            }
+
+            object UserSurveysFlow : Screen("usersurveysflow", R.string.user_surveys) {
+                object UserSurveys : Screen("usersurveys", R.string.user_surveys)
+                object UserSurveyDetails : Screen("usersurveydetails", R.string.user_survey_details)
+            }
 
             object ProfileFlow : Screen("profileflow", R.string.profile) {
                 object Profile : Screen("profile", R.string.profile)
@@ -94,33 +97,25 @@ private fun SurveyServiceApp(loggedIn: Boolean) {
     val shouldShowAuth by rememberSaveable { mutableStateOf(!loggedIn) }
     NavHost(
         navController,
-        startDestination = if (shouldShowAuth) Screen.Auth.route else Screen.NavFlow.route,
+        startDestination = if (shouldShowAuth) Auth.route else NavFlow.route,
     ) {
         // TODO: 1/20/2022 Think of how it will be related with data from view models
-        composable(Screen.Auth.route) {
+        composable(Auth.route) {
             AuthScreen {
-                navController.navigate(Screen.NavFlow.route)
+                navController.navigate(NavFlow.route)
             }
         }
-        composable(Screen.NavFlow.route) {
+        composable(NavFlow.route) {
             NavFlow(
-                onFeedItem = { navController.navigate(Screen.SurveyDetails.route) },
-                onUserSurveysItem = { navController.navigate(Screen.UserSurveyDetails.route) },
-                onNewSurvey = { navController.navigate(Screen.NewSurvey.route) },
-                onSettings = { navController.navigate(Screen.Settings.route) }
+                onNewSurvey = { navController.navigate(NewSurvey.route) },
+                onSettings = { navController.navigate(Settings.route) }
             )
         }
-        composable(Screen.SurveyDetails.route) {
-            SurveyDetailsScreen(stringResource(Screen.SurveyDetails.resId))
+        composable(NewSurvey.route) {
+            UserSurveyDetailsScreen(stringResource(NewSurvey.resId))
         }
-        composable(Screen.UserSurveyDetails.route) {
-            UserSurveyDetailsScreen(stringResource(Screen.UserSurveyDetails.resId))
-        }
-        composable(Screen.NewSurvey.route) {
-            UserSurveyDetailsScreen(stringResource(Screen.NewSurvey.resId))
-        }
-        composable(Screen.Settings.route) {
-            SettingsScreen(stringResource(Screen.Settings.resId))
+        composable(Settings.route) {
+            SettingsScreen(stringResource(Settings.resId))
         }
     }
 }
@@ -128,8 +123,6 @@ private fun SurveyServiceApp(loggedIn: Boolean) {
 @ExperimentalMaterialApi
 @Composable
 private fun NavFlow(
-    onFeedItem: () -> Unit,
-    onUserSurveysItem: () -> Unit,
     onNewSurvey: () -> Unit,
     onSettings: () -> Unit
 ) {
@@ -146,8 +139,8 @@ private fun NavFlow(
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             val profileReselected =
-                                currentDestination?.route == Screen.NavFlow.ProfileFlow.route
-                                        && screen.route == Screen.NavFlow.ProfileFlow.route
+                                currentDestination?.route == NavFlow.ProfileFlow.route
+                                        && screen.route == NavFlow.ProfileFlow.route
 
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -164,24 +157,26 @@ private fun NavFlow(
     ) { innerPadding ->
         NavHost(
             navController,
-            startDestination = Screen.NavFlow.SurveyFeed.route,
+            startDestination = NavFlow.SurveyFeedFlow.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(Screen.NavFlow.SurveyFeed.route) {
-                SurveyFeedScreen {
-                    onFeedItem()
-                }
+            composable(NavFlow.SurveyFeedFlow.route) {
+                SurveyFeedFlow(
+                    stringResource(NavFlow.SurveyFeedFlow.SurveyFeed.resId),
+                    stringResource(NavFlow.SurveyFeedFlow.SurveyDetails.resId),
+                )
             }
-            composable(Screen.NavFlow.UserSurveys.route) {
-                UserSurveysScreen(
-                    onItem = onUserSurveysItem,
+            composable(NavFlow.UserSurveysFlow.route) {
+                UserSurveysFlow(
+                    stringResource(NavFlow.UserSurveysFlow.UserSurveys.resId),
+                    stringResource(NavFlow.UserSurveysFlow.UserSurveyDetails.resId),
                     onNewSurvey = onNewSurvey
                 )
             }
-            composable(Screen.NavFlow.ProfileFlow.route) {
+            composable(NavFlow.ProfileFlow.route) {
                 ProfileFlow(
-                    stringResource(Screen.NavFlow.ProfileFlow.Profile.resId),
-                    stringResource(Screen.NavFlow.ProfileFlow.Statistics.resId),
+                    stringResource(NavFlow.ProfileFlow.Profile.resId),
+                    stringResource(NavFlow.ProfileFlow.Statistics.resId),
                     onSettings = onSettings
                 )
             }
@@ -189,8 +184,60 @@ private fun NavFlow(
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun GetIcon(screen: Screen) {
+fun SurveyFeedFlow(
+    surveyFeedTitle: String,
+    surveyDetailsTitle: String,
+) {
+    val navController = rememberNavController()
+    NavHost(
+        navController,
+        startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
+    ) {
+        composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
+            SurveyFeedScreen(
+                title = surveyFeedTitle,
+                onItem = { navController.navigate(NavFlow.SurveyFeedFlow.SurveyDetails.route) }
+            )
+        }
+        composable(NavFlow.SurveyFeedFlow.SurveyDetails.route) {
+            SurveyDetailsScreen(
+                title = surveyDetailsTitle
+            )
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun UserSurveysFlow(
+    userSurveysTitle: String,
+    userSurveyDetailsTitle: String,
+    onNewSurvey: () -> Unit
+) {
+    val navController = rememberNavController()
+    NavHost(
+        navController,
+        startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
+    ) {
+        composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
+            UserSurveysScreen(
+                title = userSurveysTitle,
+                onItem = { navController.navigate(NavFlow.UserSurveysFlow.UserSurveyDetails.route) },
+                onNewSurvey = onNewSurvey
+            )
+        }
+        composable(NavFlow.UserSurveysFlow.UserSurveyDetails.route) {
+            SurveyDetailsScreen(
+                title = userSurveyDetailsTitle
+            )
+        }
+    }
+}
+
+@Composable
+private fun GetIcon(screen: AppNavigation.Screen) {
     val iconRes = screen.getIconRes()
     Icon(
         painter = painterResource(iconRes.first),
@@ -198,10 +245,10 @@ private fun GetIcon(screen: Screen) {
     )
 }
 
-private fun Screen.getIconRes() = when (this) {
-    is Screen.NavFlow.SurveyFeed -> R.drawable.ic_feed to resId
-    is Screen.NavFlow.UserSurveys -> R.drawable.ic_user_surveys to resId
-    is Screen.NavFlow.ProfileFlow -> R.drawable.ic_profile to resId
+private fun AppNavigation.Screen.getIconRes() = when (this) {
+    is NavFlow.SurveyFeedFlow -> R.drawable.ic_feed to resId
+    is NavFlow.UserSurveysFlow -> R.drawable.ic_user_surveys to resId
+    is NavFlow.ProfileFlow -> R.drawable.ic_profile to resId
     else -> error("No resources provided for this screen: $this")
 }
 
@@ -227,6 +274,7 @@ private fun AuthScreen(onLogIn: () -> Unit) {
 @ExperimentalMaterialApi
 @Composable
 private fun SurveyFeedScreen(
+    title: String,
     names: List<String> = List(100) { "$it" },
     onItem: () -> Unit
 ) {
@@ -234,7 +282,7 @@ private fun SurveyFeedScreen(
     val scope = rememberCoroutineScope()
     Scaffold(scaffoldState = scaffoldState) {
         TopAppBar(
-            title = { Text(text = "Survey Feed") },
+            title = { Text(title) },
             actions = {
                 IconButton(onClick = {
                     scope.launch {
@@ -287,13 +335,14 @@ private fun SurveyItem(
 @ExperimentalMaterialApi
 @Composable
 private fun UserSurveysScreen(
+    title: String,
     names: List<String> = List(100) { "$it" },
     onItem: () -> Unit,
     onNewSurvey: () -> Unit
 ) {
     Scaffold {
         TopAppBar(
-            title = { Text(text = "User Surveys") },
+            title = { Text(title) },
             actions = {
                 IconButton(onClick = onNewSurvey) {
                     Icon(imageVector = Icons.Filled.Add, stringResource(R.string.new_survey))
@@ -346,18 +395,19 @@ private fun ProfileFlow(
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
+    // TODO: Move this to SurveyFeedFlow 
     NavHost(
         navController,
-        startDestination = Screen.NavFlow.ProfileFlow.Profile.route
+        startDestination = NavFlow.ProfileFlow.Profile.route
     ) {
-        composable(Screen.NavFlow.ProfileFlow.Profile.route) {
+        composable(NavFlow.ProfileFlow.Profile.route) {
             ProfileScreen(
                 title = profileTitle,
                 onSettings = onSettings,
-                onStatistics = { navController.navigate(Screen.NavFlow.ProfileFlow.Statistics.route) }
+                onStatistics = { navController.navigate(NavFlow.ProfileFlow.Statistics.route) }
             )
         }
-        composable(Screen.NavFlow.ProfileFlow.Statistics.route) {
+        composable(NavFlow.ProfileFlow.Statistics.route) {
             StatisticsScreen(
                 title = statisticsTitle
             )
@@ -398,7 +448,9 @@ private fun ProfileScreen(
 }
 
 @Composable
-private fun SurveyDetailsScreen(title: String) {
+private fun SurveyDetailsScreen(
+    title: String
+) {
     Surface {
         Scaffold {
             TopAppBar(
@@ -421,7 +473,9 @@ private fun SurveyDetailsScreen(title: String) {
 }
 
 @Composable
-private fun UserSurveyDetailsScreen(title: String) {
+private fun UserSurveyDetailsScreen(
+    title: String
+) {
     Surface {
         Scaffold {
             TopAppBar(
@@ -501,8 +555,6 @@ private fun StatisticsScreen(title: String) {
 fun NavPreview() {
     SurveyServiceTheme {
         NavFlow(
-            onFeedItem = { /*TODO*/ },
-            onUserSurveysItem = { /*TODO*/ },
             onNewSurvey = { /*TODO*/ },
             onSettings = { /*TODO*/ }
         )
