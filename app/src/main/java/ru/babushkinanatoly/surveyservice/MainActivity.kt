@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,10 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +38,10 @@ import kotlinx.coroutines.launch
 import ru.babushkinanatoly.surveyservice.AppNavigation.Companion.bottomNavItems
 import ru.babushkinanatoly.surveyservice.AppNavigation.Screen.*
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
+import ru.babushkinanatoly.surveyservice.util.Event
+import ru.babushkinanatoly.surveyservice.util.MutableEvent
+import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
+import ru.babushkinanatoly.surveyservice.util.dispatch
 
 private open class AppNavigation(val route: String, @StringRes val resId: Int) {
 
@@ -127,6 +129,7 @@ private fun NavFlow(
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
+    val fallbackToUserSurveysRoot = remember { MutableEvent<Unit>() }
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -152,16 +155,15 @@ private fun NavFlow(
                         onClick = {
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = when (screen) {
-                                        is NavFlow.SurveyFeedFlow -> !surveyFeedReselected()
-                                        is NavFlow.UserSurveysFlow -> !userSurveysReselected()
-                                        is NavFlow.ProfileFlow -> !profileReselected()
-                                        else -> error("Unexpected screen $screen")
-                                    }
-                                    inclusive = surveyFeedReselected()
+                                    saveState = true
                                 }
                                 launchSingleTop = true
                                 restoreState = true
+                            }
+                            when {
+                                surveyFeedReselected() -> TODO()
+                                userSurveysReselected() -> fallbackToUserSurveysRoot.dispatch(Unit)
+                                profileReselected() -> TODO()
                             }
                         }
                     )
@@ -182,6 +184,7 @@ private fun NavFlow(
             }
             composable(NavFlow.UserSurveysFlow.route) {
                 UserSurveysFlow(
+                    fallbackToUserSurveysRoot,
                     stringResource(NavFlow.UserSurveysFlow.UserSurveys.resId),
                     stringResource(NavFlow.UserSurveysFlow.UserSurveyDetails.resId),
                     onNewSurvey = onNewSurvey
@@ -226,17 +229,20 @@ fun SurveyFeedFlow(
 @ExperimentalMaterialApi
 @Composable
 fun UserSurveysFlow(
+    fallbackToRoot: Event<Unit>,
     userSurveysTitle: String,
     userSurveyDetailsTitle: String,
     onNewSurvey: () -> Unit
 ) {
     val navController = rememberNavController()
+    val scrollSurveysUp = remember { MutableEvent<Unit>() }
     NavHost(
         navController,
         startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
     ) {
         composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
             UserSurveysScreen(
+                scrollSurveysUp,
                 title = userSurveysTitle,
                 onItem = { navController.navigate(NavFlow.UserSurveysFlow.UserSurveyDetails.route) },
                 onNewSurvey = onNewSurvey
@@ -246,6 +252,17 @@ fun UserSurveysFlow(
             SurveyDetailsScreen(
                 title = userSurveyDetailsTitle
             )
+        }
+    }
+    fallbackToRoot.consumeAsEffect {
+        val startDestination = navController.graph.findStartDestination()
+        if (navController.currentDestination == startDestination) {
+            scrollSurveysUp.dispatch(Unit)
+        } else {
+            navController.navigate(startDestination.route!!) {
+                popUpTo(startDestination.route!!)
+                launchSingleTop = true
+            }
         }
     }
 }
@@ -295,13 +312,13 @@ private fun SurveyFeedScreen(
     onItem: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(scaffoldState = scaffoldState) {
         TopAppBar(
             title = { Text(title) },
             actions = {
                 IconButton(onClick = {
-                    scope.launch {
+                    coroutineScope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(message = "Search")
                     }
                 }) {
@@ -351,11 +368,14 @@ private fun SurveyItem(
 @ExperimentalMaterialApi
 @Composable
 private fun UserSurveysScreen(
+    scrollUp: Event<Unit>,
     title: String,
     names: List<String> = List(100) { "$it" },
     onItem: () -> Unit,
     onNewSurvey: () -> Unit
 ) {
+    val surveysState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     Scaffold {
         TopAppBar(
             title = { Text(title) },
@@ -365,10 +385,18 @@ private fun UserSurveysScreen(
                 }
             }
         )
-        LazyColumn(modifier = Modifier.padding(top = 56.dp)) {
+        LazyColumn(
+            state = surveysState,
+            modifier = Modifier.padding(top = 56.dp)
+        ) {
             items(items = names) { name ->
                 UserSurveyItem(name = name) { onItem() }
             }
+        }
+    }
+    scrollUp.consumeAsEffect {
+        coroutineScope.launch {
+            surveysState.animateScrollToItem(index = 0)
         }
     }
 }
