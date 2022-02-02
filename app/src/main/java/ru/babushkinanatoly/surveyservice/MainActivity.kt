@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,47 +36,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import ru.babushkinanatoly.surveyservice.AppNavigation.Companion.bottomNavItems
-import ru.babushkinanatoly.surveyservice.AppNavigation.Screen.*
+import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Companion.bottomNavItems
+import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen
+import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen.*
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.util.Event
 import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
 import ru.babushkinanatoly.surveyservice.util.dispatch
-
-private open class AppNavigation(val route: String, @StringRes val resId: Int) {
-
-    companion object {
-        val bottomNavItems = listOf(
-            NavFlow.SurveyFeedFlow,
-            NavFlow.UserSurveysFlow,
-            NavFlow.ProfileFlow
-        )
-    }
-
-    sealed class Screen(screenRoute: String, screenResId: Int) : AppNavigation(screenRoute, screenResId) {
-        object Auth : Screen("auth", R.string.auth)
-        object NewSurvey : Screen("newsurvey", R.string.new_survey)
-        object Settings : Screen("settings", R.string.settings)
-
-        object NavFlow : Screen("navflow", R.string.navigation) {
-            object SurveyFeedFlow : Screen("surveyfeedflow", R.string.survey_feed) {
-                object SurveyFeed : Screen("surveyfeed", R.string.survey_feed)
-                object SurveyDetails : Screen("surveydetails", R.string.survey_details)
-            }
-
-            object UserSurveysFlow : Screen("usersurveysflow", R.string.user_surveys) {
-                object UserSurveys : Screen("usersurveys", R.string.user_surveys)
-                object UserSurveyDetails : Screen("usersurveydetails", R.string.user_survey_details)
-            }
-
-            object ProfileFlow : Screen("profileflow", R.string.profile) {
-                object Profile : Screen("profile", R.string.profile)
-                object Statistics : Screen("statistics", R.string.statistics)
-            }
-        }
-    }
-}
 
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
@@ -101,16 +67,16 @@ private fun SurveyServiceApp(loggedIn: Boolean) {
     val shouldShowAuth by rememberSaveable { mutableStateOf(!loggedIn) }
     NavHost(
         navController,
-        startDestination = if (shouldShowAuth) Auth.route else NavFlow.route,
+        startDestination = if (shouldShowAuth) Auth.route else NavWorkflow.route,
     ) {
         // TODO: 1/20/2022 Think of how it will be related with data from view models
         composable(Auth.route) {
             AuthScreen {
-                navController.navigate(NavFlow.route)
+                navController.navigate(NavWorkflow.route)
             }
         }
-        composable(NavFlow.route) {
-            NavFlow(
+        composable(NavWorkflow.route) {
+            NavWorkflow(
                 onNewSurvey = { navController.navigate(NewSurvey.route) },
                 onSettings = { navController.navigate(Settings.route) }
             )
@@ -126,7 +92,7 @@ private fun SurveyServiceApp(loggedIn: Boolean) {
 
 @ExperimentalMaterialApi
 @Composable
-private fun NavFlow(
+private fun NavWorkflow(
     onNewSurvey: () -> Unit,
     onSettings: () -> Unit
 ) {
@@ -141,16 +107,16 @@ private fun NavFlow(
                 val currentDestination = navBackStackEntry?.destination
                 bottomNavItems.forEach { screen ->
                     val surveyFeedReselected = {
-                        currentDestination?.route == NavFlow.SurveyFeedFlow.route
-                                && screen.route == NavFlow.SurveyFeedFlow.route
+                        currentDestination?.route == NavWorkflow.SurveyFeedWorkflow.route
+                                && screen.route == NavWorkflow.SurveyFeedWorkflow.route
                     }
                     val userSurveysReselected = {
-                        currentDestination?.route == NavFlow.UserSurveysFlow.route
-                                && screen.route == NavFlow.UserSurveysFlow.route
+                        currentDestination?.route == NavWorkflow.UserSurveysWorkflow.route
+                                && screen.route == NavWorkflow.UserSurveysWorkflow.route
                     }
                     val profileReselected = {
-                        currentDestination?.route == NavFlow.ProfileFlow.route
-                                && screen.route == NavFlow.ProfileFlow.route
+                        currentDestination?.route == NavWorkflow.ProfileWorkflow.route
+                                && screen.route == NavWorkflow.ProfileWorkflow.route
                     }
                     BottomNavigationItem(
                         icon = { GetIcon(screen) },
@@ -171,32 +137,32 @@ private fun NavFlow(
     ) { innerPadding ->
         NavHost(
             navController,
-            startDestination = NavFlow.SurveyFeedFlow.route,
+            startDestination = NavWorkflow.SurveyFeedWorkflow.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(NavFlow.SurveyFeedFlow.route) {
-                SurveyFeedFlow(
+            composable(NavWorkflow.SurveyFeedWorkflow.route) {
+                SurveyFeedWorkflow(
                     fallbackToSurveyFeedRoot,
-                    stringResource(NavFlow.SurveyFeedFlow.SurveyFeed.resId),
-                    stringResource(NavFlow.SurveyFeedFlow.SurveyDetails.resId)
+                    stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.resId),
+                    stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.resId)
                 )
             }
-            composable(NavFlow.UserSurveysFlow.route) {
-                UserSurveysFlow(
+            composable(NavWorkflow.UserSurveysWorkflow.route) {
+                UserSurveysWorkflow(
                     fallbackToUserSurveysRoot,
-                    stringResource(NavFlow.UserSurveysFlow.UserSurveys.resId),
-                    stringResource(NavFlow.UserSurveysFlow.UserSurveyDetails.resId),
+                    stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveys.resId),
+                    stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.resId),
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },
                     onNewSurvey = onNewSurvey
                 )
             }
-            composable(NavFlow.ProfileFlow.route) {
-                ProfileFlow(
+            composable(NavWorkflow.ProfileWorkflow.route) {
+                ProfileWorkflow(
                     fallbackToProfileRoot,
-                    stringResource(NavFlow.ProfileFlow.Profile.resId),
-                    stringResource(NavFlow.ProfileFlow.Statistics.resId),
+                    stringResource(NavWorkflow.ProfileWorkflow.Profile.resId),
+                    stringResource(NavWorkflow.ProfileWorkflow.Statistics.resId),
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },
@@ -219,7 +185,7 @@ private fun NavHostController.navigateAndPopUpToStart(route: String) {
 
 @ExperimentalMaterialApi
 @Composable
-fun SurveyFeedFlow(
+fun SurveyFeedWorkflow(
     fallbackToRoot: Event<Unit>,
     surveyFeedTitle: String,
     surveyDetailsTitle: String,
@@ -228,16 +194,16 @@ fun SurveyFeedFlow(
     val scrollSurveysUp = remember { MutableEvent<Unit>() }
     NavHost(
         navController,
-        startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
+        startDestination = NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route
     ) {
-        composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
+        composable(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route) {
             SurveyFeedScreen(
                 scrollSurveysUp,
                 title = surveyFeedTitle,
-                onItem = { navController.navigate(NavFlow.SurveyFeedFlow.SurveyDetails.route) }
+                onItem = { navController.navigate(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) }
             )
         }
-        composable(NavFlow.SurveyFeedFlow.SurveyDetails.route) {
+        composable(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) {
             SurveyDetailsScreen(
                 title = surveyDetailsTitle
             )
@@ -259,7 +225,7 @@ fun SurveyFeedFlow(
 
 @ExperimentalMaterialApi
 @Composable
-fun UserSurveysFlow(
+fun UserSurveysWorkflow(
     fallbackToRoot: Event<Unit>,
     userSurveysTitle: String,
     userSurveyDetailsTitle: String,
@@ -272,18 +238,18 @@ fun UserSurveysFlow(
     BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
-        startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
+        startDestination = NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route
     ) {
-        composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
+        composable(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route) {
             backEnabled = true
             UserSurveysScreen(
                 scrollSurveysUp,
                 title = userSurveysTitle,
-                onItem = { navController.navigate(NavFlow.UserSurveysFlow.UserSurveyDetails.route) },
+                onItem = { navController.navigate(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route) },
                 onNewSurvey = onNewSurvey
             )
         }
-        composable(NavFlow.UserSurveysFlow.UserSurveyDetails.route) {
+        composable(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route) {
             backEnabled = false
             SurveyDetailsScreen(
                 title = userSurveyDetailsTitle
@@ -305,7 +271,7 @@ fun UserSurveysFlow(
 }
 
 @Composable
-private fun GetIcon(screen: AppNavigation.Screen) {
+private fun GetIcon(screen: Screen) {
     val iconRes = screen.getIconRes()
     Icon(
         painter = painterResource(iconRes.first),
@@ -313,10 +279,10 @@ private fun GetIcon(screen: AppNavigation.Screen) {
     )
 }
 
-private fun AppNavigation.Screen.getIconRes() = when (this) {
-    is NavFlow.SurveyFeedFlow -> R.drawable.ic_feed to resId
-    is NavFlow.UserSurveysFlow -> R.drawable.ic_user_surveys to resId
-    is NavFlow.ProfileFlow -> R.drawable.ic_profile to resId
+private fun Screen.getIconRes() = when (this) {
+    is NavWorkflow.SurveyFeedWorkflow -> R.drawable.ic_feed to resId
+    is NavWorkflow.UserSurveysWorkflow -> R.drawable.ic_user_surveys to resId
+    is NavWorkflow.ProfileWorkflow -> R.drawable.ic_profile to resId
     else -> error("No resources provided for this screen: $this")
 }
 
@@ -480,7 +446,7 @@ private fun UserSurveyItem(
 }
 
 @Composable
-private fun ProfileFlow(
+private fun ProfileWorkflow(
     fallbackToRoot: Event<Unit>,
     profileTitle: String,
     statisticsTitle: String,
@@ -492,17 +458,17 @@ private fun ProfileFlow(
     BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
-        startDestination = NavFlow.ProfileFlow.Profile.route
+        startDestination = NavWorkflow.ProfileWorkflow.Profile.route
     ) {
-        composable(NavFlow.ProfileFlow.Profile.route) {
+        composable(NavWorkflow.ProfileWorkflow.Profile.route) {
             backEnabled = true
             ProfileScreen(
                 title = profileTitle,
                 onSettings = onSettings,
-                onStatistics = { navController.navigate(NavFlow.ProfileFlow.Statistics.route) }
+                onStatistics = { navController.navigate(NavWorkflow.ProfileWorkflow.Statistics.route) }
             )
         }
-        composable(NavFlow.ProfileFlow.Statistics.route) {
+        composable(NavWorkflow.ProfileWorkflow.Statistics.route) {
             backEnabled = false
             StatisticsScreen(
                 title = statisticsTitle
@@ -661,7 +627,7 @@ private fun StatisticsScreen(
 @Composable
 fun NavPreview() {
     SurveyServiceTheme {
-        NavFlow(
+        NavWorkflow(
             onNewSurvey = { /*TODO*/ },
             onSettings = { /*TODO*/ }
         )
