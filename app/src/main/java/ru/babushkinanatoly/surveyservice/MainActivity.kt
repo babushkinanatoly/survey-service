@@ -129,6 +129,7 @@ private fun NavFlow(
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
+    val fallbackToSurveyFeedRoot = remember { MutableEvent<Unit>() }
     val fallbackToUserSurveysRoot = remember { MutableEvent<Unit>() }
     Scaffold(
         bottomBar = {
@@ -161,7 +162,7 @@ private fun NavFlow(
                                 restoreState = true
                             }
                             when {
-                                surveyFeedReselected() -> TODO()
+                                surveyFeedReselected() -> fallbackToSurveyFeedRoot.dispatch(Unit)
                                 userSurveysReselected() -> fallbackToUserSurveysRoot.dispatch(Unit)
                                 profileReselected() -> TODO()
                             }
@@ -178,6 +179,7 @@ private fun NavFlow(
         ) {
             composable(NavFlow.SurveyFeedFlow.route) {
                 SurveyFeedFlow(
+                    fallbackToSurveyFeedRoot,
                     stringResource(NavFlow.SurveyFeedFlow.SurveyFeed.resId),
                     stringResource(NavFlow.SurveyFeedFlow.SurveyDetails.resId),
                 )
@@ -204,16 +206,19 @@ private fun NavFlow(
 @ExperimentalMaterialApi
 @Composable
 fun SurveyFeedFlow(
+    fallbackToRoot: Event<Unit>,
     surveyFeedTitle: String,
     surveyDetailsTitle: String,
 ) {
     val navController = rememberNavController()
+    val scrollSurveysUp = remember { MutableEvent<Unit>() }
     NavHost(
         navController,
         startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
     ) {
         composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
             SurveyFeedScreen(
+                scrollSurveysUp,
                 title = surveyFeedTitle,
                 onItem = { navController.navigate(NavFlow.SurveyFeedFlow.SurveyDetails.route) }
             )
@@ -224,6 +229,18 @@ fun SurveyFeedFlow(
             )
         }
     }
+    fallbackToRoot.consumeAsEffect {
+        val startDestination = navController.graph.findStartDestination()
+        if (navController.currentDestination == startDestination) {
+            scrollSurveysUp.dispatch(Unit)
+        } else {
+            navController.navigate(startDestination.route!!) {
+                popUpTo(startDestination.route!!)
+                launchSingleTop = true
+            }
+        }
+    }
+
 }
 
 @ExperimentalMaterialApi
@@ -307,12 +324,14 @@ private fun AuthScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun SurveyFeedScreen(
+    scrollUp: Event<Unit>,
     title: String,
     names: List<String> = List(100) { "$it" },
     onItem: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
+    val surveysState = rememberLazyListState()
     Scaffold(scaffoldState = scaffoldState) {
         TopAppBar(
             title = { Text(title) },
@@ -326,10 +345,18 @@ private fun SurveyFeedScreen(
                 }
             }
         )
-        LazyColumn(modifier = Modifier.padding(top = 56.dp)) {
+        LazyColumn(
+            state = surveysState,
+            modifier = Modifier.padding(top = 56.dp)
+        ) {
             items(items = names) { name ->
                 SurveyItem(name = name) { onItem() }
             }
+        }
+    }
+    scrollUp.consumeAsEffect {
+        coroutineScope.launch {
+            surveysState.animateScrollToItem(index = 0)
         }
     }
 }
