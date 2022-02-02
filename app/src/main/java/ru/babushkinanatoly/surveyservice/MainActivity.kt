@@ -131,6 +131,7 @@ private fun NavFlow(
     val navController = rememberNavController()
     val fallbackToSurveyFeedRoot = remember { MutableEvent<Unit>() }
     val fallbackToUserSurveysRoot = remember { MutableEvent<Unit>() }
+    val fallbackToProfileRoot = remember { MutableEvent<Unit>() }
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -164,7 +165,7 @@ private fun NavFlow(
                             when {
                                 surveyFeedReselected() -> fallbackToSurveyFeedRoot.dispatch(Unit)
                                 userSurveysReselected() -> fallbackToUserSurveysRoot.dispatch(Unit)
-                                profileReselected() -> TODO()
+                                profileReselected() -> fallbackToProfileRoot.dispatch(Unit)
                             }
                         }
                     )
@@ -181,7 +182,7 @@ private fun NavFlow(
                 SurveyFeedFlow(
                     fallbackToSurveyFeedRoot,
                     stringResource(NavFlow.SurveyFeedFlow.SurveyFeed.resId),
-                    stringResource(NavFlow.SurveyFeedFlow.SurveyDetails.resId),
+                    stringResource(NavFlow.SurveyFeedFlow.SurveyDetails.resId)
                 )
             }
             composable(NavFlow.UserSurveysFlow.route) {
@@ -194,6 +195,7 @@ private fun NavFlow(
             }
             composable(NavFlow.ProfileFlow.route) {
                 ProfileFlow(
+                    fallbackToProfileRoot,
                     stringResource(NavFlow.ProfileFlow.Profile.resId),
                     stringResource(NavFlow.ProfileFlow.Statistics.resId),
                     onSettings = onSettings
@@ -461,12 +463,12 @@ private fun UserSurveyItem(
 
 @Composable
 private fun ProfileFlow(
+    fallbackToRoot: Event<Unit>,
     profileTitle: String,
     statisticsTitle: String,
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
-    // TODO: Move this to SurveyFeedFlow 
     NavHost(
         navController,
         startDestination = NavFlow.ProfileFlow.Profile.route
@@ -482,6 +484,13 @@ private fun ProfileFlow(
             StatisticsScreen(
                 title = statisticsTitle
             )
+        }
+    }
+    fallbackToRoot.consumeAsEffect {
+        val startDestination = navController.graph.findStartDestination()
+        navController.navigate(startDestination.route!!) {
+            popUpTo(startDestination.route!!)
+            launchSingleTop = true
         }
     }
 }
