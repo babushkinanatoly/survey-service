@@ -3,6 +3,7 @@ package ru.babushkinanatoly.surveyservice
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -155,13 +157,7 @@ private fun NavFlow(
                         label = { Text(stringResource(screen.resId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            navController.navigateAndPopUpToStart(screen.route)
                             when {
                                 surveyFeedReselected() -> fallbackToSurveyFeedRoot.dispatch(Unit)
                                 userSurveysReselected() -> fallbackToUserSurveysRoot.dispatch(Unit)
@@ -190,6 +186,9 @@ private fun NavFlow(
                     fallbackToUserSurveysRoot,
                     stringResource(NavFlow.UserSurveysFlow.UserSurveys.resId),
                     stringResource(NavFlow.UserSurveysFlow.UserSurveyDetails.resId),
+                    onBack = {
+                        navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
+                    },
                     onNewSurvey = onNewSurvey
                 )
             }
@@ -198,10 +197,23 @@ private fun NavFlow(
                     fallbackToProfileRoot,
                     stringResource(NavFlow.ProfileFlow.Profile.resId),
                     stringResource(NavFlow.ProfileFlow.Statistics.resId),
+                    onBack = {
+                        navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
+                    },
                     onSettings = onSettings
                 )
             }
         }
+    }
+}
+
+private fun NavHostController.navigateAndPopUpToStart(route: String) {
+    navigate(route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }
 
@@ -251,15 +263,19 @@ fun UserSurveysFlow(
     fallbackToRoot: Event<Unit>,
     userSurveysTitle: String,
     userSurveyDetailsTitle: String,
+    onBack: () -> Unit,
     onNewSurvey: () -> Unit
 ) {
     val navController = rememberNavController()
     val scrollSurveysUp = remember { MutableEvent<Unit>() }
+    var backEnabled by rememberSaveable { mutableStateOf(true) }
+    BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
         startDestination = NavFlow.SurveyFeedFlow.SurveyFeed.route
     ) {
         composable(NavFlow.SurveyFeedFlow.SurveyFeed.route) {
+            backEnabled = true
             UserSurveysScreen(
                 scrollSurveysUp,
                 title = userSurveysTitle,
@@ -268,6 +284,7 @@ fun UserSurveysFlow(
             )
         }
         composable(NavFlow.UserSurveysFlow.UserSurveyDetails.route) {
+            backEnabled = false
             SurveyDetailsScreen(
                 title = userSurveyDetailsTitle
             )
@@ -284,6 +301,7 @@ fun UserSurveysFlow(
             }
         }
     }
+
 }
 
 @Composable
@@ -466,14 +484,18 @@ private fun ProfileFlow(
     fallbackToRoot: Event<Unit>,
     profileTitle: String,
     statisticsTitle: String,
+    onBack: () -> Unit,
     onSettings: () -> Unit
 ) {
     val navController = rememberNavController()
+    var backEnabled by rememberSaveable { mutableStateOf(true) }
+    BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
         startDestination = NavFlow.ProfileFlow.Profile.route
     ) {
         composable(NavFlow.ProfileFlow.Profile.route) {
+            backEnabled = true
             ProfileScreen(
                 title = profileTitle,
                 onSettings = onSettings,
@@ -481,6 +503,7 @@ private fun ProfileFlow(
             )
         }
         composable(NavFlow.ProfileFlow.Statistics.route) {
+            backEnabled = false
             StatisticsScreen(
                 title = statisticsTitle
             )
