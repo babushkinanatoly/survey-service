@@ -29,9 +29,9 @@ fun UserSurveysWorkflow(
     BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
-        startDestination = NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route
+        startDestination = NavWorkflow.UserSurveysWorkflow.UserSurveys.route
     ) {
-        composable(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route) {
+        composable(NavWorkflow.UserSurveysWorkflow.UserSurveys.route) {
             backEnabled = true
             UserSurveysScreen(
                 scrollSurveysUp,
