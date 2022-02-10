@@ -26,7 +26,11 @@ fun SurveyServiceApp(loggedIn: Boolean) {
     ) {
         composable(Auth.route) {
             AuthScreen {
-                navController.navigate(NavWorkflow.route)
+                navController.navigate(NavWorkflow.route) {
+                    popUpTo(Auth.route) {
+                        inclusive = true
+                    }
+                }
             }
         }
         composable(NavWorkflow.route) {
