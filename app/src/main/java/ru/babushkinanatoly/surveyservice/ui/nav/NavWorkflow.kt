@@ -1,5 +1,6 @@
 package ru.babushkinanatoly.surveyservice.ui.nav
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -20,6 +22,7 @@ import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen
 import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.surveyservice.ui.profile.ProfileWorkflow
 import ru.babushkinanatoly.surveyservice.ui.surveyfeed.SurveyFeedWorkflow
+import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.ui.usersurveys.UserSurveysWorkflow
 import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.dispatch
@@ -133,4 +136,23 @@ private fun Screen.getIconRes() = when (this) {
     is NavWorkflow.UserSurveysWorkflow -> R.drawable.ic_user_surveys to resId
     is NavWorkflow.ProfileWorkflow -> R.drawable.ic_profile to resId
     else -> error("No resources provided for this screen: $this")
+}
+
+@ExperimentalMaterialApi
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "NavPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun NavPreview() {
+    SurveyServiceTheme {
+        NavWorkflow(
+            onNewSurvey = { /*TODO*/ },
+            onSettings = { /*TODO*/ },
+            onLogOut = { /*TODO*/ }
+        )
+    }
 }
