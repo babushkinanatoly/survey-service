@@ -41,7 +41,8 @@ fun NavPreview() {
     SurveyServiceTheme {
         NavWorkflow(
             onNewSurvey = { /*TODO*/ },
-            onSettings = { /*TODO*/ }
+            onSettings = { /*TODO*/ },
+            onLogOut = { /*TODO*/ }
         )
     }
 }

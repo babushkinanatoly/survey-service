@@ -12,4 +12,5 @@
     <string name="new_survey">New survey</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
+    <string name="log_out">Log out</string>
 </resources>

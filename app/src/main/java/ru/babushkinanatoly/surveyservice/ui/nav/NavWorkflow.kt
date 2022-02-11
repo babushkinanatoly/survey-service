@@ -28,7 +28,8 @@ import ru.babushkinanatoly.surveyservice.util.dispatch
 @Composable
 fun NavWorkflow(
     onNewSurvey: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onLogOut: () -> Unit
 ) {
     val navController = rememberNavController()
     val fallbackToSurveyFeedRoot = remember { MutableEvent<Unit>() }
@@ -100,7 +101,8 @@ fun NavWorkflow(
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },
-                    onSettings = onSettings
+                    onSettings = onSettings,
+                    onLogOut = onLogOut
                 )
             }
         }

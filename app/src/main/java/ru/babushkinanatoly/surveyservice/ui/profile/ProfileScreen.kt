@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -20,6 +21,7 @@ import ru.babushkinanatoly.surveyservice.R
 fun ProfileScreen(
     title: String,
     onSettings: () -> Unit,
+    onLogOut: () -> Unit,
     onStatistics: () -> Unit
 ) {
     Scaffold(
@@ -28,7 +30,10 @@ fun ProfileScreen(
                 title = { Text(text = title) },
                 actions = {
                     IconButton(onClick = onSettings) {
-                        Icon(imageVector = Icons.Outlined.Settings, stringResource(R.string.settings))
+                        Icon(Icons.Outlined.Settings, stringResource(R.string.settings))
+                    }
+                    IconButton(onClick = onLogOut) {
+                        Icon(painterResource(R.drawable.ic_log_out), stringResource(R.string.log_out))
                     }
                 }
             )

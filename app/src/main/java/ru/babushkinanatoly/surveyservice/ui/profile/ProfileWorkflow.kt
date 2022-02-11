@@ -20,7 +20,8 @@ fun ProfileWorkflow(
     profileTitle: String,
     statisticsTitle: String,
     onBack: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onLogOut: () -> Unit
 ) {
     val navController = rememberNavController()
     var backEnabled by rememberSaveable { mutableStateOf(true) }
@@ -34,6 +35,7 @@ fun ProfileWorkflow(
             ProfileScreen(
                 title = profileTitle,
                 onSettings = onSettings,
+                onLogOut = onLogOut,
                 onStatistics = { navController.navigate(NavWorkflow.ProfileWorkflow.Statistics.route) }
             )
         }

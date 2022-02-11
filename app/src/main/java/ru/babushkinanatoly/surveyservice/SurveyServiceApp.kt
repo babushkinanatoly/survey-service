@@ -36,7 +36,14 @@ fun SurveyServiceApp(loggedIn: Boolean) {
         composable(NavWorkflow.route) {
             NavWorkflow(
                 onNewSurvey = { navController.navigate(NewSurvey.route) },
-                onSettings = { navController.navigate(Settings.route) }
+                onSettings = { navController.navigate(Settings.route) },
+                onLogOut = {
+                    navController.navigate(Auth.route) {
+                        popUpTo(NavWorkflow.route) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
         composable(NewSurvey.route) {
