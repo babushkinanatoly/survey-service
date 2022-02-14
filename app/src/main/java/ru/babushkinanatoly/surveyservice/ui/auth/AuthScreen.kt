@@ -10,13 +10,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.babushkinanatoly.surveyservice.R
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
 @Composable
 fun AuthScreen(
-    onLogIn: () -> Unit
+    onLogIn: () -> Unit,
 ) {
     Surface {
         Column(
@@ -30,10 +34,8 @@ fun AuthScreen(
                 modifier = Modifier.padding(vertical = 24.dp),
                 text = "Please log in to continue",
             )
-            var usernameText by rememberSaveable { mutableStateOf("") }
-            AuthTextField(usernameText, "Username") { usernameText = it }
-            var passwordText by rememberSaveable { mutableStateOf("") }
-            AuthTextField(passwordText, "Password") { passwordText = it }
+            UsernameField()
+            PasswordField()
             Button(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
@@ -48,20 +50,56 @@ fun AuthScreen(
 }
 
 @Composable
-private fun AuthTextField(
-    text: String,
-    placeholder: String,
-    onTextChange: (String) -> Unit
-) {
-    TextField(
+private fun UsernameField() {
+    var text by rememberSaveable { mutableStateOf("") }
+    OutlinedTextField(
         modifier = Modifier
             .padding(vertical = 8.dp)
             .sizeIn(minHeight = 56.dp)
             .fillMaxWidth(),
         value = text,
-        onValueChange = { onTextChange(it) },
+        onValueChange = { text = it },
+        placeholder = { Text("Username") },
+        singleLine = true
+    )
+}
+
+@Composable
+private fun PasswordField() {
+    var text by rememberSaveable { mutableStateOf("") }
+    var showPassword by rememberSaveable { mutableStateOf(false) }
+    OutlinedTextField(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .sizeIn(minHeight = 56.dp)
+            .fillMaxWidth(),
+        value = text,
+        onValueChange = { text = it },
+        placeholder = { Text("Password") },
         singleLine = true,
-        placeholder = { Text(placeholder) }
+        visualTransformation = if (showPassword) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        },
+        trailingIcon = {
+            IconToggleButton(
+                checked = showPassword,
+                onCheckedChange = { showPassword = it }
+            ) {
+                Icon(
+                    painterResource(
+                        if (showPassword) R.drawable.ic_show_password else R.drawable.ic_hide_password
+                    ),
+                    tint = if (showPassword) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                    },
+                    contentDescription = null
+                )
+            }
+        }
     )
 }
 
