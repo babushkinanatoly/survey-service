@@ -1,5 +1,6 @@
 package ru.babushkinanatoly.surveyservice.ui.surveyfeed
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -14,10 +15,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.surveyservice.R
+import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.util.Event
+import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
 
 @ExperimentalMaterialApi
@@ -26,7 +30,7 @@ fun SurveyFeedScreen(
     scrollUp: Event<Unit>,
     title: String,
     names: List<String> = List(100) { "$it" },
-    onItem: () -> Unit
+    onItem: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
@@ -64,7 +68,7 @@ fun SurveyFeedScreen(
 @Composable
 private fun SurveyItem(
     name: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
         onClick = onClick,
@@ -88,5 +92,20 @@ private fun SurveyItem(
                 )
             }
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "SurveyFeedScreenPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun SurveyFeedScreenPreview() {
+    SurveyServiceTheme {
+        SurveyFeedScreen(MutableEvent(), "Survey feed", List(100) { "$it" }) {}
     }
 }

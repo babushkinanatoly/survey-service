@@ -114,6 +114,6 @@ private fun PasswordField() {
 @Composable
 fun AuthScreenPreview() {
     SurveyServiceTheme {
-        AuthScreen({})
+        AuthScreen {}
     }
 }

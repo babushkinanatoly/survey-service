@@ -27,7 +27,7 @@ fun ProfileWorkflow(
     statisticsTitle: String,
     onBack: () -> Unit,
     onSettings: () -> Unit,
-    onLogOut: () -> Unit
+    onLogOut: () -> Unit,
 ) {
     val navController = rememberNavController()
     var backEnabled by rememberSaveable { mutableStateOf(true) }

@@ -32,7 +32,7 @@ import ru.babushkinanatoly.surveyservice.util.dispatch
 fun NavWorkflow(
     onNewSurvey: () -> Unit,
     onSettings: () -> Unit,
-    onLogOut: () -> Unit
+    onLogOut: () -> Unit,
 ) {
     val navController = rememberNavController()
     val fallbackToSurveyFeedRoot = remember { MutableEvent<Unit>() }

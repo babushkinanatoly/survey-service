@@ -17,7 +17,7 @@ import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
 @Composable
 fun NewSurveyScreen(
-    title: String
+    title: String,
 ) {
     Surface {
         Scaffold {
