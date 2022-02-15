@@ -1,14 +1,18 @@
 package ru.babushkinanatoly.surveyservice.ui.usersurveys
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen.NavWorkflow
+import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.util.Event
 import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
@@ -21,7 +25,7 @@ fun UserSurveysWorkflow(
     userSurveysTitle: String,
     userSurveyDetailsTitle: String,
     onBack: () -> Unit,
-    onNewSurvey: () -> Unit
+    onNewSurvey: () -> Unit,
 ) {
     val navController = rememberNavController()
     val scrollSurveysUp = remember { MutableEvent<Unit>() }
@@ -56,6 +60,23 @@ fun UserSurveysWorkflow(
                 popUpTo(startDestination.route!!)
                 launchSingleTop = true
             }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "UserSurveysWorkflowPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun UserSurveysWorkflowPreview() {
+    SurveyServiceTheme {
+        Scaffold {
+            UserSurveysWorkflow(MutableEvent(), "User surveys", "User survey details", {}, {})
         }
     }
 }
