@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.babushkinanatoly.surveyservice.R
-import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen.NewSurvey
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
 @Composable
@@ -52,6 +51,6 @@ fun NewSurveyScreen(
 @Composable
 fun NewSurveyPreview() {
     SurveyServiceTheme {
-        NewSurveyScreen(stringResource(NewSurvey.resId))
+        NewSurveyScreen("New survey")
     }
 }

@@ -108,12 +108,12 @@ private fun PasswordField() {
     showBackground = true,
     widthDp = 320,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "AuthPreviewDark"
+    name = "AuthScreenPreviewDark"
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun AuthPreview() {
+fun AuthScreenPreview() {
     SurveyServiceTheme {
-        AuthScreen(onLogIn = {})
+        AuthScreen({})
     }
 }

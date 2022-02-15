@@ -143,16 +143,12 @@ private fun Screen.getIconRes() = when (this) {
     showBackground = true,
     widthDp = 320,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "NavPreviewDark"
+    name = "NavWorkflowPreviewDark"
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun NavPreview() {
+fun NavWorkflowPreview() {
     SurveyServiceTheme {
-        NavWorkflow(
-            onNewSurvey = { /*TODO*/ },
-            onSettings = { /*TODO*/ },
-            onLogOut = { /*TODO*/ }
-        )
+        NavWorkflow({}, {}, {})
     }
 }
