@@ -1,5 +1,6 @@
 package ru.babushkinanatoly.surveyservice.ui.usersurveys
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import ru.babushkinanatoly.surveyservice.R
+import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
 @Composable
 fun UserSurveyDetailsScreen(
-    title: String
+    title: String,
 ) {
     Surface {
         Scaffold {
@@ -34,5 +37,20 @@ fun UserSurveyDetailsScreen(
         ) {
             Text(title)
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "UserSurveyDetailsScreenPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun UserSurveyDetailsScreenPreview() {
+    SurveyServiceTheme {
+        UserSurveyDetailsScreen("User survey details")
     }
 }
