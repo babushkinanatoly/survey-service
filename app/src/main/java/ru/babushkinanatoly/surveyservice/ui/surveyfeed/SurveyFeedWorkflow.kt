@@ -1,13 +1,17 @@
 package ru.babushkinanatoly.surveyservice.ui.surveyfeed
 
+import android.content.res.Configuration
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.surveyservice.ui.nav.AppNavigation.Screen.NavWorkflow
+import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.util.Event
 import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
@@ -48,6 +52,23 @@ fun SurveyFeedWorkflow(
                 popUpTo(startDestination.route!!)
                 launchSingleTop = true
             }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "SurveyFeedWorkflowPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun SurveyFeedWorkflowPreview() {
+    SurveyServiceTheme {
+        Scaffold {
+            SurveyFeedWorkflow(MutableEvent(), "Survey feed", "Survey details")
         }
     }
 }
