@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +47,7 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val focusManager = LocalFocusManager.current
             AuthHeader(
                 text = stringResource(R.string.auth_header)
             )
@@ -65,7 +67,10 @@ fun AuthScreen(
             AuthButton(
                 text = stringResource(R.string.log_in),
                 enabled = state.loginEnabled,
-                onClick = { onLogIn(UserAuthData(state.email, state.password)) }
+                onClick = {
+                    focusManager.clearFocus()
+                    onLogIn(UserAuthData(state.email, state.password))
+                }
             )
         }
         if (state.loading) {
