@@ -30,16 +30,13 @@ import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(RepoImpl())),
-    onLogIn: () -> Unit,
+    onEmailChange: (String) -> Unit = authViewModel.authModel::onEmailChange,
+    onPasswordChange: (String) -> Unit = authViewModel.authModel::onPasswordChange,
+    onLogIn: (UserAuthData) -> Unit = authViewModel.authModel::onLogIn,
+    onLogInSuccess: () -> Unit,
 ) {
-    val vm = authViewModel.authModel
+    val state by authViewModel.authModel.state.collectAsState()
     val context = LocalContext.current
-    val loading by vm.loading.collectAsState(false)
-    val email by vm.email.collectAsState("")
-    val password by vm.password.collectAsState("")
-    val emailError by vm.emailError.collectAsState("")
-    val passwordError by vm.passwordError.collectAsState("")
-    val loginEnabled by vm.loginEnabled.collectAsState(false)
     // TODO: Lift up the content depending on whether the keyboard is shown or not (insets)
     Surface {
         Column(
@@ -55,20 +52,20 @@ fun AuthScreen(
                 text = stringResource(R.string.auth_header),
             )
             // TODO: Lose focus when onLogin
-            EmailField(email, emailError) { vm.onEmailChange(it) }
-            PasswordField(password, passwordError) { vm.onPasswordChange(it) }
+            EmailField(state.email, state.emailError) { onEmailChange(it) }
+            PasswordField(state.password, state.passwordError) { onPasswordChange(it) }
             Button(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .sizeIn(minHeight = 56.dp)
                     .fillMaxWidth(),
-                enabled = loginEnabled,
-                onClick = { vm.onLogIn(UserAuthData(email, password)) }
+                enabled = state.loginEnabled,
+                onClick = { onLogIn(UserAuthData(state.email, state.password)) }
             ) {
                 Text(stringResource(R.string.log_in))
             }
         }
-        if (loading) {
+        if (state.loading) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -79,10 +76,10 @@ fun AuthScreen(
                 CircularProgressIndicator()
             }
         }
-        vm.loginEvent.consumeAsEffect {
+        authViewModel.authModel.loginEvent.consumeAsEffect {
             when (it) {
                 is LogInEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
-                LogInEvent.Success -> onLogIn()
+                LogInEvent.Success -> onLogInSuccess()
             }
         }
     }

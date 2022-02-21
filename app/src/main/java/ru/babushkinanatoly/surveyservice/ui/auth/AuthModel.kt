@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.surveyservice.data.LogInResult
 import ru.babushkinanatoly.surveyservice.data.Repo
@@ -16,17 +16,21 @@ import ru.babushkinanatoly.surveyservice.util.MutableEvent
 import ru.babushkinanatoly.surveyservice.util.dispatch
 
 interface AuthModel {
-    val email: Flow<String>
-    val password: Flow<String>
-    val emailError: Flow<String>
-    val passwordError: Flow<String>
-    val loginEnabled: Flow<Boolean>
-    val loading: Flow<Boolean>
+    val state: StateFlow<AuthState>
     val loginEvent: Event<LogInEvent>
     fun onLogIn(userAuthData: UserAuthData)
     fun onEmailChange(email: String)
     fun onPasswordChange(password: String)
 }
+
+data class AuthState(
+    val email: String,
+    val password: String,
+    val emailError: String,
+    val passwordError: String,
+    val loginEnabled: Boolean,
+    val loading: Boolean,
+)
 
 class AuthViewModel(repo: Repo) : ViewModel() {
     val authModel: AuthModel = AuthModelImpl(viewModelScope, repo)
@@ -53,22 +57,21 @@ class AuthModelImpl(
     private val repo: Repo,
 ) : AuthModel {
 
-    override val email = MutableStateFlow("")
-    override val password = MutableStateFlow("")
-
-    override val emailError = MutableStateFlow("")
-    override val passwordError = MutableStateFlow("")
-
-    override val loginEnabled = combine(email, password) { values ->
-        values.all { it.isNotBlank() }
-    }
-
-    override val loading = MutableStateFlow(false)
+    override val state = MutableStateFlow(
+        AuthState(
+            email = "",
+            password = "",
+            emailError = "",
+            passwordError = "",
+            loginEnabled = false,
+            loading = false
+        )
+    )
 
     override val loginEvent = MutableEvent<LogInEvent>()
 
     override fun onLogIn(userAuthData: UserAuthData) {
-        loading.value = true
+        state.update { it.copy(loading = true) }
         scope.launch {
             loginEvent.dispatch(
                 when (repo.onLogIn(userAuthData)) {
@@ -78,20 +81,30 @@ class AuthModelImpl(
                     LogInResult.CONNECTION_ERROR -> LogInEvent.Error("Check internet connection or try again later")
                 }
             )
-            loading.value = false
+            state.update { it.copy(loading = false) }
         }
     }
 
     override fun onEmailChange(email: String) {
-        this.email.value = email
-        emailError.value = (if (emailValid()) "" else "Illegal email format")
+        state.update {
+            it.copy(
+                email = email,
+                emailError = (if (isEmailValid(email)) "" else "Illegal email format"),
+                loginEnabled = isEmailValid(email) && isPasswordValid(it.password)
+            )
+        }
     }
 
     override fun onPasswordChange(password: String) {
-        this.password.value = password
-        passwordError.value = (if (passwordValid()) "" else "Illegal password format")
+        state.update {
+            it.copy(
+                password = password,
+                passwordError = (if (isPasswordValid(password)) "" else "Illegal password format"),
+                loginEnabled = isPasswordValid(password) && isEmailValid(it.email)
+            )
+        }
     }
 
-    private fun emailValid() = email.value.isNotBlank()
-    private fun passwordValid() = password.value.isNotBlank()
+    private fun isEmailValid(email: String) = email.isNotBlank()
+    private fun isPasswordValid(password: String) = password.isNotBlank()
 }
