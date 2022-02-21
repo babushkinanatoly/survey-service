@@ -46,43 +46,45 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier.padding(vertical = 24.dp),
-                fontWeight = FontWeight.Bold,
-                text = stringResource(R.string.auth_header),
+            AuthHeader(
+                text = stringResource(R.string.auth_header)
             )
             // TODO: Lose focus when onLogin
-            EmailField(state.email, state.emailError) { onEmailChange(it) }
-            PasswordField(state.password, state.passwordError) { onPasswordChange(it) }
-            Button(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .sizeIn(minHeight = 56.dp)
-                    .fillMaxWidth(),
+            EmailField(
+                text = state.email,
+                error = state.emailError,
+                onValueChange = { onEmailChange(it) }
+            )
+            PasswordField(
+                text = state.password,
+                error = state.passwordError,
+                onValueChange = { onPasswordChange(it) }
+            )
+            AuthButton(
+                text = stringResource(R.string.log_in),
                 enabled = state.loginEnabled,
                 onClick = { onLogIn(UserAuthData(state.email, state.password)) }
-            ) {
-                Text(stringResource(R.string.log_in))
-            }
+            )
         }
         if (state.loading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
-                    .pointerInput(Unit) {}
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        authViewModel.authModel.loginEvent.consumeAsEffect {
-            when (it) {
-                is LogInEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
-                LogInEvent.Success -> onLogInSuccess()
-            }
+            AuthProgressBar()
         }
     }
+    authViewModel.authModel.loginEvent.consumeAsEffect {
+        when (it) {
+            is LogInEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+            LogInEvent.Success -> onLogInSuccess()
+        }
+    }
+}
+
+@Composable
+private fun AuthHeader(text: String) {
+    Text(
+        modifier = Modifier.padding(vertical = 24.dp),
+        fontWeight = FontWeight.Bold,
+        text = text,
+    )
 }
 
 @Composable
@@ -173,6 +175,37 @@ private fun ErrorText(
         color = MaterialTheme.colors.error,
         style = MaterialTheme.typography.caption,
     )
+}
+
+@Composable
+private fun AuthButton(
+    text: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .sizeIn(minHeight = 56.dp)
+            .fillMaxWidth(),
+        enabled = enabled,
+        onClick = onClick
+    ) {
+        Text(text)
+    }
+}
+
+@Composable
+private fun AuthProgressBar() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
+            .pointerInput(Unit) {}
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @ExperimentalMaterialApi
