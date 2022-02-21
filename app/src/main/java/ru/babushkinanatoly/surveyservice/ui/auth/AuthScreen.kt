@@ -53,11 +53,13 @@ fun AuthScreen(
             EmailField(
                 text = state.email,
                 error = state.emailError,
+                isError = state.emailError.isNotBlank(),
                 onValueChange = { onEmailChange(it) }
             )
             PasswordField(
                 text = state.password,
                 error = state.passwordError,
+                isError = state.passwordError.isNotBlank(),
                 onValueChange = { onPasswordChange(it) }
             )
             AuthButton(
@@ -91,6 +93,7 @@ private fun AuthHeader(text: String) {
 private fun EmailField(
     text: String,
     error: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
 ) {
     Column {
@@ -100,14 +103,14 @@ private fun EmailField(
                 .sizeIn(minHeight = 56.dp)
                 .fillMaxWidth(),
             value = text,
-            isError = error.isNotBlank(),
+            isError = isError,
             onValueChange = { onValueChange(it) },
             placeholder = { Text(stringResource(R.string.email)) },
             singleLine = true
         )
         ErrorText(
             text = error,
-            visible = error.isNotBlank()
+            visible = isError
         )
     }
 }
@@ -116,6 +119,7 @@ private fun EmailField(
 private fun PasswordField(
     text: String,
     error: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
@@ -126,7 +130,7 @@ private fun PasswordField(
                 .sizeIn(minHeight = 56.dp)
                 .fillMaxWidth(),
             value = text,
-            isError = error.isNotBlank(),
+            isError = isError,
             onValueChange = { onValueChange(it) },
             placeholder = { Text(stringResource(R.string.password)) },
             singleLine = true,
@@ -156,7 +160,7 @@ private fun PasswordField(
         )
         ErrorText(
             text = error,
-            visible = error.isNotBlank()
+            visible = isError
         )
     }
 }
