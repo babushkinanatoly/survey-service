@@ -18,7 +18,7 @@ fun <T> MutableEvent<T>.dispatch(data: T) {
 
 @SuppressLint("ComposableNaming")
 @Composable
-fun <T> Event<T>.consumeAsEffect(consumer: (T) -> Unit) {
+inline fun <T> Event<T>.consumeAsEffect(crossinline consumer: (T) -> Unit) {
     LaunchedEffect(Unit) {
         for (item in this@consumeAsEffect) {
             consumer(item)
