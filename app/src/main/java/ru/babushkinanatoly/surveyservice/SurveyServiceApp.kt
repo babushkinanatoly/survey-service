@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.surveyservice
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import ru.babushkinanatoly.surveyservice.ui.newsurvey.NewSurveyScreen
 import ru.babushkinanatoly.surveyservice.ui.settings.SettingsScreen
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun SurveyServiceApp(loggedIn: Boolean) {
@@ -59,6 +61,7 @@ fun SurveyServiceApp(loggedIn: Boolean) {
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Preview(
     showBackground = true,

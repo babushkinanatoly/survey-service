@@ -3,8 +3,12 @@ package ru.babushkinanatoly.surveyservice.ui.auth
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,6 +32,7 @@ import ru.babushkinanatoly.surveyservice.data.UserAuthData
 import ru.babushkinanatoly.surveyservice.ui.theme.SurveyServiceTheme
 import ru.babushkinanatoly.surveyservice.util.consumeAsEffect
 
+@ExperimentalFoundationApi
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(RepoImpl())),
@@ -38,43 +43,46 @@ fun AuthScreen(
 ) {
     val state by authViewModel.authModel.state.collectAsState()
     val context = LocalContext.current
-    // TODO: Lift up the content depending on whether the keyboard is shown or not (insets)
     Surface {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        CompositionLocalProvider(
+            LocalOverScrollConfiguration provides null
         ) {
-            val focusManager = LocalFocusManager.current
-            AuthHeader(
-                text = stringResource(R.string.auth_header)
-            )
-            // TODO: Lose focus when onLogin
-            EmailField(
-                text = state.email,
-                error = state.emailError,
-                isError = state.emailError.isNotBlank(),
-                onValueChange = { onEmailChange(it) }
-            )
-            PasswordField(
-                text = state.password,
-                error = state.passwordError,
-                isError = state.passwordError.isNotBlank(),
-                onValueChange = { onPasswordChange(it) }
-            )
-            AuthButton(
-                text = stringResource(R.string.log_in),
-                enabled = state.loginEnabled,
-                onClick = {
-                    focusManager.clearFocus()
-                    onLogIn(UserAuthData(state.email, state.password))
-                }
-            )
-        }
-        if (state.loading) {
-            AuthProgressBar()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val focusManager = LocalFocusManager.current
+                AuthHeader(
+                    text = stringResource(R.string.auth_header)
+                )
+                EmailField(
+                    text = state.email,
+                    error = state.emailError,
+                    isError = state.emailError.isNotBlank(),
+                    onValueChange = { onEmailChange(it) }
+                )
+                PasswordField(
+                    text = state.password,
+                    error = state.passwordError,
+                    isError = state.passwordError.isNotBlank(),
+                    onValueChange = { onPasswordChange(it) }
+                )
+                AuthButton(
+                    text = stringResource(R.string.log_in),
+                    enabled = state.loginEnabled,
+                    onClick = {
+                        focusManager.clearFocus()
+                        onLogIn(UserAuthData(state.email, state.password))
+                    }
+                )
+            }
+            if (state.loading) {
+                AuthProgressBar()
+            }
         }
     }
     authViewModel.authModel.loginEvent.consumeAsEffect {
@@ -217,6 +225,7 @@ private fun AuthProgressBar() {
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Preview(
     showBackground = true,
