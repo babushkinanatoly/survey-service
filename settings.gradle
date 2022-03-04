@@ -1,2 +1,12 @@
 rootProject.name = "Survey Service"
 include ':app'
+include ':feature_auth'
+include ':feature_survey_feed'
+include ':feature_user_surveys'
+include ':feature_new_survey'
+include ':feature_profile'
+include ':feature_settings'
+include ':base_feature'
+include ':core'
+include ':core_api'
+include ':core_impl'
