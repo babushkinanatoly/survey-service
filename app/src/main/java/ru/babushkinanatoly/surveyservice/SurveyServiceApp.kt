@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.*
 import ru.babushkinanatoly.feature_auth.AuthScreen
-import ru.babushkinanatoly.feature_auth.AuthViewModel
+import ru.babushkinanatoly.feature_auth.di.AuthViewModel
 import ru.babushkinanatoly.feature_new_survey.NewSurveyScreen
 import ru.babushkinanatoly.feature_settings.SettingsScreen
 

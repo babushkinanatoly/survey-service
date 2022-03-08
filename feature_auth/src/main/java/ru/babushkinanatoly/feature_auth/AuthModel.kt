@@ -1,8 +1,5 @@
 package ru.babushkinanatoly.feature_auth
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,13 +8,10 @@ import kotlinx.coroutines.launch
 import ru.babushkinanatoly.base_feature.util.Event
 import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.dispatch
-import ru.babushkinanatoly.core.RepoProvider
-import ru.babushkinanatoly.core.StringsProvider
 import ru.babushkinanatoly.core_api.LogInResult
 import ru.babushkinanatoly.core_api.Repo
 import ru.babushkinanatoly.core_api.Strings
 import ru.babushkinanatoly.core_api.UserAuthData
-import ru.babushkinanatoly.feature_auth.di.DaggerAuthComponent
 
 interface AuthModel {
     val state: StateFlow<AuthState>
@@ -35,11 +29,6 @@ data class AuthState(
     val loading: Boolean,
 ) {
     val loginEnabled = isEmailValid(email) && isPasswordValid(password)
-}
-
-class AuthViewModel(app: Application) : AndroidViewModel(app) {
-    val authComponent = DaggerAuthComponent.factory()
-        .create(viewModelScope, (app as StringsProvider), (app as RepoProvider))
 }
 
 sealed class LogInEvent {

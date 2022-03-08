@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="auth">Authentication</string>
-    <string name="auth_header">Please log in to continue</string>
     <string name="survey_feed">Survey feed</string>
     <string name="user_surveys">User surveys</string>
     <string name="profile">Profile</string>
@@ -13,12 +12,5 @@
     <string name="new_survey">New survey</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
-    <string name="log_in">Log in</string>
     <string name="log_out">Log out</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="error_email_format">Illegal email format</string>
-    <string name="error_password_format">Illegal password format</string>
-    <string name="error_invalid_credentials">Invalid email or password</string>
-    <string name="error_no_connection">Check internet connection or try again later</string>
 </resources>

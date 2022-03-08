@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_in">Log in</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="auth_header">Please log in to continue</string>
+    <string name="error_email_format">Illegal email format</string>
+    <string name="error_password_format">Illegal password format</string>
+    <string name="error_invalid_credentials">Invalid email or password</string>
+    <string name="error_no_connection">Check internet connection or try again later</string>
+</resources>
