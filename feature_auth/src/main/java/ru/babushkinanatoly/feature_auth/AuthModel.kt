@@ -63,7 +63,9 @@ class AuthModelImpl(
                 LogInResult.CONNECTION_ERROR -> LogInEvent.Error(strings[R.string.error_no_connection])
             }
             loginEvent.dispatch(event)
-            state.update { it.copy(loading = false) }
+            if (event !is LogInEvent.Success) {
+                state.update { it.copy(loading = false) }
+            }
         }
     }
 
