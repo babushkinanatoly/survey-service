@@ -57,7 +57,9 @@ dependencies {
     implementation project(path: ':feature_profile')
     implementation project(path: ':feature_settings')
 
-    kapt 'com.google.dagger:dagger-compiler:2.38.1'
+    implementation 'androidx.activity:activity-compose:1.4.0'
+
+    kapt "com.google.dagger:dagger-compiler:$dagger_compiler_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
