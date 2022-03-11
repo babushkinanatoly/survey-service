@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -155,6 +158,13 @@ private fun EmailField(
                 .sizeIn(minHeight = 56.dp)
                 .fillMaxWidth(),
             value = text,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                )
+            },
             isError = isError,
             onValueChange = { onValueChange(it) },
             placeholder = { Text(stringResource(R.string.email)) },
@@ -182,6 +192,13 @@ private fun PasswordField(
                 .sizeIn(minHeight = 56.dp)
                 .fillMaxWidth(),
             value = text,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                )
+            },
             isError = isError,
             onValueChange = { onValueChange(it) },
             placeholder = { Text(stringResource(R.string.password)) },
