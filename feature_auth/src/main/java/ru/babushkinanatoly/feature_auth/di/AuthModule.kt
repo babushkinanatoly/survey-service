@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import ru.babushkinanatoly.core_api.Repo
-import ru.babushkinanatoly.core_api.Strings
+import ru.babushkinanatoly.core_api.StringRes
 import ru.babushkinanatoly.feature_auth.AuthModel
 import ru.babushkinanatoly.feature_auth.AuthModelImpl
 
@@ -15,7 +15,7 @@ class AuthModule {
     @Provides
     fun provideModel(
         scope: CoroutineScope,
-        strings: Strings,
+        stringRes: StringRes,
         repo: Repo,
-    ): AuthModel = AuthModelImpl(scope, strings, repo)
+    ): AuthModel = AuthModelImpl(scope, stringRes, repo)
 }

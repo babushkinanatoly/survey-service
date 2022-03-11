@@ -2,24 +2,24 @@ package ru.babushkinanatoly.surveyservice.di
 
 import dagger.Component
 import ru.babushkinanatoly.core.RepoProvider
-import ru.babushkinanatoly.core.StringsProvider
+import ru.babushkinanatoly.core.StringResProvider
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     dependencies = [
         RepoProvider::class,
-        StringsProvider::class
+        StringResProvider::class
     ]
 )
-interface AppComponent : RepoProvider, StringsProvider {
+interface AppComponent : RepoProvider, StringResProvider {
 
     @Component.Factory
     interface Factory {
 
         fun create(
             repoProvider: RepoProvider,
-            stringsProvider: StringsProvider,
+            stringResProvider: StringResProvider,
         ): AppComponent
     }
 }

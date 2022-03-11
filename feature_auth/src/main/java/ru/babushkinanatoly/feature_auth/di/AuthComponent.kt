@@ -4,14 +4,14 @@ import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.CoroutineScope
 import ru.babushkinanatoly.core.RepoProvider
-import ru.babushkinanatoly.core.StringsProvider
+import ru.babushkinanatoly.core.StringResProvider
 import ru.babushkinanatoly.feature_auth.AuthModel
 
 @AuthScope
 @Component(
     dependencies = [
         RepoProvider::class,
-        StringsProvider::class
+        StringResProvider::class
     ],
     modules = [AuthModule::class]
 )
@@ -24,7 +24,7 @@ interface AuthComponent {
 
         fun create(
             @BindsInstance scope: CoroutineScope,
-            stringsProvider: StringsProvider,
+            stringResProvider: StringResProvider,
             repoProvider: RepoProvider,
         ): AuthComponent
     }

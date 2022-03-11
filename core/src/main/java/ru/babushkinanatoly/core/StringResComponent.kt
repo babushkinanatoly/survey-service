@@ -7,12 +7,12 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-    modules = [StringsModule::class]
+    modules = [StringResModule::class]
 )
-interface StringsComponent : StringsProvider {
+interface StringResComponent : StringResProvider {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance context: Context): StringsComponent
+        fun create(@BindsInstance context: Context): StringResComponent
     }
 }

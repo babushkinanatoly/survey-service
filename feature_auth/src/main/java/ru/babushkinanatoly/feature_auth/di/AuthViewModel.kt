@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ru.babushkinanatoly.core.RepoProvider
-import ru.babushkinanatoly.core.StringsProvider
+import ru.babushkinanatoly.core.StringResProvider
 
 class AuthViewModel(app: Application) : AndroidViewModel(app) {
     val authComponent = DaggerAuthComponent.factory()
-        .create(viewModelScope, (app as StringsProvider), (app as RepoProvider))
+        .create(viewModelScope, (app as StringResProvider), (app as RepoProvider))
 }

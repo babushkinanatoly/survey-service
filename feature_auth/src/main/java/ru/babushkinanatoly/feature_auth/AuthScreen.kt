@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -51,9 +53,15 @@ fun AuthScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val focusManager = LocalFocusManager.current
-                AuthHeader(
-                    text = stringResource(R.string.auth_header)
-                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AuthHeader(
+                        text = stringResource(R.string.auth_header)
+                    )
+                }
                 EmailField(
                     text = state.email,
                     error = state.emailError,
@@ -74,6 +82,20 @@ fun AuthScreen(
                         authModel.onLogIn()
                     }
                 )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val signUpText = stringResource(R.string.sign_up)
+                    AuthFooter(
+                        text = stringResource(R.string.auth_footer),
+                        clickableText = signUpText,
+                        onClick = {
+                            Toast.makeText(context, signUpText, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
             }
             if (state.loading) {
                 AuthProgressBar()
@@ -93,7 +115,29 @@ private fun AuthHeader(text: String) {
     Text(
         modifier = Modifier.padding(vertical = 24.dp),
         fontWeight = FontWeight.Bold,
-        text = text,
+        text = text
+    )
+}
+
+@Composable
+private fun AuthFooter(
+    text: String,
+    clickableText: String,
+    onClick: () -> Unit,
+) {
+    Text(
+        modifier = Modifier.padding(top = 24.dp),
+        fontSize = 14.sp,
+        text = text
+    )
+    Text(
+        modifier = Modifier
+            .padding(bottom = 24.dp)
+            .clickable { onClick() },
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        color = MaterialTheme.colors.primary,
+        text = clickableText
     )
 }
 
@@ -233,7 +277,7 @@ fun AuthScreenPreview() {
         AuthScreen(
             AuthModelImpl(
                 CoroutineScope(Dispatchers.IO),
-                object : Strings {
+                object : StringRes {
                     override fun get(resId: Int): String {
                         TODO("Not yet implemented")
                     }

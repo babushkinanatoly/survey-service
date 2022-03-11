@@ -10,7 +10,7 @@ import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.dispatch
 import ru.babushkinanatoly.core_api.LogInResult
 import ru.babushkinanatoly.core_api.Repo
-import ru.babushkinanatoly.core_api.Strings
+import ru.babushkinanatoly.core_api.StringRes
 import ru.babushkinanatoly.core_api.UserAuthData
 
 interface AuthModel {
@@ -38,7 +38,7 @@ sealed class LogInEvent {
 
 class AuthModelImpl(
     private val scope: CoroutineScope,
-    private val strings: Strings,
+    private val stringRes: StringRes,
     private val repo: Repo,
 ) : AuthModel {
 
@@ -59,8 +59,8 @@ class AuthModelImpl(
         scope.launch {
             val event = when (repo.onLogIn(UserAuthData(state.value.email, state.value.password))) {
                 LogInResult.OK -> LogInEvent.Success
-                LogInResult.INVALID_CREDENTIALS -> LogInEvent.Error(strings[R.string.error_invalid_credentials])
-                LogInResult.CONNECTION_ERROR -> LogInEvent.Error(strings[R.string.error_no_connection])
+                LogInResult.INVALID_CREDENTIALS -> LogInEvent.Error(stringRes[R.string.error_invalid_credentials])
+                LogInResult.CONNECTION_ERROR -> LogInEvent.Error(stringRes[R.string.error_no_connection])
             }
             loginEvent.dispatch(event)
             if (event !is LogInEvent.Success) {
@@ -73,7 +73,7 @@ class AuthModelImpl(
         state.update {
             it.copy(
                 email = email,
-                emailError = (if (isEmailValid(email)) "" else strings[R.string.error_email_format]),
+                emailError = (if (isEmailValid(email)) "" else stringRes[R.string.error_email_format]),
             )
         }
     }
@@ -82,7 +82,7 @@ class AuthModelImpl(
         state.update {
             it.copy(
                 password = password,
-                passwordError = (if (isPasswordValid(password)) "" else strings[R.string.error_password_format]),
+                passwordError = (if (isPasswordValid(password)) "" else stringRes[R.string.error_password_format]),
             )
         }
     }
