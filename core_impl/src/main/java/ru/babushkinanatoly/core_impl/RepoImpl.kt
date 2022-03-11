@@ -1,29 +1,34 @@
 package ru.babushkinanatoly.core_impl
 
-import kotlinx.coroutines.delay
-import ru.babushkinanatoly.core_api.LogInResult
-import ru.babushkinanatoly.core_api.Repo
-import ru.babushkinanatoly.core_api.UserAuthData
+import kotlinx.coroutines.flow.map
+import ru.babushkinanatoly.core_api.*
 import ru.babushkinanatoly.core_impl.api.Api
+import ru.babushkinanatoly.core_impl.api.RemoteException
 import ru.babushkinanatoly.core_impl.db.Db
-import java.util.*
+import ru.babushkinanatoly.core_impl.db.entity.UserEntity
 
 class RepoImpl(
     db: Db,
-    api: Api,
+    private val api: Api,
 ) : Repo {
 
-    private val fakeUserData = "Email" to "Password"
+    private val user = db.getUser()
 
-    override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult {
-        delay(2000)
-        val isServerError = Random().nextBoolean()
-        val isValidCredentials =
-            userAuthData.email == fakeUserData.first && userAuthData.password == fakeUserData.second
-        return when {
-            isServerError -> LogInResult.CONNECTION_ERROR
-            !isValidCredentials -> LogInResult.INVALID_CREDENTIALS
-            else -> LogInResult.OK
+    override val currentUser = user.map {
+        it?.toUser()
+    }
+
+    override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult = try {
+        when (api.logIn(userAuthData)) {
+            is LogInResponse.Success -> {
+                // TODO: Write the response data to db
+                LogInResult.OK
+            }
+            LogInResponse.InvalidCredentials -> LogInResult.INVALID_CREDENTIALS
         }
+    } catch (ex: RemoteException) {
+        LogInResult.CONNECTION_ERROR
     }
 }
+
+fun UserEntity.toUser() = User(id, email, name)

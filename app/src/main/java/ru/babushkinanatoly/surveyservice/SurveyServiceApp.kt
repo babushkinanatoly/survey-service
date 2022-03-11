@@ -1,9 +1,6 @@
 package ru.babushkinanatoly.surveyservice
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -18,10 +15,9 @@ import ru.babushkinanatoly.feature_settings.SettingsScreen
 @Composable
 fun SurveyServiceApp(loggedIn: Boolean) {
     val navController = rememberNavController()
-    val shouldShowAuth by rememberSaveable { mutableStateOf(!loggedIn) }
     NavHost(
         navController,
-        startDestination = if (shouldShowAuth) Auth.route else NavWorkflow.route,
+        startDestination = if (!loggedIn) Auth.route else NavWorkflow.route,
     ) {
         composable(Auth.route) {
             AuthScreen(viewModel<AuthViewModel>().authComponent.provideModel()) {

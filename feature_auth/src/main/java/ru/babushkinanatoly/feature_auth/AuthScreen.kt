@@ -26,12 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.core_api.LogInResult
-import ru.babushkinanatoly.core_api.Repo
-import ru.babushkinanatoly.core_api.Strings
-import ru.babushkinanatoly.core_api.UserAuthData
+import ru.babushkinanatoly.core_api.*
 
 @Composable
 fun AuthScreen(
@@ -245,6 +243,9 @@ fun AuthScreenPreview() {
                     }
                 },
                 object : Repo {
+                    override val currentUser: Flow<User?>
+                        get() = TODO("Not yet implemented")
+
                     override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult {
                         TODO("Not yet implemented")
                     }
