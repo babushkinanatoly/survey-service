@@ -33,7 +33,7 @@ import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysState
 import kotlin.random.Random
 
 @Composable
-fun UserSurveysScreen(
+internal fun UserSurveysScreen(
     userSurveysModel: UserSurveysModel,
     scrollUp: Event<Unit>,
     onItem: () -> Unit,
@@ -106,7 +106,7 @@ private fun UserSurveyItem(
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun UserSurveysScreenPreview() {
+private fun UserSurveysScreenPreview() {
     SurveyServiceTheme {
         UserSurveysScreen(
             object : UserSurveysModel {

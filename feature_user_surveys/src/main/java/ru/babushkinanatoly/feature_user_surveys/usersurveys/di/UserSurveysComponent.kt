@@ -15,7 +15,7 @@ import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysModel
     ],
     modules = [UserSurveysModule::class]
 )
-interface UserSurveysComponent {
+internal interface UserSurveysComponent {
 
     fun provideModel(): UserSurveysModel
 

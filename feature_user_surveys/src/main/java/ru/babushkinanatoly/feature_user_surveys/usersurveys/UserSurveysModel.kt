@@ -9,15 +9,15 @@ import ru.babushkinanatoly.core_api.Repo
 import ru.babushkinanatoly.core_api.StringRes
 import ru.babushkinanatoly.core_api.UserSurvey
 
-interface UserSurveysModel {
+internal interface UserSurveysModel {
     val state: StateFlow<UserSurveysState>
 }
 
-data class UserSurveysState(
+internal data class UserSurveysState(
     val surveys: List<UserSurvey>,
 )
 
-class UserSurveysModelImpl(
+internal class UserSurveysModelImpl(
     scope: CoroutineScope,
     stringRes: StringRes,
     private val repo: Repo,

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
 
-class UserSurveysViewModel(app: Application) : AndroidViewModel(app) {
+internal class UserSurveysViewModel(app: Application) : AndroidViewModel(app) {
 
     val userSurveysComponent = DaggerUserSurveysComponent.factory()
         .create(viewModelScope, (app as StringResProvider), (app as RepoProvider))

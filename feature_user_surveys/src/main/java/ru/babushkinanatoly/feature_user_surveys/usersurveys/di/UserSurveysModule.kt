@@ -9,7 +9,7 @@ import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysModel
 import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysModelImpl
 
 @Module
-class UserSurveysModule {
+internal class UserSurveysModule {
 
     @UserSurveysScope
     @Provides

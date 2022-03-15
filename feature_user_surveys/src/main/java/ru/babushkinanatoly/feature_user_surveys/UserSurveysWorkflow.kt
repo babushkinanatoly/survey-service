@@ -71,7 +71,7 @@ fun UserSurveysWorkflow(
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun UserSurveysWorkflowPreview() {
+private fun UserSurveysWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
             UserSurveysWorkflow(MutableEvent(), "User survey details", {}, {})
