@@ -9,7 +9,7 @@ import ru.babushkinanatoly.feature_auth.AuthModel
 import ru.babushkinanatoly.feature_auth.AuthModelImpl
 
 @Module
-class AuthModule {
+internal class AuthModule {
 
     @AuthScope
     @Provides

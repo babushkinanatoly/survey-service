@@ -2,13 +2,11 @@ package ru.babushkinanatoly.surveyservice
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.*
 import ru.babushkinanatoly.feature_auth.AuthScreen
-import ru.babushkinanatoly.feature_auth.di.AuthViewModel
 import ru.babushkinanatoly.feature_new_survey.NewSurveyScreen
 import ru.babushkinanatoly.feature_settings.SettingsScreen
 
@@ -20,7 +18,7 @@ fun SurveyServiceApp(loggedIn: Boolean) {
         startDestination = if (!loggedIn) Auth.route else NavWorkflow.route,
     ) {
         composable(Auth.route) {
-            AuthScreen(viewModel<AuthViewModel>().authComponent.provideModel()) {
+            AuthScreen {
                 navController.navigate(NavWorkflow.route) {
                     popUpTo(Auth.route) {
                         inclusive = true

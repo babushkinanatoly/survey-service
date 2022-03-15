@@ -13,7 +13,7 @@ import ru.babushkinanatoly.core_api.Repo
 import ru.babushkinanatoly.core_api.StringRes
 import ru.babushkinanatoly.core_api.UserAuthData
 
-interface AuthModel {
+internal interface AuthModel {
     val state: StateFlow<AuthState>
     val loginEvent: Event<LogInEvent>
     fun onLogIn()
@@ -21,7 +21,7 @@ interface AuthModel {
     fun onPasswordChange(password: String)
 }
 
-data class AuthState(
+internal data class AuthState(
     val email: String,
     val password: String,
     val emailError: String,
@@ -31,12 +31,12 @@ data class AuthState(
     val loginEnabled = isEmailValid(email) && isPasswordValid(password)
 }
 
-sealed class LogInEvent {
+internal sealed class LogInEvent {
     object Success : LogInEvent()
     data class Error(val msg: String) : LogInEvent()
 }
 
-class AuthModelImpl(
+internal class AuthModelImpl(
     private val scope: CoroutineScope,
     private val stringRes: StringRes,
     private val repo: Repo,

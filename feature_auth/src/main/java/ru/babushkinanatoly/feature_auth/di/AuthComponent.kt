@@ -15,7 +15,7 @@ import ru.babushkinanatoly.feature_auth.AuthModel
     ],
     modules = [AuthModule::class]
 )
-interface AuthComponent {
+internal interface AuthComponent {
 
     fun provideModel(): AuthModel
 

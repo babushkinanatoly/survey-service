@@ -29,16 +29,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.feature_auth.di.AuthViewModel
 
 @Composable
 fun AuthScreen(
-    authModel: AuthModel,
     onLogInSuccess: () -> Unit,
 ) {
+    val authModel = viewModel<AuthViewModel>().authComponent.provideModel()
     val state by authModel.state.collectAsState()
     val context = LocalContext.current
     Surface {
@@ -287,37 +287,10 @@ private fun AuthProgressBar() {
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun AuthScreenPreview() {
+private fun AuthScreenPreview() {
     SurveyServiceTheme {
         Scaffold {
-            AuthScreen(
-                object : AuthModel {
-
-                    override val state = MutableStateFlow(
-                        AuthState(
-                            email = "",
-                            password = "",
-                            emailError = "",
-                            passwordError = "",
-                            loading = false
-                        )
-                    )
-
-                    override val loginEvent = MutableEvent<LogInEvent>()
-
-                    override fun onLogIn() {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onEmailChange(email: String) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onPasswordChange(password: String) {
-                        TODO("Not yet implemented")
-                    }
-                }
-            ) {}
+            AuthScreen {}
         }
     }
 }

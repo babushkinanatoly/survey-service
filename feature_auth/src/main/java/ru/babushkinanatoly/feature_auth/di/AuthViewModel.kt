@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
 
-class AuthViewModel(app: Application) : AndroidViewModel(app) {
+internal class AuthViewModel(app: Application) : AndroidViewModel(app) {
 
     val authComponent = DaggerAuthComponent.factory()
         .create(viewModelScope, (app as StringResProvider), (app as RepoProvider))
