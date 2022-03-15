@@ -6,6 +6,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,11 +17,11 @@ import ru.babushkinanatoly.base_feature.util.Event
 import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.base_feature.util.dispatch
+import ru.babushkinanatoly.feature_user_surveys.usersurveys.di.UserSurveysViewModel
 
 @Composable
 fun UserSurveysWorkflow(
     fallbackToRoot: Event<Unit>,
-    userSurveysTitle: String,
     userSurveyDetailsTitle: String,
     onBack: () -> Unit,
     onNewSurvey: () -> Unit,
@@ -36,8 +37,8 @@ fun UserSurveysWorkflow(
         composable(NavWorkflow.UserSurveysWorkflow.UserSurveys.route) {
             backEnabled = true
             UserSurveysScreen(
+                viewModel<UserSurveysViewModel>().userSurveysComponent.provideModel(),
                 scrollSurveysUp,
-                title = userSurveysTitle,
                 onItem = { navController.navigate(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route) },
                 onNewSurvey = onNewSurvey
             )
@@ -73,7 +74,7 @@ fun UserSurveysWorkflow(
 fun UserSurveysWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
-            UserSurveysWorkflow(MutableEvent(), "User surveys", "User survey details", {}, {})
+            UserSurveysWorkflow(MutableEvent(), "User survey details", {}, {})
         }
     }
 }

@@ -87,7 +87,6 @@ fun NavWorkflow(
             composable(NavWorkflow.UserSurveysWorkflow.route) {
                 UserSurveysWorkflow(
                     fallbackToUserSurveysRoot,
-                    stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveys.resId),
                     stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.resId),
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)

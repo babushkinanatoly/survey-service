@@ -29,12 +29,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.core_api.*
 
 @Composable
 fun AuthScreen(
@@ -291,27 +289,35 @@ private fun AuthProgressBar() {
 @Composable
 fun AuthScreenPreview() {
     SurveyServiceTheme {
-        AuthScreen(
-            AuthModelImpl(
-                CoroutineScope(Dispatchers.IO),
-                object : StringRes {
-                    override fun get(resId: Int): String {
+        Scaffold {
+            AuthScreen(
+                object : AuthModel {
+
+                    override val state = MutableStateFlow(
+                        AuthState(
+                            email = "",
+                            password = "",
+                            emailError = "",
+                            passwordError = "",
+                            loading = false
+                        )
+                    )
+
+                    override val loginEvent = MutableEvent<LogInEvent>()
+
+                    override fun onLogIn() {
                         TODO("Not yet implemented")
                     }
 
-                    override fun format(resId: Int, vararg args: Any): String {
+                    override fun onEmailChange(email: String) {
                         TODO("Not yet implemented")
                     }
-                },
-                object : Repo {
-                    override val currentUser: Flow<User?>
-                        get() = TODO("Not yet implemented")
 
-                    override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult {
+                    override fun onPasswordChange(password: String) {
                         TODO("Not yet implemented")
                     }
                 }
-            )
-        ) {}
+            ) {}
+        }
     }
 }

@@ -1,7 +1,7 @@
 package ru.babushkinanatoly.core_impl.db.entity
 
-data class UserVoteEntity(
+data class VoteEntity(
     val id: Long,
     val value: Boolean,
-    val surveyId: Long,
+    val userSurveyId: Long,
 )

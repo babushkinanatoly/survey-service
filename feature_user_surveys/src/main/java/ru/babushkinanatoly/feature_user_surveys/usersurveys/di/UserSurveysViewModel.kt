@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_auth.di
+package ru.babushkinanatoly.feature_user_surveys.usersurveys.di
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
 
-class AuthViewModel(app: Application) : AndroidViewModel(app) {
+class UserSurveysViewModel(app: Application) : AndroidViewModel(app) {
 
-    val authComponent = DaggerAuthComponent.factory()
+    val userSurveysComponent = DaggerUserSurveysComponent.factory()
         .create(viewModelScope, (app as StringResProvider), (app as RepoProvider))
 }

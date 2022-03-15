@@ -18,6 +18,18 @@ enum class LogInResult {
     OK, INVALID_CREDENTIALS, CONNECTION_ERROR
 }
 
+data class UserSurvey(
+    val id: Long,
+    val title: String,
+    val desc: String,
+    val votes: List<Vote>,
+)
+
+data class Vote(
+    val id: Long,
+    val value: Boolean,
+)
+
 /**
  * Remote data
  */
