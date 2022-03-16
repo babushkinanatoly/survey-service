@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_user_surveys
+package ru.babushkinanatoly.feature_user_surveys.usersurveys
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -28,15 +28,14 @@ import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.core_api.UserSurvey
 import ru.babushkinanatoly.core_api.Vote
-import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysModel
-import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysState
+import ru.babushkinanatoly.feature_user_surveys.R
 import kotlin.random.Random
 
 @Composable
 internal fun UserSurveysScreen(
     userSurveysModel: UserSurveysModel,
     scrollUp: Event<Unit>,
-    onItem: () -> Unit,
+    onItem: (id: Long) -> Unit,
     onNewSurvey: () -> Unit,
 ) {
     val state by userSurveysModel.state.collectAsState()
@@ -56,7 +55,7 @@ internal fun UserSurveysScreen(
             modifier = Modifier.padding(top = 56.dp)
         ) {
             items(items = state.surveys) { userSurvey ->
-                UserSurveyItem(userSurvey.title, userSurvey.desc) { onItem() }
+                UserSurveyItem(userSurvey) { onItem(it) }
             }
         }
     }
@@ -69,12 +68,11 @@ internal fun UserSurveysScreen(
 
 @Composable
 private fun UserSurveyItem(
-    title: String,
-    desc: String,
-    onClick: () -> Unit,
+    userSurvey: UserSurvey,
+    onClick: (id: Long) -> Unit,
 ) {
     Card(
-        onClick = onClick,
+        onClick = { onClick(userSurvey.id) },
         backgroundColor = MaterialTheme.colors.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
@@ -85,13 +83,13 @@ private fun UserSurveyItem(
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 16.dp),
-                text = title,
+                text = userSurvey.title,
                 maxLines = 2,
                 style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
             )
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
-                text = desc,
+                text = userSurvey.desc,
                 maxLines = 4
             )
         }

@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.core_impl.db
 
 import android.content.Context
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -20,6 +21,13 @@ class DbImpl(context: Context) : Db {
 
     override fun getUserSurveys() = _userSurveys.map { userSurveys ->
         userSurveys.map { userSurvey ->
+            UserSurveyWithVotes(userSurvey, _votes.value.filter { it.id == userSurvey.id })
+        }
+    }
+
+    override fun getUserSurvey(id: Long): Flow<UserSurveyWithVotes> {
+        return _userSurveys.map { userSurveys ->
+            val userSurvey = userSurveys.first { it.id == id }
             UserSurveyWithVotes(userSurvey, _votes.value.filter { it.id == userSurvey.id })
         }
     }

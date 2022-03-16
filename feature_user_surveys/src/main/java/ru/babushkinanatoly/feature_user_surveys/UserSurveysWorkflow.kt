@@ -13,16 +13,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.Event
-import ru.babushkinanatoly.base_feature.util.MutableEvent
-import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.base_feature.util.dispatch
+import ru.babushkinanatoly.base_feature.util.*
+import ru.babushkinanatoly.feature_user_surveys.usersurveydetails.UserSurveyDetailsScreen
+import ru.babushkinanatoly.feature_user_surveys.usersurveydetails.di.UserSurveyDetailsViewModel
+import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysScreen
 import ru.babushkinanatoly.feature_user_surveys.usersurveys.di.UserSurveysViewModel
 
 @Composable
 fun UserSurveysWorkflow(
     fallbackToRoot: Event<Unit>,
-    userSurveyDetailsTitle: String,
     onBack: () -> Unit,
     onNewSurvey: () -> Unit,
 ) {
@@ -39,14 +38,19 @@ fun UserSurveysWorkflow(
             UserSurveysScreen(
                 viewModel<UserSurveysViewModel>().userSurveysComponent.provideModel(),
                 scrollSurveysUp,
-                onItem = { navController.navigate(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route) },
+                onItem = {
+                    navController.navigate(
+                        NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route + "/${it.toString()}"
+                    )
+                },
                 onNewSurvey = onNewSurvey
             )
         }
-        composable(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route) {
+        composable(NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route + "/{surveyId}") {
             backEnabled = false
             UserSurveyDetailsScreen(
-                title = userSurveyDetailsTitle
+                viewModel<UserSurveyDetailsViewModel>()
+                    .getUserSurveyDetailsComponent(it.requireLong("surveyId")).provideModel()
             )
         }
     }
@@ -74,7 +78,7 @@ fun UserSurveysWorkflow(
 private fun UserSurveysWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
-            UserSurveysWorkflow(MutableEvent(), "User survey details", {}, {})
+            UserSurveysWorkflow(MutableEvent(), {}, {})
         }
     }
 }

@@ -9,6 +9,7 @@ import ru.babushkinanatoly.core_impl.db.entity.VoteEntity
 interface Db {
     fun getUser(): Flow<UserEntity?>
     fun getUserSurveys(): Flow<List<UserSurveyWithVotes>>
+    fun getUserSurvey(id: Long): Flow<UserSurveyWithVotes>
 
     fun insertUser(user: UserEntity)
     fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)

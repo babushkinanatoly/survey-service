@@ -24,6 +24,8 @@ class RepoImpl(
         surveysWithVotes.map { it.toUserSurvey() }
     }
 
+    override fun getUserSurvey(id: Long) = db.getUserSurvey(id).map { it.toUserSurvey() }
+
     override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult = try {
         when (val response = api.logIn(userAuthData)) {
             is LogInResponse.Success -> {
