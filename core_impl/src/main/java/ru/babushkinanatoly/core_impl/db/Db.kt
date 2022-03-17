@@ -11,6 +11,9 @@ interface Db {
     fun getUserSurveys(): Flow<List<UserSurveyWithVotes>>
     fun getUserSurvey(id: Long): Flow<UserSurveyWithVotes>
 
+    fun updateUserSurveyTitle(id: Long, title: String)
+    fun updateUserSurveyDesc(id: Long, desc: String)
+
     fun insertUser(user: UserEntity)
     fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
     fun insertUserVotes(userVotes: List<UserVoteEntity>)

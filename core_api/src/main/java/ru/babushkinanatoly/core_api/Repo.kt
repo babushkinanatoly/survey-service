@@ -7,5 +7,8 @@ interface Repo {
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: Long): Flow<UserSurvey>
 
+    fun updateUserSurveyTitle(id: Long, title: String)
+    fun updateUserSurveyDesc(id: Long, desc: String)
+
     suspend fun onLogIn(userAuthData: UserAuthData): LogInResult
 }

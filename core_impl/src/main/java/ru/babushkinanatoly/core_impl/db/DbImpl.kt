@@ -32,6 +32,22 @@ class DbImpl(context: Context) : Db {
         }
     }
 
+    override fun updateUserSurveyTitle(id: Long, title: String) {
+        _userSurveys.update { surveys ->
+            surveys.map {
+                if (it.id == id) it.copy(title = title) else it
+            }
+        }
+    }
+
+    override fun updateUserSurveyDesc(id: Long, desc: String) {
+        _userSurveys.update { surveys ->
+            surveys.map {
+                if (it.id == id) it.copy(desc = desc) else it
+            }
+        }
+    }
+
     override fun insertUser(user: UserEntity) = _user.update { user }
 
     override fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) {
