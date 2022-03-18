@@ -40,7 +40,7 @@ fun UserSurveysWorkflow(
                 scrollSurveysUp,
                 onItem = {
                     navController.navigate(
-                        NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route + "/${it.toString()}"
+                        NavWorkflow.UserSurveysWorkflow.UserSurveyDetails.route + "/$it"
                     )
                 },
                 onNewSurvey = onNewSurvey

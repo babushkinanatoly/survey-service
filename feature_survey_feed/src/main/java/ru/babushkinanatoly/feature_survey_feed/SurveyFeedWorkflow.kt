@@ -15,11 +15,11 @@ import ru.babushkinanatoly.base_feature.util.Event
 import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.base_feature.util.dispatch
+import ru.babushkinanatoly.feature_survey_feed.surveyfeed.SurveyFeedScreen
 
 @Composable
 fun SurveyFeedWorkflow(
     fallbackToRoot: Event<Unit>,
-    surveyFeedTitle: String,
     surveyDetailsTitle: String,
 ) {
     val navController = rememberNavController()
@@ -31,7 +31,6 @@ fun SurveyFeedWorkflow(
         composable(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route) {
             SurveyFeedScreen(
                 scrollSurveysUp,
-                title = surveyFeedTitle,
                 onItem = { navController.navigate(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) }
             )
         }
@@ -65,7 +64,7 @@ fun SurveyFeedWorkflow(
 fun SurveyFeedWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
-            SurveyFeedWorkflow(MutableEvent(), "Survey feed", "Survey details")
+            SurveyFeedWorkflow(MutableEvent(), "Survey details")
         }
     }
 }

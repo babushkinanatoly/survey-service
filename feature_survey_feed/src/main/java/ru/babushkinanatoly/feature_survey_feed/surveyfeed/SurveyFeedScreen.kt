@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_survey_feed
+package ru.babushkinanatoly.feature_survey_feed.surveyfeed
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -18,15 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.Event
 import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.feature_survey_feed.R
 
 @Composable
-fun SurveyFeedScreen(
+internal fun SurveyFeedScreen(
     scrollUp: Event<Unit>,
-    title: String,
     names: List<String> = List(100) { "$it" },
     onItem: () -> Unit,
 ) {
@@ -35,13 +36,15 @@ fun SurveyFeedScreen(
     val surveysState = rememberLazyListState()
     Scaffold(scaffoldState = scaffoldState) {
         TopAppBar(
-            title = { Text(title) },
+            title = { Text(stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.resId)) },
             actions = {
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(message = "Search")
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(message = "Search")
+                        }
                     }
-                }) {
+                ) {
                     Icon(imageVector = Icons.Filled.Search, stringResource(R.string.search))
                 }
             }
@@ -100,8 +103,8 @@ private fun SurveyItem(
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun SurveyFeedScreenPreview() {
+private fun SurveyFeedScreenPreview() {
     SurveyServiceTheme {
-        SurveyFeedScreen(MutableEvent(), "Survey feed", List(100) { "$it" }) {}
+        SurveyFeedScreen(MutableEvent(), List(100) { "$it" }) {}
     }
 }

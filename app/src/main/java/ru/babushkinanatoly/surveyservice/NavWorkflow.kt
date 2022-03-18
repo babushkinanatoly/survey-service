@@ -80,7 +80,6 @@ fun NavWorkflow(
             composable(NavWorkflow.SurveyFeedWorkflow.route) {
                 SurveyFeedWorkflow(
                     fallbackToSurveyFeedRoot,
-                    stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.resId),
                     stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.resId)
                 )
             }
