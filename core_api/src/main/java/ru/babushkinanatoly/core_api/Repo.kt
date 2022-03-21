@@ -4,6 +4,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repo {
     val currentUser: Flow<User?>
+
+    // TODO: Pagination...
+    suspend fun getSurveys(): SurveysResult
+
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: Long): Flow<UserSurvey>
 

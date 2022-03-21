@@ -14,7 +14,7 @@ internal interface UserSurveysModel {
 }
 
 internal data class UserSurveysState(
-    val surveys: List<UserSurvey>,
+    val userSurveys: List<UserSurvey>,
 )
 
 internal class UserSurveysModelImpl(
@@ -28,7 +28,7 @@ internal class UserSurveysModelImpl(
     init {
         scope.launch {
             repo.getUserSurveys().collect { userSurveys ->
-                state.update { it.copy(surveys = userSurveys) }
+                state.update { it.copy(userSurveys = userSurveys) }
             }
         }
     }

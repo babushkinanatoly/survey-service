@@ -10,7 +10,7 @@
     <string name="settings">Settings</string>
     <string name="statistics">Statistics</string>
     <string name="new_survey">New survey</string>
-    <string name="search">Search</string>
     <string name="back">Back</string>
     <string name="log_out">Log out</string>
+    <string name="error_no_connection">Check internet connection or try again later</string>
 </resources>

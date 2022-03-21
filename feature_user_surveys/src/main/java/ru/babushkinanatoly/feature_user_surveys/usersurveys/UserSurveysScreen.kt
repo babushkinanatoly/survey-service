@@ -54,7 +54,7 @@ internal fun UserSurveysScreen(
             state = listState,
             modifier = Modifier.padding(top = 56.dp)
         ) {
-            items(items = state.surveys) { userSurvey ->
+            items(items = state.userSurveys) { userSurvey ->
                 UserSurveyItem(userSurvey) { onItem(it) }
             }
         }

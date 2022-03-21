@@ -10,6 +10,33 @@ class ApiImpl(context: Context) : Api {
 
     private val fakeUserData = "Email" to "Password"
 
+    override suspend fun getSurveys(): SurveysResponse {
+        delay(2000)
+        val isServerError = Random.nextBoolean()
+        return if (isServerError) {
+            throw RemoteException(SocketTimeoutException())
+        } else {
+            var surveyId = 1L
+            var voteId = 1L
+            SurveysResponse(
+                buildMap {
+                    (0..9L).toList().map {
+                        put(
+                            RemoteSurvey(
+                                surveyId,
+                                "Survey $surveyId",
+                                "Survey $surveyId desc"
+                            ),
+                            ((0..19L).toList().map { RemoteVote(voteId, Random.nextBoolean()) })
+                        )
+                        surveyId += 1
+                        voteId += 1
+                    }
+                }
+            )
+        }
+    }
+
     override suspend fun logIn(userAuthData: UserAuthData): LogInResponse {
         delay(2000)
         val isServerError = Random.nextBoolean()

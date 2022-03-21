@@ -9,5 +9,4 @@
     <string name="error_email_format">Illegal email format</string>
     <string name="error_password_format">Illegal password format</string>
     <string name="error_invalid_credentials">Invalid email or password</string>
-    <string name="error_no_connection">Check internet connection or try again later</string>
 </resources>

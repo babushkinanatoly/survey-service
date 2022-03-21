@@ -18,6 +18,18 @@ enum class LogInResult {
     OK, INVALID_CREDENTIALS, CONNECTION_ERROR
 }
 
+sealed class SurveysResult {
+    data class Success(val surveys: List<Survey>) : SurveysResult()
+    object Error : SurveysResult()
+}
+
+data class Survey(
+    val id: Long,
+    val title: String,
+    val desc: String,
+    val votes: List<Vote>,
+)
+
 data class UserSurvey(
     val id: Long,
     val title: String,
@@ -42,6 +54,8 @@ sealed class LogInResponse {
 
     object InvalidCredentials : LogInResponse()
 }
+
+data class SurveysResponse(val surveys: Map<RemoteSurvey, List<RemoteVote>>)
 
 data class RemoteUser(
     val id: Long,

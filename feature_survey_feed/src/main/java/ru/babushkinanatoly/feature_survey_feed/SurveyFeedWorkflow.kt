@@ -5,6 +5,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +17,7 @@ import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.base_feature.util.dispatch
 import ru.babushkinanatoly.feature_survey_feed.surveyfeed.SurveyFeedScreen
+import ru.babushkinanatoly.feature_survey_feed.surveyfeed.di.SurveyFeedViewModel
 
 @Composable
 fun SurveyFeedWorkflow(
@@ -30,6 +32,7 @@ fun SurveyFeedWorkflow(
     ) {
         composable(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.route) {
             SurveyFeedScreen(
+                viewModel<SurveyFeedViewModel>().surveyFeedComponent.provideModel(),
                 scrollSurveysUp,
                 onItem = { navController.navigate(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) }
             )
