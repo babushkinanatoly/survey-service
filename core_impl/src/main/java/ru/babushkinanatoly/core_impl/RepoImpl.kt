@@ -26,6 +26,12 @@ class RepoImpl(
         SurveysResult.Error
     }
 
+    override suspend fun getSurvey(surveyId: Long): SurveyResult = try {
+        SurveyResult.Success(api.getSurvey(surveyId).survey.toSurvey())
+    } catch (ex: RemoteException) {
+        SurveyResult.Error
+    }
+
     override fun getUserSurveys() = db.getUserSurveys().map { surveysWithVotes ->
         surveysWithVotes.map { it.toUserSurvey() }
     }
@@ -67,3 +73,6 @@ fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toVoteForUserSurveyEntity() =
 
 fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toSurvey() =
     Survey(key.id, key.title, key.desc, value.map { it.toVote() })
+
+fun Pair<RemoteSurvey, List<RemoteVote>>.toSurvey() =
+    Survey(first.id, first.title, first.desc, second.map { it.toVote() })

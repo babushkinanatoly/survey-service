@@ -78,10 +78,7 @@ fun NavWorkflow(
             Modifier.padding(innerPadding)
         ) {
             composable(NavWorkflow.SurveyFeedWorkflow.route) {
-                SurveyFeedWorkflow(
-                    fallbackToSurveyFeedRoot,
-                    stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.resId)
-                )
+                SurveyFeedWorkflow(fallbackToSurveyFeedRoot)
             }
             composable(NavWorkflow.UserSurveysWorkflow.route) {
                 UserSurveysWorkflow(

@@ -167,6 +167,7 @@ private fun UserSurveyDetailsScreenPreview() {
     SurveyServiceTheme {
         UserSurveyDetailsScreen(
             object : UserSurveyDetailsModel {
+
                 override val state = MutableStateFlow(
                     UserSurveyDetailsState(
                         UserSurvey(

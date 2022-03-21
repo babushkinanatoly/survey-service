@@ -13,4 +13,6 @@
     <string name="back">Back</string>
     <string name="log_out">Log out</string>
     <string name="error_no_connection">Check internet connection or try again later</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

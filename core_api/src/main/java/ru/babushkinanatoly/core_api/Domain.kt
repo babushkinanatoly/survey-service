@@ -23,6 +23,11 @@ sealed class SurveysResult {
     object Error : SurveysResult()
 }
 
+sealed class SurveyResult {
+    data class Success(val survey: Survey) : SurveyResult()
+    object Error : SurveyResult()
+}
+
 data class Survey(
     val id: Long,
     val title: String,
@@ -56,6 +61,7 @@ sealed class LogInResponse {
 }
 
 data class SurveysResponse(val surveys: Map<RemoteSurvey, List<RemoteVote>>)
+data class SurveyResponse(val survey: Pair<RemoteSurvey, List<RemoteVote>>)
 
 data class RemoteUser(
     val id: Long,

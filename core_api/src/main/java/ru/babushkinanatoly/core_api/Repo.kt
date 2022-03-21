@@ -7,6 +7,7 @@ interface Repo {
 
     // TODO: Pagination...
     suspend fun getSurveys(): SurveysResult
+    suspend fun getSurvey(surveyId: Long): SurveyResult
 
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: Long): Flow<UserSurvey>

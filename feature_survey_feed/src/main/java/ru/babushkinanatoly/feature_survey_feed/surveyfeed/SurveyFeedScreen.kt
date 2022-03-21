@@ -51,9 +51,9 @@ internal fun SurveyFeedScreen(
         when (state) {
             SurveyFeedState.LoadingError -> LoadingError(surveyFeedModel::reloadSurveys)
             SurveyFeedState.Loading -> Loading()
-            is SurveyFeedState.Surveys -> {
+            is SurveyFeedState.Data -> {
                 SurveyFeed(
-                    surveys = (state as SurveyFeedState.Surveys).data,
+                    surveys = (state as SurveyFeedState.Data).surveys,
                     listState = surveysState,
                     onClick = { onItem(it) }
                 )
@@ -195,7 +195,7 @@ private fun SurveyFeedScreenPreview() {
             object : SurveyFeedModel {
 
                 override val state = MutableStateFlow(
-                    SurveyFeedState.Surveys(
+                    SurveyFeedState.Data(
                         buildList {
                             (0..9L).toList().map { value ->
                                 add(

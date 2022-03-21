@@ -16,7 +16,7 @@ internal interface SurveyFeedModel {
 }
 
 internal sealed class SurveyFeedState {
-    data class Surveys(val data: List<Survey>) : SurveyFeedState()
+    data class Data(val surveys: List<Survey>) : SurveyFeedState()
     object Loading : SurveyFeedState()
     object LoadingError : SurveyFeedState()
 }
@@ -37,7 +37,7 @@ internal class SurveyFeedModelImpl(
         state.update { SurveyFeedState.Loading }
         scope.launch {
             when (val result = repo.getSurveys()) {
-                is SurveysResult.Success -> state.update { SurveyFeedState.Surveys(result.surveys) }
+                is SurveysResult.Success -> state.update { SurveyFeedState.Data(result.surveys) }
                 SurveysResult.Error -> state.update { SurveyFeedState.LoadingError }
             }
         }

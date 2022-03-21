@@ -10,29 +10,29 @@ class ApiImpl(context: Context) : Api {
 
     private val fakeUserData = "Email" to "Password"
 
+    private val surveys = createFakeSurveys()
+
+    private val isServerError get() = Random.nextBoolean()
+
     override suspend fun getSurveys(): SurveysResponse {
         delay(2000)
-        val isServerError = Random.nextBoolean()
         return if (isServerError) {
             throw RemoteException(SocketTimeoutException())
         } else {
-            var surveyId = 1L
-            var voteId = 1L
-            SurveysResponse(
-                buildMap {
-                    (0..9L).toList().map {
-                        put(
-                            RemoteSurvey(
-                                surveyId,
-                                "Survey $surveyId",
-                                "Survey $surveyId desc"
-                            ),
-                            ((0..19L).toList().map { RemoteVote(voteId, Random.nextBoolean()) })
-                        )
-                        surveyId += 1
-                        voteId += 1
-                    }
-                }
+            SurveysResponse(surveys)
+        }
+    }
+
+    override suspend fun getSurvey(surveyId: Long): SurveyResponse {
+        delay(1000)
+        return if (isServerError) {
+            throw RemoteException(SocketTimeoutException())
+        } else {
+            SurveyResponse(
+                surveys
+                    .filter { it.key.id == surveyId }
+                    .toList()
+                    .first()
             )
         }
     }
@@ -79,6 +79,25 @@ class ApiImpl(context: Context) : Api {
                         voteId += 1
                     }
                 )
+            }
+        }
+    }
+
+    private fun createFakeSurveys(): Map<RemoteSurvey, List<RemoteVote>> {
+        var surveyId = 1L
+        var voteId = 1L
+        return buildMap {
+            (0..9L).toList().map {
+                put(
+                    RemoteSurvey(
+                        surveyId,
+                        "Survey $surveyId",
+                        "Survey $surveyId desc"
+                    ),
+                    ((0..19L).toList().map { RemoteVote(voteId, Random.nextBoolean()) })
+                )
+                surveyId += 1
+                voteId += 1
             }
         }
     }

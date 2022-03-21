@@ -12,17 +12,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.Event
-import ru.babushkinanatoly.base_feature.util.MutableEvent
-import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.base_feature.util.dispatch
+import ru.babushkinanatoly.base_feature.util.*
+import ru.babushkinanatoly.feature_survey_feed.surveydetails.SurveyDetailsScreen
+import ru.babushkinanatoly.feature_survey_feed.surveydetails.di.SurveyDetailsViewModel
 import ru.babushkinanatoly.feature_survey_feed.surveyfeed.SurveyFeedScreen
 import ru.babushkinanatoly.feature_survey_feed.surveyfeed.di.SurveyFeedViewModel
 
 @Composable
 fun SurveyFeedWorkflow(
     fallbackToRoot: Event<Unit>,
-    surveyDetailsTitle: String,
 ) {
     val navController = rememberNavController()
     val scrollSurveysUp = remember { MutableEvent<Unit>() }
@@ -34,12 +32,17 @@ fun SurveyFeedWorkflow(
             SurveyFeedScreen(
                 viewModel<SurveyFeedViewModel>().surveyFeedComponent.provideModel(),
                 scrollSurveysUp,
-                onItem = { navController.navigate(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) }
+                onItem = {
+                    navController.navigate(
+                        NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route + "/$it"
+                    )
+                }
             )
         }
-        composable(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route) {
+        composable(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route + "/{surveyId}") {
             SurveyDetailsScreen(
-                title = surveyDetailsTitle
+                viewModel<SurveyDetailsViewModel>()
+                    .getSurveyDetailsComponent(it.requireLong("surveyId")).provideModel(),
             )
         }
     }
@@ -67,7 +70,7 @@ fun SurveyFeedWorkflow(
 fun SurveyFeedWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
-            SurveyFeedWorkflow(MutableEvent(), "Survey details")
+            SurveyFeedWorkflow(MutableEvent())
         }
     }
 }
