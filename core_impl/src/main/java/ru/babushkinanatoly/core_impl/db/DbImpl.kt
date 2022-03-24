@@ -36,6 +36,8 @@ class DbImpl(context: Context) : Db {
         }
     }
 
+    override suspend fun getUserVotes() = _userVotes.value
+
     override fun updateUserSurveyTitle(id: Long, title: String) {
         _userSurveys.update { surveys ->
             surveys.map {
@@ -59,11 +61,21 @@ class DbImpl(context: Context) : Db {
     }
 
     override fun insertUserVotes(userVotes: List<UserVoteEntity>) {
-        _userVotes.update { userVotes }
+        _userVotes.update { it + userVotes }
     }
 
     override fun insertVotesForUserSurveys(votesForUserSurveys: List<VoteForUserSurveyEntity>) {
         _votesForUserSurveys.update { votesForUserSurveys }
+    }
+
+    override fun removeUserVotes(userVotes: List<UserVoteEntity>) {
+        _userVotes.update { it - userVotes }
+    }
+
+    override fun updateUserVote(userVote: UserVoteEntity) {
+        _userVotes.update { userVotes ->
+            userVotes.map { if (it.id == userVote.id) userVote else it }
+        }
     }
 }
 

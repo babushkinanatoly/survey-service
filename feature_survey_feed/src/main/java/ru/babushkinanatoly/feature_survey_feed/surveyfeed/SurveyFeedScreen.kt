@@ -205,7 +205,8 @@ private fun SurveyFeedScreenPreview() {
                                         "Survey $value desc",
                                         (0..19L).toList().map {
                                             Vote(it, Random.nextBoolean())
-                                        }
+                                        },
+                                        Vote(value + 19, Random.nextBoolean())
                                     ),
                                 )
                             }

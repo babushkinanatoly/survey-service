@@ -21,15 +21,39 @@ class RepoImpl(
     override val currentUser = user.map { it?.toUser() }
 
     override suspend fun getSurveys(): SurveysResult = try {
-        SurveysResult.Success(api.getSurveys().surveys.map { it.toSurvey() })
+        val userVotes = db.getUserVotes().map { it.id }
+        SurveysResult.Success(
+            api.getSurveys().surveys.map {
+                it.toSurvey(
+                    it.value.find { remoteVote ->
+                        userVotes.contains(remoteVote.id)
+                    }?.toVote()
+                )
+            }
+        )
     } catch (ex: RemoteException) {
         SurveysResult.Error
     }
 
     override suspend fun getSurvey(surveyId: Long): SurveyResult = try {
-        SurveyResult.Success(api.getSurvey(surveyId).survey.toSurvey())
+        val remoteSurvey = api.getSurvey(surveyId).survey
+        val userVotes = db.getUserVotes().map { it.id }
+        val userVote = remoteSurvey.second.find { userVotes.contains(it.id) }?.toVote()
+        SurveyResult.Success(remoteSurvey.toSurvey(userVote))
     } catch (ex: RemoteException) {
         SurveyResult.Error
+    }
+
+    override suspend fun updateSurveyVote(surveyId: Long, voteId: Long?, value: Boolean) {
+        when (val result = api.updateSurveyVote(surveyId, voteId, value)) {
+            // TODO: result - ok - write to db
+            is UpdateSurveyVoteResponse.VoteCreated ->
+                db.insertUserVotes(listOf(result.remoteVote.toUserVoteEntity(surveyId)))
+            UpdateSurveyVoteResponse.VoteRemoved ->
+                db.removeUserVotes(listOf(UserVoteEntity(voteId!!, value, surveyId)))
+            UpdateSurveyVoteResponse.VoteValueChanged ->
+                db.updateUserVote(UserVoteEntity(voteId!!, value, surveyId))
+        }
     }
 
     override fun getUserSurveys() = db.getUserSurveys().map { surveysWithVotes ->
@@ -57,22 +81,23 @@ class RepoImpl(
     }
 }
 
-fun UserEntity.toUser() = User(id, email, name)
-fun VoteForUserSurveyEntity.toVote() = Vote(id, value)
+private fun UserEntity.toUser() = User(id, email, name)
+private fun VoteForUserSurveyEntity.toVote() = Vote(id, value)
 
-fun UserSurveyWithVotesForUserSurvey.toUserSurvey() =
+private fun UserSurveyWithVotesForUserSurvey.toUserSurvey() =
     UserSurvey(userSurvey.id, userSurvey.title, userSurvey.desc, votesForUserSurvey.map { it.toVote() })
 
-fun RemoteVote.toVote() = Vote(id, value)
-fun RemoteUser.toUserEntity() = UserEntity(id, email, name)
-fun RemoteSurvey.toUserSurveyEntity() = UserSurveyEntity(id, title, desc)
-fun Map.Entry<RemoteVote, RemoteSurvey>.toUserVoteEntity() = UserVoteEntity(key.id, key.value, value.id)
+private fun RemoteVote.toVote() = Vote(id, value)
+private fun RemoteVote.toUserVoteEntity(surveyId: Long) = UserVoteEntity(id, value, surveyId)
+private fun RemoteUser.toUserEntity() = UserEntity(id, email, name)
+private fun RemoteSurvey.toUserSurveyEntity() = UserSurveyEntity(id, title, desc)
+private fun Map.Entry<RemoteVote, RemoteSurvey>.toUserVoteEntity() = UserVoteEntity(key.id, key.value, value.id)
 
-fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toVoteForUserSurveyEntity() =
+private fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toVoteForUserSurveyEntity() =
     value.map { VoteForUserSurveyEntity(it.id, it.value, key.id) }
 
-fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toSurvey() =
-    Survey(key.id, key.title, key.desc, value.map { it.toVote() })
+private fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toSurvey(userVote: Vote?) =
+    Survey(key.id, key.title, key.desc, value.map { it.toVote() }, userVote)
 
-fun Pair<RemoteSurvey, List<RemoteVote>>.toSurvey() =
-    Survey(first.id, first.title, first.desc, second.map { it.toVote() })
+private fun Pair<RemoteSurvey, List<RemoteVote>>.toSurvey(userVote: Vote?) =
+    Survey(first.id, first.title, first.desc, second.map { it.toVote() }, userVote)

@@ -11,6 +11,8 @@ interface Db {
     fun getUserSurveys(): Flow<List<UserSurveyWithVotesForUserSurvey>>
     fun getUserSurvey(id: Long): Flow<UserSurveyWithVotesForUserSurvey>
 
+    suspend fun getUserVotes(): List<UserVoteEntity>
+
     fun updateUserSurveyTitle(id: Long, title: String)
     fun updateUserSurveyDesc(id: Long, desc: String)
 
@@ -18,4 +20,7 @@ interface Db {
     fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
     fun insertUserVotes(userVotes: List<UserVoteEntity>)
     fun insertVotesForUserSurveys(votesForUserSurveys: List<VoteForUserSurveyEntity>)
+
+    fun removeUserVotes(userVotes: List<UserVoteEntity>)
+    fun updateUserVote(userVote: UserVoteEntity)
 }

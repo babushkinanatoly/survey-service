@@ -12,11 +12,17 @@ import ru.babushkinanatoly.core_api.SurveyResult
 
 internal interface SurveyDetailsModel {
     val state: StateFlow<SurveyDetailsState>
-    fun reloadSurvey()
+    fun onReloadSurvey()
+    fun onYes()
+    fun onNo()
 }
 
 internal sealed class SurveyDetailsState {
-    data class Data(val survey: Survey) : SurveyDetailsState()
+    data class Data(
+        val survey: Survey,
+        val voting: Boolean,
+    ) : SurveyDetailsState()
+
     object Loading : SurveyDetailsState()
     object LoadingError : SurveyDetailsState()
 }
@@ -31,16 +37,45 @@ internal class SurveyDetailsModelImpl(
     override val state = MutableStateFlow<SurveyDetailsState>(SurveyDetailsState.Loading)
 
     init {
-        reloadSurvey()
+        onReloadSurvey()
     }
 
-    override fun reloadSurvey() {
+    override fun onReloadSurvey() {
         state.update { SurveyDetailsState.Loading }
         scope.launch {
-            when (val result = repo.getSurvey(surveyId)) {
-                is SurveyResult.Success -> state.update { SurveyDetailsState.Data(result.survey) }
-                SurveyResult.Error -> state.update { SurveyDetailsState.LoadingError }
+            reloadSurvey()
+        }
+    }
+
+    override fun onYes() = onVote(true)
+    override fun onNo() = onVote(false)
+
+    private fun onVote(value: Boolean) {
+        var voteId: Long? = null
+        state.update { state ->
+            (state as SurveyDetailsState.Data).let {
+                it.survey.userVote?.let { userVote -> voteId = userVote.id }
+                it.copy(voting = true)
             }
+        }
+        scope.launch {
+            // TODO: add error state
+            // TODO: return result from repo and change the state depending on it
+            repo.updateSurveyVote(surveyId, voteId, value)
+            // TODO: remove later
+            reloadSurvey()
+        }
+    }
+
+    private suspend fun reloadSurvey() {
+        when (val result = repo.getSurvey(surveyId)) {
+            is SurveyResult.Success -> state.update {
+                SurveyDetailsState.Data(
+                    survey = result.survey,
+                    voting = false
+                )
+            }
+            SurveyResult.Error -> state.update { SurveyDetailsState.LoadingError }
         }
     }
 }

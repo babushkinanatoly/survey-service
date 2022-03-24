@@ -9,6 +9,9 @@ interface Repo {
     suspend fun getSurveys(): SurveysResult
     suspend fun getSurvey(surveyId: Long): SurveyResult
 
+    // TODO: remove voteId later
+    suspend fun updateSurveyVote(surveyId: Long, voteId: Long?, value: Boolean)
+
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: Long): Flow<UserSurvey>
 

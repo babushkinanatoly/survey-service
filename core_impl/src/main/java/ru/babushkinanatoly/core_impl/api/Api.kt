@@ -1,13 +1,13 @@
 package ru.babushkinanatoly.core_impl.api
 
-import ru.babushkinanatoly.core_api.LogInResponse
-import ru.babushkinanatoly.core_api.SurveyResponse
-import ru.babushkinanatoly.core_api.SurveysResponse
-import ru.babushkinanatoly.core_api.UserAuthData
+import ru.babushkinanatoly.core_api.*
 
 interface Api {
     suspend fun getSurveys(): SurveysResponse
     suspend fun getSurvey(surveyId: Long): SurveyResponse
+
+    // TODO: remove voteId later
+    suspend fun updateSurveyVote(surveyId: Long, voteId: Long?, voteValue: Boolean): UpdateSurveyVoteResponse
 
     suspend fun logIn(userAuthData: UserAuthData): LogInResponse
 }

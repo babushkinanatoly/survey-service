@@ -33,6 +33,7 @@ data class Survey(
     val title: String,
     val desc: String,
     val votes: List<Vote>,
+    val userVote: Vote?,
 )
 
 data class UserSurvey(
@@ -62,6 +63,13 @@ sealed class LogInResponse {
 
 data class SurveysResponse(val surveys: Map<RemoteSurvey, List<RemoteVote>>)
 data class SurveyResponse(val survey: Pair<RemoteSurvey, List<RemoteVote>>)
+
+// TODO: Temporary solution just to fake the result in current implementation, remove later
+sealed class UpdateSurveyVoteResponse {
+    data class VoteCreated(val remoteVote: RemoteVote) : UpdateSurveyVoteResponse()
+    object VoteRemoved : UpdateSurveyVoteResponse()
+    object VoteValueChanged : UpdateSurveyVoteResponse()
+}
 
 data class RemoteUser(
     val id: Long,

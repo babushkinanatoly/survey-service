@@ -2,6 +2,8 @@ package ru.babushkinanatoly.core_impl.api
 
 import android.content.Context
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import ru.babushkinanatoly.core_api.*
 import java.net.SocketTimeoutException
 import kotlin.random.Random
@@ -19,7 +21,7 @@ class ApiImpl(context: Context) : Api {
         return if (isServerError) {
             throw RemoteException(SocketTimeoutException())
         } else {
-            SurveysResponse(surveys)
+            SurveysResponse(surveys.value)
         }
     }
 
@@ -29,17 +31,79 @@ class ApiImpl(context: Context) : Api {
             throw RemoteException(SocketTimeoutException())
         } else {
             SurveyResponse(
-                surveys
-                    .filter { it.key.id == surveyId }
-                    .toList()
-                    .first()
+                surveys.value.filter { it.key.id == surveyId }.toList().first()
             )
+        }
+    }
+
+    override suspend fun updateSurveyVote(
+        surveyId: Long, voteId: Long?, voteValue: Boolean,
+    ): UpdateSurveyVoteResponse {
+        delay(500)
+        var remoteVote: RemoteVote? = null
+        var secondValue = false
+        surveys.update { surveys ->
+            surveys.map { survey ->
+                val surveyPair = survey.toPair()
+                if (survey.key.id == surveyId) {
+                    if (voteId != null) {
+                        val vote = surveyPair.second.first { it.id == voteId }
+                        val votes = surveyPair.second.toMutableList()
+                        if (voteValue) {
+                            if (vote.value) {
+                                // remove vote
+                                votes.remove(vote)
+                                secondValue = true
+                                surveyPair.copy(second = votes)
+                            } else {
+                                // change value
+                                secondValue = false
+                                surveyPair.copy(
+                                    second = surveyPair.second.map {
+                                        if (it.id == voteId) it.copy(
+                                            value = voteValue
+                                        ) else it
+                                    }
+                                )
+                            }
+                        } else {
+                            if (vote.value) {
+                                // change value
+                                secondValue = false
+                                surveyPair.copy(
+                                    second = surveyPair.second.map {
+                                        if (it.id == voteId) it.copy(
+                                            value = voteValue
+                                        ) else it
+                                    }
+                                )
+                            } else {
+                                // remove vote
+                                votes.remove(vote)
+                                secondValue = true
+                                surveyPair.copy(second = votes)
+                            }
+                        }
+                    } else {
+                        remoteVote = RemoteVote(
+                            surveyPair.second.last().id + 1, voteValue
+                        )
+                        surveyPair.copy(
+                            second = surveyPair.second + remoteVote!!
+                        )
+                    }
+                } else surveyPair
+            }.toMap()
+        }
+        return when {
+            remoteVote != null -> UpdateSurveyVoteResponse.VoteCreated(remoteVote!!)
+            secondValue -> UpdateSurveyVoteResponse.VoteRemoved
+            else -> UpdateSurveyVoteResponse.VoteValueChanged
         }
     }
 
     override suspend fun logIn(userAuthData: UserAuthData): LogInResponse {
         delay(2000)
-        val isServerError = Random.nextBoolean()
         val isValidCredentials =
             userAuthData.email == fakeUserData.first && userAuthData.password == fakeUserData.second
         return when {
@@ -83,22 +147,24 @@ class ApiImpl(context: Context) : Api {
         }
     }
 
-    private fun createFakeSurveys(): Map<RemoteSurvey, List<RemoteVote>> {
+    private fun createFakeSurveys(): MutableStateFlow<Map<RemoteSurvey, List<RemoteVote>>> {
         var surveyId = 1L
         var voteId = 1L
-        return buildMap {
-            (0..9L).toList().map {
-                put(
-                    RemoteSurvey(
-                        surveyId,
-                        "Survey $surveyId",
-                        "Survey $surveyId desc"
-                    ),
-                    ((0..19L).toList().map { RemoteVote(voteId, Random.nextBoolean()) })
-                )
-                surveyId += 1
-                voteId += 1
+        return MutableStateFlow(
+            buildMap {
+                (0..9L).toList().map {
+                    put(
+                        RemoteSurvey(
+                            surveyId,
+                            "Survey $surveyId",
+                            "Survey $surveyId desc"
+                        ),
+                        ((0..19L).toList().map { RemoteVote(voteId, Random.nextBoolean()) })
+                    )
+                    surveyId += 1
+                    voteId += 1
+                }
             }
-        }
+        )
     }
 }
