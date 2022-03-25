@@ -3,7 +3,7 @@ package ru.babushkinanatoly.core_impl.api
 import ru.babushkinanatoly.core_api.*
 
 interface Api {
-    suspend fun getSurveys(): SurveysResponse
+    suspend fun getSurveys(count: Int, startAfter: Long? = null): SurveysResponse
     suspend fun getSurvey(surveyId: Long): SurveyResponse
 
     // TODO: remove voteId later

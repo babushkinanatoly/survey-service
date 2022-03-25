@@ -13,7 +13,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.*
+import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.base_feature.util.requireLong
+import ru.babushkinanatoly.core_api.Event
+import ru.babushkinanatoly.core_api.MutableEvent
+import ru.babushkinanatoly.core_api.dispatch
 import ru.babushkinanatoly.feature_user_surveys.usersurveydetails.UserSurveyDetailsScreen
 import ru.babushkinanatoly.feature_user_surveys.usersurveydetails.di.UserSurveyDetailsViewModel
 import ru.babushkinanatoly.feature_user_surveys.usersurveys.UserSurveysScreen

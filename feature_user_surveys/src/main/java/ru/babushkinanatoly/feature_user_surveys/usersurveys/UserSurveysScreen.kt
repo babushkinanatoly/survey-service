@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.Event
-import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.core_api.Event
+import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.UserSurvey
 import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_user_surveys.R

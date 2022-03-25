@@ -1,12 +1,12 @@
 package ru.babushkinanatoly.core_api
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 interface Repo {
     val currentUser: Flow<User?>
 
-    // TODO: Pagination...
-    suspend fun getSurveys(): SurveysResult
+    fun getSurveys(scope: CoroutineScope): PagedFeed
     suspend fun getSurvey(surveyId: Long): SurveyResult
 
     // TODO: remove voteId later

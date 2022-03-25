@@ -11,17 +11,33 @@ import kotlin.random.Random
 class ApiImpl(context: Context) : Api {
 
     private val fakeUserData = "Email" to "Password"
-
     private val surveys = createFakeSurveys()
-
     private val isServerError get() = Random.nextBoolean()
 
-    override suspend fun getSurveys(): SurveysResponse {
+    override suspend fun getSurveys(count: Int, startAfter: Long?): SurveysResponse {
         delay(2000)
         return if (isServerError) {
             throw RemoteException(SocketTimeoutException())
+        } else if (startAfter != null) {
+            val surveyList = surveys.value.filter { it.key.id > startAfter }
+                .toList()
+                .toMutableList()
+            val surveyListSize = surveyList.size
+            SurveysResponse(
+                surveyList.subList(0, if (count > surveyListSize) surveyListSize else count).toMap()
+            )
         } else {
-            SurveysResponse(surveys.value)
+            SurveysResponse(
+                if (count > surveys.value.size) {
+                    surveys.value
+                } else {
+                    surveys.value
+                        .toList()
+                        .toMutableList()
+                        .subList(0, count)
+                        .toMap()
+                }
+            )
         }
     }
 
@@ -168,3 +184,16 @@ class ApiImpl(context: Context) : Api {
         )
     }
 }
+
+// TODO: Wrap server calls
+//private inline fun <T> wrapErrors(call: () -> T): T = try {
+//    call()
+//} catch (e: UnknownHostException) {
+//    throw RemoteException(e, "Unknown host (no connection)")
+//} catch (e: HttpException) {
+//    if (e.code() == 404) {
+//        throw ResourceNotFoundException(e, "Not found (404)")
+//    } else {
+//        throw RemoteException(e, "Non 2XX response: ${e.code()}")
+//    }
+//}

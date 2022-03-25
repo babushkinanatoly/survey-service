@@ -1,7 +1,7 @@
 package ru.babushkinanatoly.surveyservice
 
 import android.app.Application
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import ru.babushkinanatoly.core.DaggerRepoComponent
 import ru.babushkinanatoly.core.DaggerStringResComponent
 import ru.babushkinanatoly.core.RepoProvider
@@ -18,10 +18,8 @@ class App : Application(), RepoProvider, StringResProvider {
         )
     }
 
-    val loggedIn by lazy {
-        appComponent.provideRepo().currentUser.map { it != null }
-    }
-
     override fun provideRepo() = appComponent.provideRepo()
     override fun provideStringRes() = appComponent.provideStringRes()
+
+    suspend fun loggedIn() = provideRepo().currentUser.first() != null
 }

@@ -59,8 +59,8 @@ internal class SurveyDetailsModelImpl(
             }
         }
         scope.launch {
-            // TODO: add error state
-            // TODO: return result from repo and change the state depending on it
+            // TODO: add error status
+            // TODO: return result from repo and change the status depending on it
             repo.updateSurveyVote(surveyId, voteId, value)
             // TODO: remove later
             reloadSurvey()

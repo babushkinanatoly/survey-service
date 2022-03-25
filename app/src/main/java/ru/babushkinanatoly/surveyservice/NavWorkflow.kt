@@ -21,8 +21,8 @@ import ru.babushkinanatoly.base_feature.AppNavigation
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.MutableEvent
-import ru.babushkinanatoly.base_feature.util.dispatch
+import ru.babushkinanatoly.core_api.MutableEvent
+import ru.babushkinanatoly.core_api.dispatch
 import ru.babushkinanatoly.feature_profile.ProfileWorkflow
 import ru.babushkinanatoly.feature_survey_feed.SurveyFeedWorkflow
 import ru.babushkinanatoly.feature_user_surveys.UserSurveysWorkflow

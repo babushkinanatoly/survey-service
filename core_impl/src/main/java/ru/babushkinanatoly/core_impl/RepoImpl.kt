@@ -1,5 +1,6 @@
 package ru.babushkinanatoly.core_impl
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import ru.babushkinanatoly.core_api.*
 import ru.babushkinanatoly.core_impl.api.Api
@@ -20,20 +21,7 @@ class RepoImpl(
 
     override val currentUser = user.map { it?.toUser() }
 
-    override suspend fun getSurveys(): SurveysResult = try {
-        val userVotes = db.getUserVotes().map { it.id }
-        SurveysResult.Success(
-            api.getSurveys().surveys.map {
-                it.toSurvey(
-                    it.value.find { remoteVote ->
-                        userVotes.contains(remoteVote.id)
-                    }?.toVote()
-                )
-            }
-        )
-    } catch (ex: RemoteException) {
-        SurveysResult.Error
-    }
+    override fun getSurveys(scope: CoroutineScope) = PagedFeedImpl(scope = scope, db = db, api = api)
 
     override suspend fun getSurvey(surveyId: Long): SurveyResult = try {
         val remoteSurvey = api.getSurvey(surveyId).survey
@@ -87,7 +75,7 @@ private fun VoteForUserSurveyEntity.toVote() = Vote(id, value)
 private fun UserSurveyWithVotesForUserSurvey.toUserSurvey() =
     UserSurvey(userSurvey.id, userSurvey.title, userSurvey.desc, votesForUserSurvey.map { it.toVote() })
 
-private fun RemoteVote.toVote() = Vote(id, value)
+fun RemoteVote.toVote() = Vote(id, value)
 private fun RemoteVote.toUserVoteEntity(surveyId: Long) = UserVoteEntity(id, value, surveyId)
 private fun RemoteUser.toUserEntity() = UserEntity(id, email, name)
 private fun RemoteSurvey.toUserSurveyEntity() = UserSurveyEntity(id, title, desc)
@@ -96,7 +84,7 @@ private fun Map.Entry<RemoteVote, RemoteSurvey>.toUserVoteEntity() = UserVoteEnt
 private fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toVoteForUserSurveyEntity() =
     value.map { VoteForUserSurveyEntity(it.id, it.value, key.id) }
 
-private fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toSurvey(userVote: Vote?) =
+fun Map.Entry<RemoteSurvey, List<RemoteVote>>.toSurvey(userVote: Vote?) =
     Survey(key.id, key.title, key.desc, value.map { it.toVote() }, userVote)
 
 private fun Pair<RemoteSurvey, List<RemoteVote>>.toSurvey(userVote: Vote?) =

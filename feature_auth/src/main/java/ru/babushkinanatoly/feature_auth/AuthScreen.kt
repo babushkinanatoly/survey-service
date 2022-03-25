@@ -103,7 +103,7 @@ fun AuthScreen(
             }
         }
     }
-    authModel.loginEvent.consumeAsEffect {
+    authModel.event.consumeAsEffect {
         when (it) {
             is LogInEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
             LogInEvent.Success -> onLogInSuccess()

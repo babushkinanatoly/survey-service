@@ -15,9 +15,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.Event
-import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.core_api.Event
+import ru.babushkinanatoly.core_api.MutableEvent
 
 @Composable
 fun ProfileWorkflow(

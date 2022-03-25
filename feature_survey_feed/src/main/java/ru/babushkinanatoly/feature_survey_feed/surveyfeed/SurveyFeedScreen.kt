@@ -1,6 +1,8 @@
 package ru.babushkinanatoly.feature_survey_feed.surveyfeed
 
 import android.content.res.Configuration
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -10,27 +12,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.Event
-import ru.babushkinanatoly.base_feature.util.MutableEvent
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
+import ru.babushkinanatoly.core_api.Event
+import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.Survey
 import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_survey_feed.R
@@ -46,18 +49,22 @@ internal fun SurveyFeedScreen(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
     val surveysState = rememberLazyListState()
+    val context = LocalContext.current
     Scaffold(scaffoldState = scaffoldState) {
-        AppBar(coroutineScope, scaffoldState)
-        when (state) {
-            SurveyFeedState.LoadingError -> LoadingError(surveyFeedModel::reloadSurveys)
-            SurveyFeedState.Loading -> Loading()
-            is SurveyFeedState.Data -> {
-                SurveyFeed(
-                    surveys = (state as SurveyFeedState.Data).surveys,
-                    listState = surveysState,
-                    onClick = { onItem(it) }
-                )
-            }
+        AppBar(
+            refreshing = state.refreshing,
+            onRefresh = surveyFeedModel::refresh
+        )
+        SurveyFeed(
+            surveys = state.surveys,
+            listState = surveysState,
+            loadingMore = state.loadingMore,
+            onItem = { onItem(it) },
+            onRetry = surveyFeedModel::refresh,
+            onLoadMore = surveyFeedModel::loadMore
+        )
+        if (state.refreshing) {
+            FeedProgressBar()
         }
     }
     scrollUp.consumeAsEffect {
@@ -65,28 +72,82 @@ internal fun SurveyFeedScreen(
             surveysState.animateScrollToItem(0)
         }
     }
+    surveyFeedModel.event.consumeAsEffect {
+        when (it) {
+            is FeedEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 @Composable
 private fun AppBar(
-    scope: CoroutineScope,
-    scaffoldState: ScaffoldState,
+    refreshing: Boolean,
+    onRefresh: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.resId)) },
         actions = {
-            val searchText = stringResource(R.string.search)
             IconButton(
-                onClick = {
-                    scope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(searchText)
-                    }
-                }
+                enabled = !refreshing,
+                onClick = onRefresh
             ) {
-                Icon(imageVector = Icons.Filled.Search, searchText)
+                Icon(imageVector = Icons.Filled.Refresh, stringResource(R.string.refresh))
             }
         }
     )
+}
+
+@Composable
+private fun SurveyFeed(
+    surveys: List<Survey>?,
+    listState: LazyListState,
+    loadingMore: Boolean,
+    onItem: (id: Long) -> Unit,
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+) {
+    if (surveys == null) {
+        LoadingError { onRetry() }
+    } else {
+        LazyColumn(
+            state = listState,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 56.dp)
+        ) {
+            items(surveys) { survey ->
+                SurveyItem(survey) { onItem(survey.id) }
+            }
+            item {
+                if (loadingMore) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(24.dp)
+                    )
+                } else if (surveys.isNotEmpty()) {
+                    // TODO: Hide if no new surveys added
+                    Button(
+                        modifier = Modifier.padding(24.dp),
+                        onClick = onLoadMore
+                    ) {
+                        Text(stringResource(R.string.load_more))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeedProgressBar() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 56.dp)
+            .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
+            .pointerInput(Unit) {}
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
@@ -117,32 +178,6 @@ private fun LoadingError(
             onClick = onRetry
         ) {
             Text(stringResource(R.string.retry))
-        }
-    }
-}
-
-@Composable
-private fun Loading() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun SurveyFeed(
-    surveys: List<Survey>,
-    listState: LazyListState,
-    onClick: (id: Long) -> Unit,
-) {
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.padding(top = 56.dp)
-    ) {
-        items(surveys) { survey ->
-            SurveyItem(survey) { onClick(survey.id) }
         }
     }
 }
@@ -195,8 +230,8 @@ private fun SurveyFeedScreenPreview() {
             object : SurveyFeedModel {
 
                 override val state = MutableStateFlow(
-                    SurveyFeedState.Data(
-                        buildList {
+                    SurveyFeedState(
+                        surveys = buildList {
                             (0..9L).toList().map { value ->
                                 add(
                                     Survey(
@@ -210,15 +245,23 @@ private fun SurveyFeedScreenPreview() {
                                     ),
                                 )
                             }
-                        }
+                        },
+                        refreshing = false,
+                        loadingMore = false
                     )
                 )
 
-                override fun reloadSurveys() {
+                override val event: Event<FeedEvent>
+                    get() = TODO("Not yet implemented")
+
+                override fun refresh() {
                     TODO("Not yet implemented")
                 }
-            },
-            MutableEvent()
+
+                override fun loadMore() {
+                    TODO("Not yet implemented")
+                }
+            }, MutableEvent()
         ) {}
     }
 }
@@ -236,13 +279,25 @@ private fun SurveyFeedScreenLoadingErrorPreview() {
         SurveyFeedScreen(
             object : SurveyFeedModel {
 
-                override val state = MutableStateFlow(SurveyFeedState.LoadingError)
+                override val state = MutableStateFlow(
+                    SurveyFeedState(
+                        surveys = null,
+                        refreshing = true,
+                        loadingMore = false
+                    )
+                )
 
-                override fun reloadSurveys() {
+                override val event: Event<FeedEvent>
+                    get() = TODO("Not yet implemented")
+
+                override fun refresh() {
                     TODO("Not yet implemented")
                 }
-            },
-            MutableEvent()
+
+                override fun loadMore() {
+                    TODO("Not yet implemented")
+                }
+            }, MutableEvent()
         ) {}
     }
 }
