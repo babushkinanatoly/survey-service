@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.goBack
 import ru.babushkinanatoly.core_api.Survey
 import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_survey_feed.R
@@ -31,9 +33,10 @@ internal fun SurveyDetailsScreen(
     surveyDetailsModel: SurveyDetailsModel,
 ) {
     val state by surveyDetailsModel.state.collectAsState()
+    val context = LocalContext.current
     Surface {
         Scaffold {
-            AppBar()
+            AppBar { context.goBack() }
             when (state) {
                 is SurveyDetailsState.Data -> {
                     val data = state as SurveyDetailsState.Data
@@ -52,11 +55,13 @@ internal fun SurveyDetailsScreen(
 }
 
 @Composable
-private fun AppBar() {
+private fun AppBar(
+    onBack: () -> Unit,
+) {
     TopAppBar(
         title = { Text(stringResource(R.string.survey_details)) },
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onBack) {
                 Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
             }
         }
