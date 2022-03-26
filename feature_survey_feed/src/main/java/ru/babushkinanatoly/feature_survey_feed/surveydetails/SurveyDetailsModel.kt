@@ -28,7 +28,7 @@ internal sealed class SurveyDetailsState {
 }
 
 internal class SurveyDetailsModelImpl(
-    private val surveyId: Long,
+    private val surveyId: String,
     private val scope: CoroutineScope,
     stringRes: StringRes,
     private val repo: Repo,
@@ -51,13 +51,8 @@ internal class SurveyDetailsModelImpl(
     override fun onNo() = onVote(false)
 
     private fun onVote(value: Boolean) {
-        var voteId: Long? = null
-        state.update { state ->
-            (state as SurveyDetailsState.Data).let {
-                it.survey.userVote?.let { userVote -> voteId = userVote.id }
-                it.copy(voting = true)
-            }
-        }
+        val voteId: Long? = null
+        state.update { (it as SurveyDetailsState.Data).copy(voting = true) }
         scope.launch {
             // TODO: add error status
             // TODO: return result from repo and change the status depending on it

@@ -6,7 +6,7 @@ interface PagedFeed {
     val status: StateFlow<Status>
     val feedEvent: Event<FeedEvent>
     fun refresh()
-    fun loadMore(count: Int = 5, startAfter: Long? = null)
+    fun loadMore(count: Int = 5, startAfter: String? = null)
 
     sealed class Status {
         data class Data(val surveys: List<Survey>?) : Status()

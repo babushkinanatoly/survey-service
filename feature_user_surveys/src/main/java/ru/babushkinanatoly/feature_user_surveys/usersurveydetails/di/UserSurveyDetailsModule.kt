@@ -14,7 +14,7 @@ internal class UserSurveyDetailsModule {
     @UserSurveyDetailsScope
     @Provides
     fun provideModel(
-        surveyId: Long,
+        surveyId: String,
         scope: CoroutineScope,
         stringRes: StringRes,
         repo: Repo,

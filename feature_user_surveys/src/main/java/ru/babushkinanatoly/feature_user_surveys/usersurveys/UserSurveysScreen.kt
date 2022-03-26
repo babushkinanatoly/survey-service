@@ -27,15 +27,13 @@ import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.UserSurvey
-import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_user_surveys.R
-import kotlin.random.Random
 
 @Composable
 internal fun UserSurveysScreen(
     userSurveysModel: UserSurveysModel,
     scrollUp: Event<Unit>,
-    onItem: (id: Long) -> Unit,
+    onItem: (id: String) -> Unit,
     onNewSurvey: () -> Unit,
 ) {
     val state by userSurveysModel.state.collectAsState()
@@ -69,7 +67,7 @@ internal fun UserSurveysScreen(
 @Composable
 private fun UserSurveyItem(
     userSurvey: UserSurvey,
-    onClick: (id: Long) -> Unit,
+    onClick: (id: String) -> Unit,
 ) {
     Card(
         onClick = { onClick(userSurvey.id) },
@@ -112,10 +110,11 @@ private fun UserSurveysScreenPreview() {
                     UserSurveysState(
                         (0..20L).toList().map { index ->
                             UserSurvey(
-                                index,
+                                index.toString(),
                                 "Title 1",
                                 "Desc 1",
-                                (0..20L).toList().map { Vote(it, Random.nextBoolean()) }
+                                listOf(),
+                                listOf()
                             )
                         }
                     )

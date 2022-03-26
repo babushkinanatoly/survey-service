@@ -14,7 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.base_feature.util.requireLong
+import ru.babushkinanatoly.base_feature.util.requireString
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.dispatch
@@ -54,7 +54,7 @@ fun UserSurveysWorkflow(
             backEnabled = false
             UserSurveyDetailsScreen(
                 viewModel<UserSurveyDetailsViewModel>()
-                    .getUserSurveyDetailsComponent(it.requireLong("surveyId")).provideModel()
+                    .getUserSurveyDetailsComponent(it.requireString("surveyId")).provideModel()
             )
         }
     }

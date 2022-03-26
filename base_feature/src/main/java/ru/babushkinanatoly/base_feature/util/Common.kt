@@ -9,8 +9,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
 import ru.babushkinanatoly.core_api.Event
 
-fun NavBackStackEntry.requireLong(key: String) =
-    requireNotNull(arguments).getString(key)?.toLong() ?: error("No value found for this key: $key")
+fun NavBackStackEntry.requireString(key: String) =
+    requireNotNull(arguments).getString(key) ?: error("No value found for this key: $key")
 
 @SuppressLint("ComposableNaming")
 @Composable

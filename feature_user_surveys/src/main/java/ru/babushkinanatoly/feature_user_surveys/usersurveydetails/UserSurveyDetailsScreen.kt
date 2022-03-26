@@ -29,9 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.goBack
 import ru.babushkinanatoly.core_api.UserSurvey
-import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_user_surveys.R
-import kotlin.random.Random
 
 @Composable
 internal fun UserSurveyDetailsScreen(
@@ -71,11 +69,11 @@ internal fun UserSurveyDetailsScreen(
                 ) {
                     VoteBox(
                         text = stringResource(R.string.yes),
-                        count = state.userSurvey.votes.filter { it.value }.size
+                        count = state.userSurvey.upvotes.size
                     )
                     VoteBox(
                         text = stringResource(R.string.no),
-                        count = state.userSurvey.votes.filter { !it.value }.size
+                        count = state.userSurvey.downvotes.size
                     )
                 }
             }
@@ -174,10 +172,11 @@ private fun UserSurveyDetailsScreenPreview() {
                 override val state = MutableStateFlow(
                     UserSurveyDetailsState(
                         UserSurvey(
-                            0, "Title", "Desc",
-                            (1..9L).toList().map {
-                                Vote(it, Random.nextBoolean())
-                            }
+                            "0",
+                            "Title",
+                            "Desc",
+                            listOf("1", "2"),
+                            listOf("1", "2", "3", "4")
                         )
                     )
                 )

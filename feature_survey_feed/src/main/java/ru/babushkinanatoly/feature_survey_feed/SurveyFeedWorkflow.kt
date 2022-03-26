@@ -13,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.base_feature.util.requireLong
+import ru.babushkinanatoly.base_feature.util.requireString
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.dispatch
@@ -46,7 +46,7 @@ fun SurveyFeedWorkflow(
         composable(NavWorkflow.SurveyFeedWorkflow.SurveyDetails.route + "/{surveyId}") {
             SurveyDetailsScreen(
                 viewModel<SurveyDetailsViewModel>()
-                    .getSurveyDetailsComponent(it.requireLong("surveyId")).provideModel(),
+                    .getSurveyDetailsComponent(it.requireString("surveyId")).provideModel(),
             )
         }
     }

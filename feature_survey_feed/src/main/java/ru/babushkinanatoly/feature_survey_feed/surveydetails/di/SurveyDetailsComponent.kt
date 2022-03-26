@@ -23,7 +23,7 @@ internal interface SurveyDetailsComponent {
     interface Factory {
 
         fun create(
-            @BindsInstance surveyId: Long,
+            @BindsInstance surveyId: String,
             @BindsInstance scope: CoroutineScope,
             stringResProvider: StringResProvider,
             repoProvider: RepoProvider,

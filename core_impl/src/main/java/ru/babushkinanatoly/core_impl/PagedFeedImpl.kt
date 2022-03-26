@@ -36,14 +36,14 @@ class PagedFeedImpl(
         scope.launch {
             try {
                 val userVotes = db.getUserVotes().map { it.id }
-                val surveys = api.getSurveys(surveysCount).surveys.map {
-                    it.toSurvey(
-                        it.value.find { remoteVote ->
-                            userVotes.contains(remoteVote.id)
-                        }?.toVote()
-                    )
-                }
-                status.update { PagedFeed.Status.Data(surveys) }
+//                val surveys = api.getSurveys(surveysCount).surveys.map {
+//                    it.toSurvey(
+//                        it.value.find { remoteVote ->
+//                            userVotes.contains(remoteVote.id)
+//                        }?.toVote()
+//                    )
+//                }
+//                status.update { PagedFeed.Status.Data(surveys) }
             } catch (ex: RemoteException) {
                 status.update { PagedFeed.Status.Data((it as PagedFeed.Status.Refreshing).surveys) }
                 feedEvent.dispatch(PagedFeed.FeedEvent.REFRESHING_ERROR)
@@ -51,7 +51,7 @@ class PagedFeedImpl(
         }
     }
 
-    override fun loadMore(count: Int, startAfter: Long?) {
+    override fun loadMore(count: Int, startAfter: String?) {
         if (status.value is PagedFeed.Status.Data) {
             status.update { status ->
                 when (status) {
@@ -67,16 +67,16 @@ class PagedFeedImpl(
                 // TODO: Catch all exceptions wrapped in api
                 scope.launch {
                     try {
-                        val userVotes = db.getUserVotes().map { it.id }
-                        val currentSurveys = (status.value as PagedFeed.Status.LoadingMore).surveys
-                        val newSurveys = api.getSurveys(count, startAfter).surveys.map {
-                            it.toSurvey(
-                                it.value.find { remoteVote ->
-                                    userVotes.contains(remoteVote.id)
-                                }?.toVote()
-                            )
-                        }
-                        status.update { PagedFeed.Status.Data(currentSurveys + newSurveys) }
+//                        val userVotes = db.getUserVotes().map { it.id }
+//                        val currentSurveys = (status.value as PagedFeed.Status.LoadingMore).surveys
+//                        val newSurveys = api.getSurveys(count, startAfter).surveys.map {
+//                            it.toSurvey(
+//                                it.value.find { remoteVote ->
+//                                    userVotes.contains(remoteVote.id)
+//                                }?.toVote()
+//                            )
+//                        }
+//                        status.update { PagedFeed.Status.Data(currentSurveys + newSurveys) }
                     } catch (ex: RemoteException) {
                         status.update { PagedFeed.Status.Data((it as PagedFeed.Status.LoadingMore).surveys) }
                         feedEvent.dispatch(PagedFeed.FeedEvent.LOADING_MORE_ERROR)

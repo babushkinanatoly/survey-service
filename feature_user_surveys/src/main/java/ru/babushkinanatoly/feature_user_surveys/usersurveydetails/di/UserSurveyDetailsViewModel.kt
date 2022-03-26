@@ -10,7 +10,7 @@ internal class UserSurveyDetailsViewModel(private val app: Application) : Androi
 
     private var userSurveyDetailsComponent: UserSurveyDetailsComponent? = null
 
-    fun getUserSurveyDetailsComponent(surveyId: Long): UserSurveyDetailsComponent {
+    fun getUserSurveyDetailsComponent(surveyId: String): UserSurveyDetailsComponent {
         return userSurveyDetailsComponent ?: DaggerUserSurveyDetailsComponent.factory()
             .create(surveyId, viewModelScope, (app as StringResProvider), (app as RepoProvider))
             .also { userSurveyDetailsComponent = it }

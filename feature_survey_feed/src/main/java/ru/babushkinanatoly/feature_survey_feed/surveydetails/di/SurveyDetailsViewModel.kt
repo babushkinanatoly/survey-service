@@ -10,7 +10,7 @@ internal class SurveyDetailsViewModel(private val app: Application) : AndroidVie
 
     private var surveyDetailsComponent: SurveyDetailsComponent? = null
 
-    fun getSurveyDetailsComponent(surveyId: Long): SurveyDetailsComponent {
+    fun getSurveyDetailsComponent(surveyId: String): SurveyDetailsComponent {
         return surveyDetailsComponent ?: DaggerSurveyDetailsComponent.factory()
             .create(surveyId, viewModelScope, (app as StringResProvider), (app as RepoProvider))
             .also { surveyDetailsComponent = it }

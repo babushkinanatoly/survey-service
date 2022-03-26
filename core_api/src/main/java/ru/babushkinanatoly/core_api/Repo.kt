@@ -6,17 +6,17 @@ import kotlinx.coroutines.flow.Flow
 interface Repo {
     val currentUser: Flow<User?>
 
-    fun getSurveys(scope: CoroutineScope): PagedFeed
-    suspend fun getSurvey(surveyId: Long): SurveyResult
+    suspend fun onLogIn(userAuthData: UserAuthData): LogInResult
 
-    // TODO: remove voteId later
-    suspend fun updateSurveyVote(surveyId: Long, voteId: Long?, value: Boolean)
+    fun getSurveys(scope: CoroutineScope): PagedFeed
+    suspend fun getSurvey(surveyId: String): SurveyResult
+
+    suspend fun updateSurveyVote(surveyId: String, voteId: Long?, value: Boolean)
 
     fun getUserSurveys(): Flow<List<UserSurvey>>
-    fun getUserSurvey(id: Long): Flow<UserSurvey>
 
-    fun updateUserSurveyTitle(id: Long, title: String)
-    fun updateUserSurveyDesc(id: Long, desc: String)
+    fun getUserSurvey(id: String): Flow<UserSurvey>
+    fun updateUserSurveyTitle(id: String, title: String)
 
-    suspend fun onLogIn(userAuthData: UserAuthData): LogInResult
+    fun updateUserSurveyDesc(id: String, desc: String)
 }

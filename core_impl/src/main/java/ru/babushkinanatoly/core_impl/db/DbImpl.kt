@@ -3,7 +3,7 @@ package ru.babushkinanatoly.core_impl.db
 import android.content.Context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import ru.babushkinanatoly.core_impl.db.entity.UserEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserSurveyEntity
@@ -15,41 +15,29 @@ class DbImpl(context: Context) : Db {
     private val _user = MutableStateFlow<UserEntity?>(null)
     private val _userSurveys = MutableStateFlow<List<UserSurveyEntity>>(listOf())
     private val _userVotes = MutableStateFlow<List<UserVoteEntity>>(listOf())
-    private val _votesForUserSurveys = MutableStateFlow<List<VoteForUserSurveyEntity>>(listOf())
 
     override fun getUser() = _user
+    override fun getUserSurveys() = _userSurveys
 
-    override fun getUserSurveys() = _userSurveys.map { userSurveys ->
-        userSurveys.map { userSurvey ->
-            UserSurveyWithVotesForUserSurvey(
-                userSurvey, _votesForUserSurveys.value.filter { it.id == userSurvey.id }
-            )
-        }
-    }
-
-    override fun getUserSurvey(id: Long): Flow<UserSurveyWithVotesForUserSurvey> {
-        return _userSurveys.map { userSurveys ->
-            val userSurvey = userSurveys.first { it.id == id }
-            UserSurveyWithVotesForUserSurvey(
-                userSurvey, _votesForUserSurveys.value.filter { it.id == userSurvey.id }
-            )
-        }
+    override fun getUserSurvey(id: String): Flow<UserSurveyEntity> {
+        _userSurveys.value.first { it.remoteId == id }
+        return flowOf()
     }
 
     override suspend fun getUserVotes() = _userVotes.value
 
-    override fun updateUserSurveyTitle(id: Long, title: String) {
+    override fun updateUserSurveyTitle(id: String, title: String) {
         _userSurveys.update { surveys ->
             surveys.map {
-                if (it.id == id) it.copy(title = title) else it
+                if (it.remoteId == id) it.copy(title = title) else it
             }
         }
     }
 
-    override fun updateUserSurveyDesc(id: Long, desc: String) {
+    override fun updateUserSurveyDesc(id: String, desc: String) {
         _userSurveys.update { surveys ->
             surveys.map {
-                if (it.id == id) it.copy(desc = desc) else it
+                if (it.remoteId == id) it.copy(desc = desc) else it
             }
         }
     }
@@ -62,10 +50,6 @@ class DbImpl(context: Context) : Db {
 
     override fun insertUserVotes(userVotes: List<UserVoteEntity>) {
         _userVotes.update { it + userVotes }
-    }
-
-    override fun insertVotesForUserSurveys(votesForUserSurveys: List<VoteForUserSurveyEntity>) {
-        _votesForUserSurveys.update { votesForUserSurveys }
     }
 
     override fun removeUserVotes(userVotes: List<UserVoteEntity>) {

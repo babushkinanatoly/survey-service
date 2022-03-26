@@ -22,14 +22,16 @@ internal data class UserSurveyDetailsState(
 )
 
 internal class UserSurveyDetailsModelImpl(
-    private val surveyId: Long,
+    private val surveyId: String,
     private val scope: CoroutineScope,
     stringRes: StringRes,
     private val repo: Repo,
 ) : UserSurveyDetailsModel {
 
     override val state = MutableStateFlow(
-        UserSurveyDetailsState(UserSurvey(0, "", "", listOf()))
+        UserSurveyDetailsState(
+            UserSurvey("0", "", "", listOf(), listOf())
+        )
     )
 
     init {

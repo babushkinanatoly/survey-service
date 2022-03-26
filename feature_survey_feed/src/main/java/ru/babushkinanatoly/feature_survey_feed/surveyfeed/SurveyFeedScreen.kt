@@ -35,15 +35,13 @@ import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.Survey
-import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_survey_feed.R
-import kotlin.random.Random
 
 @Composable
 internal fun SurveyFeedScreen(
     surveyFeedModel: SurveyFeedModel,
     scrollUp: Event<Unit>,
-    onItem: (id: Long) -> Unit,
+    onItem: (id: String) -> Unit,
 ) {
     val state by surveyFeedModel.state.collectAsState()
     val scaffoldState = rememberScaffoldState()
@@ -102,7 +100,7 @@ private fun SurveyFeed(
     surveys: List<Survey>?,
     listState: LazyListState,
     loadingMore: Boolean,
-    onItem: (id: Long) -> Unit,
+    onItem: (id: String) -> Unit,
     onRetry: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -232,16 +230,14 @@ private fun SurveyFeedScreenPreview() {
                 override val state = MutableStateFlow(
                     SurveyFeedState(
                         surveys = buildList {
-                            (0..9L).toList().map { value ->
+                            (0..9).toList().map { value ->
                                 add(
                                     Survey(
-                                        value,
+                                        value.toString(),
                                         "Survey $value",
                                         "Survey $value desc",
-                                        (0..19L).toList().map {
-                                            Vote(it, Random.nextBoolean())
-                                        },
-                                        Vote(value + 19, Random.nextBoolean())
+                                        listOf("1", "2"),
+                                        listOf("1", "2", "3", "4")
                                     ),
                                 )
                             }
