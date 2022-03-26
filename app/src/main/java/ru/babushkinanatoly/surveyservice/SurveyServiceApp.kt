@@ -1,7 +1,6 @@
 package ru.babushkinanatoly.surveyservice
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -43,7 +42,7 @@ fun SurveyServiceApp(loggedIn: Boolean) {
             NewSurveyScreen()
         }
         composable(Settings.route) {
-            SettingsScreen(stringResource(Settings.resId))
+            SettingsScreen()
         }
     }
 }
