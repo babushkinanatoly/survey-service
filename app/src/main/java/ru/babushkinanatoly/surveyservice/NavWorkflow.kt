@@ -93,7 +93,6 @@ fun NavWorkflow(
                 ProfileWorkflow(
                     fallbackToProfileRoot,
                     stringResource(NavWorkflow.ProfileWorkflow.Profile.resId),
-                    stringResource(NavWorkflow.ProfileWorkflow.Statistics.resId),
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },

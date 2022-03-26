@@ -23,7 +23,6 @@ import ru.babushkinanatoly.core_api.MutableEvent
 fun ProfileWorkflow(
     fallbackToRoot: Event<Unit>,
     profileTitle: String,
-    statisticsTitle: String,
     onBack: () -> Unit,
     onSettings: () -> Unit,
     onLogOut: () -> Unit,
@@ -46,9 +45,7 @@ fun ProfileWorkflow(
         }
         composable(NavWorkflow.ProfileWorkflow.Statistics.route) {
             backEnabled = false
-            StatisticsScreen(
-                title = statisticsTitle
-            )
+            StatisticsScreen()
         }
     }
     fallbackToRoot.consumeAsEffect {
@@ -71,7 +68,7 @@ fun ProfileWorkflow(
 fun ProfileWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
-            ProfileWorkflow(MutableEvent(), "Profile", "Statistics", {}, {}, {})
+            ProfileWorkflow(MutableEvent(), "Profile", {}, {}, {})
         }
     }
 }

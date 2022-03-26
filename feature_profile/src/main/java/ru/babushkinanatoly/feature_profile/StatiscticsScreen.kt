@@ -10,20 +10,23 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow.ProfileWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.goBack
 
 @Composable
-fun StatisticsScreen(
-    title: String,
-) {
+fun StatisticsScreen() {
+    val title = stringResource(ProfileWorkflow.Statistics.resId)
+    val context = LocalContext.current
     Surface {
         Scaffold {
             TopAppBar(
-                title = { Text(text = title) },
+                title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
                     }
                 }
@@ -49,6 +52,6 @@ fun StatisticsScreen(
 @Composable
 fun StatisticsScreenPreview() {
     SurveyServiceTheme {
-        StatisticsScreen("Statistics")
+        StatisticsScreen()
     }
 }
