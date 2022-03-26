@@ -1,9 +1,8 @@
 package ru.babushkinanatoly.core_impl.db
 
 import android.content.Context
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import ru.babushkinanatoly.core_impl.db.entity.UserEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserSurveyEntity
@@ -19,10 +18,8 @@ class DbImpl(context: Context) : Db {
     override fun getUser() = _user
     override fun getUserSurveys() = _userSurveys
 
-    override fun getUserSurvey(id: String): Flow<UserSurveyEntity> {
-        _userSurveys.value.first { it.remoteId == id }
-        return flowOf()
-    }
+    override fun getUserSurvey(id: String) =
+        _userSurveys.map { userSurveys -> userSurveys.first { it.remoteId == id } }
 
     override suspend fun getUserVotes() = _userVotes.value
 
