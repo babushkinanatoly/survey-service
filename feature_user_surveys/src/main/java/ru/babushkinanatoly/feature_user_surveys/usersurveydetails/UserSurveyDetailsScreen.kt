@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.goBack
 import ru.babushkinanatoly.core_api.UserSurvey
 import ru.babushkinanatoly.core_api.Vote
 import ru.babushkinanatoly.feature_user_surveys.R
@@ -36,12 +38,13 @@ internal fun UserSurveyDetailsScreen(
     userSurveyDetailsModel: UserSurveyDetailsModel,
 ) {
     val state by userSurveyDetailsModel.state.collectAsState()
+    val context = LocalContext.current
     Surface {
         Scaffold {
             TopAppBar(
                 title = { Text(stringResource(R.string.survey_details)) },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
                     }
                 }
