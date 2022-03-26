@@ -1,6 +1,9 @@
 package ru.babushkinanatoly.base_feature.util
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
@@ -17,4 +20,15 @@ inline fun <T> Event<T>.consumeAsEffect(crossinline consumer: (T) -> Unit) {
             consumer(item)
         }
     }
+}
+
+fun Context.goBack() = findActivity()?.onBackPressed()
+
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
 }

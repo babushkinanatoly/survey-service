@@ -40,7 +40,7 @@ fun SurveyServiceApp(loggedIn: Boolean) {
             )
         }
         composable(NewSurvey.route) {
-            NewSurveyScreen(stringResource(NewSurvey.resId))
+            NewSurveyScreen()
         }
         composable(Settings.route) {
             SettingsScreen(stringResource(Settings.resId))
