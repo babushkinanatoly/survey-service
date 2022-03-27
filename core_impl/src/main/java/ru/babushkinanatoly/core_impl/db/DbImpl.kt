@@ -2,9 +2,6 @@ package ru.babushkinanatoly.core_impl.db
 
 import android.content.Context
 import androidx.room.Room
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import ru.babushkinanatoly.core_impl.db.entity.UserEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserSurveyEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserVoteEntity
@@ -15,55 +12,29 @@ class DbImpl(context: Context) : Db {
         .fallbackToDestructiveMigration()
         .build()
 
-    private val _userSurveys = MutableStateFlow<List<UserSurveyEntity>>(listOf())
-    private val _userVotes = MutableStateFlow<List<UserVoteEntity>>(listOf())
-
-    override fun getUser() = db.user().getUser()
-    override fun getUserSurveys() = _userSurveys
-
-    override fun getUserSurvey(id: String) =
-        _userSurveys.map { userSurveys -> userSurveys.first { it.remoteId == id } }
-
-    override suspend fun getUserVotes() = _userVotes.value
-
-    override suspend fun getUserVote(surveyId: String) =
-        _userVotes.value.find { it.surveyRemoteId == surveyId }
-
-    override suspend fun updateUserSurveyTitle(id: String, title: String) {
-        _userSurveys.update { surveys ->
-            surveys.map {
-                if (it.remoteId == id) it.copy(title = title) else it
-            }
-        }
-    }
-
-    override suspend fun updateUserSurveyDesc(id: String, desc: String) {
-        _userSurveys.update { surveys ->
-            surveys.map {
-                if (it.remoteId == id) it.copy(desc = desc) else it
-            }
-        }
-    }
-
     override suspend fun insertUser(user: UserEntity) = db.user().insertUser(user)
 
-    override suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) {
-        _userSurveys.update { userSurveys }
-    }
+    override suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) =
+        db.userSurvey().insertSurveys(userSurveys)
 
-    override suspend fun insertUserVotes(userVotes: List<UserVoteEntity>) {
-        _userVotes.update { it + userVotes }
-    }
+    override suspend fun insertUserVotes(userVotes: List<UserVoteEntity>) =
+        db.userVote().insertVotes(userVotes)
 
-    override suspend fun removeUserVote(surveyId: String) {
-        _userVotes.update { userVotes ->
-            userVotes.filter { it.surveyRemoteId != surveyId }
-        }
-    }
+    override fun getUser() = db.user().getUser()
+    override fun getUserSurveys() = db.userSurvey().getSurveys()
+    override fun getUserSurvey(id: String) = db.userSurvey().getSurvey(id)
 
-    override suspend fun updateUserVote(surveyId: String, value: Boolean) {
-        _userVotes.update { userVotes ->
-            userVotes.map { if (it.surveyRemoteId == surveyId) it.copy(value = value) else it }
-        }
-    }
+    override suspend fun getUserVotes() = db.userVote().getVotes()
+    override suspend fun getUserVote(surveyId: String) = db.userVote().getVote(surveyId)
+
+    override suspend fun updateUserSurveyTitle(id: String, title: String) =
+        db.userSurvey().updateSurveyTitle(id, title)
+
+    override suspend fun updateUserSurveyDesc(id: String, desc: String) =
+        db.userSurvey().updateSurveyDesc(id, desc)
+
+    override suspend fun updateUserVote(surveyId: String, value: Boolean) =
+        db.userVote().updateVote(surveyId, value)
+
+    override suspend fun deleteUserVote(surveyId: String) = db.userVote().deleteVote(surveyId)
 }

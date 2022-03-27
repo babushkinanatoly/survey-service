@@ -50,7 +50,7 @@ class RepoImpl(
     override suspend fun updateSurveyVote(surveyId: String, value: Boolean?): SurveyResult = try {
         val remoteSurvey = api.updateSurveyVote(surveyId, value)
         if (value == null) {
-            db.removeUserVote(surveyId)
+            db.deleteUserVote(surveyId)
         } else {
             db.getUserVote(surveyId)?.let {
                 db.updateUserVote(surveyId, value)
