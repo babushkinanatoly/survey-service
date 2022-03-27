@@ -31,6 +31,7 @@ data class Survey(
     val desc: String,
     val upvotes: List<String>,
     val downvotes: List<String>,
+    val userVote: Boolean?,
 )
 
 data class UserSurvey(

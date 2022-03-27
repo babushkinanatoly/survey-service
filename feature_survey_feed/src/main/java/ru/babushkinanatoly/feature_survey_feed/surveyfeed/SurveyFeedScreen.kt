@@ -237,7 +237,8 @@ private fun SurveyFeedScreenPreview() {
                                         "Survey $value",
                                         "Survey $value desc",
                                         listOf("1", "2"),
-                                        listOf("1", "2", "3", "4")
+                                        listOf("1", "2", "3", "4"),
+                                        null
                                     ),
                                 )
                             }

@@ -56,31 +56,8 @@ class ApiImpl(private val context: Context) : Api {
         }
     }
 
-    override suspend fun getSurveys(count: Int, startAfter: Long?): SurveysResponse {
-//        delay(2000)
-//        return if (isServerError) {
-        throw RemoteException(SocketTimeoutException())
-//        } else if (startAfter != null) {
-//            val surveyList = surveys.value.filter { it.key.id > startAfter }
-//                .toList()
-//                .toMutableList()
-//            val surveyListSize = surveyList.size
-//            SurveysResponse(
-//                surveyList.subList(0, if (count > surveyListSize) surveyListSize else count).toMap()
-//            )
-//        } else {
-//            SurveysResponse(
-//                if (count > surveys.value.size) {
-//                    surveys.value
-//                } else {
-//                    surveys.value
-//                        .toList()
-//                        .toMutableList()
-//                        .subList(0, count)
-//                        .toMap()
-//                }
-//            )
-//        }
+    override suspend fun getSurveys(count: Int, startAfter: String?): List<RemoteSurvey> = wrapErrors {
+        surveyService.getSurveys(count, startAfter).map { it.toRemoteSurvey() }
     }
 
     override suspend fun getSurvey(surveyId: Long): SurveyResponse {

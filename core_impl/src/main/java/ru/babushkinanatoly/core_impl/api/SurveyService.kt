@@ -1,8 +1,7 @@
 package ru.babushkinanatoly.core_impl.api
 
 import com.squareup.moshi.Json
-import retrofit2.http.Body
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface SurveyService {
 
@@ -13,6 +12,13 @@ interface SurveyService {
 
     @POST("signin")
     suspend fun getUser(@Body data: GetUserRequestData): UserResponseData
+
+    @GET("feed")
+    @Headers(REQUIRE_AUTH)
+    suspend fun getSurveys(
+        @Query("count") count: Int,
+        @Query("startAfter") startAfter: String?,
+    ): List<SurveyData>
 }
 
 data class UserResponseData(

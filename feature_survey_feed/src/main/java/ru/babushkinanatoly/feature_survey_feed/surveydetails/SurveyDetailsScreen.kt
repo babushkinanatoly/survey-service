@@ -213,7 +213,8 @@ fun SurveyDetailsScreenPreview() {
                             "Title",
                             "Desc",
                             listOf("1", "2"),
-                            listOf("1", "2", "3", "4")
+                            listOf("1", "2", "3", "4"),
+                            true
                         ),
                         false
                     )
