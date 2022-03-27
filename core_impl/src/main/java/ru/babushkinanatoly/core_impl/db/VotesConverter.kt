@@ -12,5 +12,6 @@ class VotesConverter {
     fun votesToString(votedUserIds: List<String>) = votedUserIds.joinToString(separator = SEPARATOR)
 
     @TypeConverter
-    fun stringToVotes(votedUserIds: String) = votedUserIds.split(SEPARATOR)
+    fun stringToVotes(votedUserIds: String) =
+        if (votedUserIds.isEmpty()) listOf() else votedUserIds.split(SEPARATOR)
 }

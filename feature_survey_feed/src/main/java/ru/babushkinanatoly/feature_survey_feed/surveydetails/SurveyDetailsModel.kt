@@ -65,7 +65,6 @@ internal class SurveyDetailsModelImpl(
             when (val result = repo.updateSurveyVote(surveyId, desiredValue)) {
                 is SurveyResult.Success -> {
                     state.update {
-                        println(result.survey)
                         (it as SurveyDetailsState.Data).copy(survey = result.survey, voting = false)
                     }
                 }
