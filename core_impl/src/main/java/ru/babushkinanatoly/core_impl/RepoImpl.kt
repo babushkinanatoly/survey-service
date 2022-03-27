@@ -18,7 +18,7 @@ class RepoImpl(
 
     override val currentUser = user.map { it?.toUser() }
 
-    override suspend fun onLogIn(userAuthData: UserAuthData): LogInResult = try {
+    override suspend fun logIn(userAuthData: UserAuthData): LogInResult = try {
         when (val response = api.logIn(userAuthData)) {
             is LogInResponse.Success -> {
                 db.insertUserSurveys(response.userSurveys.map { it.toUserSurveyEntity() })
@@ -38,21 +38,31 @@ class RepoImpl(
     override fun getSurveys(scope: CoroutineScope) = PagedFeedImpl(scope = scope, db = db, api = api)
 
     override suspend fun getSurvey(surveyId: String): SurveyResult = try {
-        TODO()
+        val remoteSurvey = api.getSurvey(surveyId)
+        val survey = remoteSurvey.toSurvey(
+            db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value
+        )
+        SurveyResult.Success(survey)
     } catch (ex: RemoteException) {
-        SurveyResult.Error
+        SurveyResult.Error(ex.message ?: "Unknown message")
     }
 
-    override suspend fun updateSurveyVote(surveyId: String, voteId: Long?, value: Boolean) {
-//        when (val result = api.updateSurveyVote(surveyId, voteId, value)) {
-//            // TODO: result - ok - write to db
-//            is UpdateSurveyVoteResponse.VoteCreated ->
-//                db.insertUserVotes(listOf(result.remoteVote.toUserVoteEntity(surveyId)))
-//            UpdateSurveyVoteResponse.VoteRemoved ->
-//                db.removeUserVotes(listOf(UserVoteEntity(voteId!!, value, surveyId)))
-//            UpdateSurveyVoteResponse.VoteValueChanged ->
-//                db.updateUserVote(UserVoteEntity(voteId!!, value, surveyId))
-//        }
+    override suspend fun updateSurveyVote(surveyId: String, value: Boolean?): SurveyResult = try {
+        val remoteSurvey = api.updateSurveyVote(surveyId, value)
+        if (value == null) {
+            db.removeUserVote(surveyId)
+        } else {
+            db.getUserVote(surveyId)?.let {
+                db.updateUserVote(surveyId, value)
+            } ?: db.insertUserVotes(listOf(surveyId.toUserVoteEntity(value)))
+        }
+        SurveyResult.Success(
+            remoteSurvey.toSurvey(
+                db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value
+            )
+        )
+    } catch (ex: RemoteException) {
+        SurveyResult.Error(ex.message ?: "Unknown message")
     }
 
     override fun getUserSurveys() = db.getUserSurveys().map { surveys -> surveys.map { it.toUserSurvey() } }
@@ -70,3 +80,6 @@ private fun RemoteUser.toUserEntity() = UserEntity(0, email, name, age, sex, cou
 
 private fun RemoteSurvey.toUserSurveyEntity() =
     UserSurveyEntity(0, id, title, desc, upvotedUserIds, downvotedUserIds)
+
+fun RemoteSurvey.toSurvey(userVote: Boolean?) =
+    Survey(id, title, desc, upvotedUserIds, downvotedUserIds, userVote)

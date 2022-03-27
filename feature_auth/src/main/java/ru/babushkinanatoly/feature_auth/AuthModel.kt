@@ -51,7 +51,7 @@ internal class AuthModelImpl(
     override fun onLogIn() {
         state.update { it.copy(loading = true) }
         scope.launch {
-            val loginEvent = when (repo.onLogIn(UserAuthData(state.value.email, state.value.password))) {
+            val loginEvent = when (repo.logIn(UserAuthData(state.value.email, state.value.password))) {
                 LogInResult.OK -> LogInEvent.Success
                 LogInResult.INVALID_CREDENTIALS -> LogInEvent.Error(stringRes[R.string.error_invalid_credentials])
                 LogInResult.CONNECTION_ERROR -> LogInEvent.Error(stringRes[R.string.error_no_connection])

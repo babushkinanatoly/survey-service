@@ -15,14 +15,9 @@ enum class LogInResult {
     OK, INVALID_CREDENTIALS, CONNECTION_ERROR
 }
 
-sealed class SurveysResult {
-    data class Success(val surveys: List<Survey>) : SurveysResult()
-    object Error : SurveysResult()
-}
-
 sealed class SurveyResult {
     data class Success(val survey: Survey) : SurveyResult()
-    object Error : SurveyResult()
+    data class Error(val msg: String) : SurveyResult()
 }
 
 data class Survey(

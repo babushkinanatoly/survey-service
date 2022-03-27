@@ -5,13 +5,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.babushkinanatoly.core_api.Repo
-import ru.babushkinanatoly.core_api.StringRes
-import ru.babushkinanatoly.core_api.Survey
-import ru.babushkinanatoly.core_api.SurveyResult
+import ru.babushkinanatoly.core_api.*
 
 internal interface SurveyDetailsModel {
     val state: StateFlow<SurveyDetailsState>
+    val event: Event<SurveyDetailsEvent>
     fun onReloadSurvey()
     fun onYes()
     fun onNo()
@@ -27,6 +25,10 @@ internal sealed class SurveyDetailsState {
     object LoadingError : SurveyDetailsState()
 }
 
+internal sealed class SurveyDetailsEvent {
+    data class Error(val msg: String) : SurveyDetailsEvent()
+}
+
 internal class SurveyDetailsModelImpl(
     private val surveyId: String,
     private val scope: CoroutineScope,
@@ -35,6 +37,8 @@ internal class SurveyDetailsModelImpl(
 ) : SurveyDetailsModel {
 
     override val state = MutableStateFlow<SurveyDetailsState>(SurveyDetailsState.Loading)
+
+    override val event = MutableEvent<SurveyDetailsEvent>()
 
     init {
         onReloadSurvey()
@@ -51,14 +55,25 @@ internal class SurveyDetailsModelImpl(
     override fun onNo() = onVote(false)
 
     private fun onVote(value: Boolean) {
-        val voteId: Long? = null
-        state.update { (it as SurveyDetailsState.Data).copy(voting = true) }
+        var desiredValue: Boolean? = null
+        state.update {
+            (it as SurveyDetailsState.Data).apply {
+                desiredValue = if (survey.userVote == value) null else value
+            }.copy(voting = true)
+        }
         scope.launch {
-            // TODO: add error status
-            // TODO: return result from repo and change the status depending on it
-            repo.updateSurveyVote(surveyId, voteId, value)
-            // TODO: remove later
-            reloadSurvey()
+            when (val result = repo.updateSurveyVote(surveyId, desiredValue)) {
+                is SurveyResult.Success -> {
+                    state.update {
+                        println(result.survey)
+                        (it as SurveyDetailsState.Data).copy(survey = result.survey, voting = false)
+                    }
+                }
+                is SurveyResult.Error -> {
+                    state.update { (it as SurveyDetailsState.Data).copy(voting = false) }
+                    event.dispatch(SurveyDetailsEvent.Error(result.msg))
+                }
+            }
         }
     }
 
@@ -70,7 +85,10 @@ internal class SurveyDetailsModelImpl(
                     voting = false
                 )
             }
-            SurveyResult.Error -> state.update { SurveyDetailsState.LoadingError }
+            is SurveyResult.Error -> {
+                state.update { SurveyDetailsState.LoadingError }
+                event.dispatch(SurveyDetailsEvent.Error(result.msg))
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.update
 import ru.babushkinanatoly.core_impl.db.entity.UserEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserSurveyEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserVoteEntity
-import ru.babushkinanatoly.core_impl.db.entity.VoteForUserSurveyEntity
 
 class DbImpl(context: Context) : Db {
 
@@ -22,6 +21,9 @@ class DbImpl(context: Context) : Db {
         _userSurveys.map { userSurveys -> userSurveys.first { it.remoteId == id } }
 
     override suspend fun getUserVotes() = _userVotes.value
+
+    override suspend fun getUserVote(surveyId: String) =
+        _userVotes.value.find { it.surveyRemoteId == surveyId }
 
     override fun updateUserSurveyTitle(id: String, title: String) {
         _userSurveys.update { surveys ->
@@ -49,18 +51,15 @@ class DbImpl(context: Context) : Db {
         _userVotes.update { it + userVotes }
     }
 
-    override fun removeUserVotes(userVotes: List<UserVoteEntity>) {
-        _userVotes.update { it - userVotes }
+    override fun removeUserVote(surveyId: String) {
+        _userVotes.update { userVotes ->
+            userVotes.filter { it.surveyRemoteId != surveyId }
+        }
     }
 
-    override fun updateUserVote(userVote: UserVoteEntity) {
+    override fun updateUserVote(surveyId: String, value: Boolean) {
         _userVotes.update { userVotes ->
-            userVotes.map { if (it.id == userVote.id) userVote else it }
+            userVotes.map { if (it.surveyRemoteId == surveyId) it.copy(value = value) else it }
         }
     }
 }
-
-data class UserSurveyWithVotesForUserSurvey(
-    val userSurvey: UserSurveyEntity,
-    val votesForUserSurvey: List<VoteForUserSurveyEntity>,
-)

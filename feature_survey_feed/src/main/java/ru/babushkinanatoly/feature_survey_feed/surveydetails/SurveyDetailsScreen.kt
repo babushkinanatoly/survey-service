@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.feature_survey_feed.surveydetails
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.base_feature.util.goBack
+import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.Survey
 import ru.babushkinanatoly.feature_survey_feed.R
 
@@ -48,6 +51,11 @@ internal fun SurveyDetailsScreen(
                 SurveyDetailsState.Loading -> Loading()
                 SurveyDetailsState.LoadingError -> LoadingError(onRetry = surveyDetailsModel::onReloadSurvey)
             }
+        }
+    }
+    surveyDetailsModel.event.consumeAsEffect {
+        when (it) {
+            is SurveyDetailsEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -96,17 +104,16 @@ private fun SurveyDetails(
         Row(
             modifier = Modifier.padding(top = 8.dp)
         ) {
-            // TODO: Retreive voted data
             VoteBox(
                 text = stringResource(R.string.yes),
                 count = survey.upvotes.size,
-                voted = false,
+                voted = survey.userVote == true,
                 onClick = onYes
             )
             VoteBox(
                 text = stringResource(R.string.no),
                 count = survey.downvotes.size,
-                voted = false,
+                voted = survey.userVote == false,
                 onClick = onNo
             )
         }
@@ -143,11 +150,6 @@ private fun LoadingError(
             text = stringResource(R.string.error_loading),
             textAlign = TextAlign.Center,
             fontSize = 20.sp
-        )
-        Text(
-            modifier = Modifier.padding(vertical = 12.dp),
-            text = stringResource(R.string.error_no_connection),
-            textAlign = TextAlign.Center
         )
         Button(
             modifier = Modifier.padding(vertical = 12.dp),
@@ -186,6 +188,7 @@ private fun SurveyDetailsProgressBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = 56.dp)
             .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
             .pointerInput(Unit) {}
     ) {
@@ -220,6 +223,9 @@ fun SurveyDetailsScreenPreview() {
                     )
                 )
 
+                override val event: Event<SurveyDetailsEvent>
+                    get() = TODO("Not yet implemented")
+
                 override fun onReloadSurvey() {
                     TODO("Not yet implemented")
                 }
@@ -250,6 +256,9 @@ fun SurveyDetailsLoadingErrorScreenPreview() {
             object : SurveyDetailsModel {
 
                 override val state = MutableStateFlow(SurveyDetailsState.LoadingError)
+
+                override val event: Event<SurveyDetailsEvent>
+                    get() = TODO("Not yet implemented")
 
                 override fun onReloadSurvey() {
                     TODO("Not yet implemented")

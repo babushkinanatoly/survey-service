@@ -6,11 +6,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.core_api.PagedFeed
-import ru.babushkinanatoly.core_api.Survey
 import ru.babushkinanatoly.core_api.dispatch
 import ru.babushkinanatoly.core_impl.api.Api
 import ru.babushkinanatoly.core_impl.api.RemoteException
-import ru.babushkinanatoly.core_impl.api.RemoteSurvey
 import ru.babushkinanatoly.core_impl.db.Db
 
 class PagedFeedImpl(
@@ -84,6 +82,3 @@ class PagedFeedImpl(
         }
     }
 }
-
-private fun RemoteSurvey.toSurvey(userVote: Boolean?) =
-    Survey(id, title, desc, upvotedUserIds, downvotedUserIds, userVote)

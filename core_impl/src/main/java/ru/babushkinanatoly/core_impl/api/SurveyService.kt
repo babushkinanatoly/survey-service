@@ -19,6 +19,14 @@ interface SurveyService {
         @Query("count") count: Int,
         @Query("startAfter") startAfter: String?,
     ): List<SurveyData>
+
+    @GET("survey/{id}")
+    @Headers(REQUIRE_AUTH)
+    suspend fun getSurvey(@Path("id") id: String): SurveyData
+
+    @POST("vote")
+    @Headers(REQUIRE_AUTH)
+    suspend fun setSurveyVote(@Body data: SetVoteRequestData): SurveyData
 }
 
 data class UserResponseData(
@@ -82,9 +90,7 @@ data class GetUserRequestData(
     val password: String,
 )
 
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-
-data class SurveysResponse(val surveys: Map<RemoteSurvey, List<String>>)
-data class SurveyResponse(val survey: Pair<RemoteSurvey, List<String>>)
+data class SetVoteRequestData(
+    val surveyId: String,
+    val vote: String,
+)

@@ -1,13 +1,11 @@
 package ru.babushkinanatoly.core_impl.api
 
 import android.content.Context
-import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.babushkinanatoly.core_api.UserAuthData
-import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class ApiImpl(private val context: Context) : Api {
@@ -60,81 +58,14 @@ class ApiImpl(private val context: Context) : Api {
         surveyService.getSurveys(count, startAfter).map { it.toRemoteSurvey() }
     }
 
-    override suspend fun getSurvey(surveyId: Long): SurveyResponse {
-        delay(1000)
-//        return if (isServerError) {
-        throw RemoteException(SocketTimeoutException())
-//        } else {
-//            SurveyResponse(
-//                surveys.value.filter { it.key.id == surveyRemoteId }.toList().first()
-//            )
-//        }
+    override suspend fun getSurvey(surveyId: String): RemoteSurvey = wrapErrors {
+        surveyService.getSurvey(surveyId).toRemoteSurvey()
     }
 
-    override suspend fun updateSurveyVote(
-        surveyId: Long, voteId: Long?, voteValue: Boolean,
-    ) {
-//        delay(500)
-//        var remoteVote: RemoteVote? = null
-//        var secondValue = false
-//        surveys.update { surveys ->
-//            surveys.map { survey ->
-//                val surveyPair = survey.toPair()
-//                if (survey.key.id == surveyRemoteId) {
-//                    if (voteId != null) {
-//                        val vote = surveyPair.second.first { it.id == voteId }
-//                        val votes = surveyPair.second.toMutableList()
-//                        if (voteValue) {
-//                            if (vote.value) {
-//                                // remove vote
-//                                votes.remove(vote)
-//                                secondValue = true
-//                                surveyPair.copy(second = votes)
-//                            } else {
-//                                // change value
-//                                secondValue = false
-//                                surveyPair.copy(
-//                                    second = surveyPair.second.map {
-//                                        if (it.id == voteId) it.copy(
-//                                            value = voteValue
-//                                        ) else it
-//                                    }
-//                                )
-//                            }
-//                        } else {
-//                            if (vote.value) {
-//                                // change value
-//                                secondValue = false
-//                                surveyPair.copy(
-//                                    second = surveyPair.second.map {
-//                                        if (it.id == voteId) it.copy(
-//                                            value = voteValue
-//                                        ) else it
-//                                    }
-//                                )
-//                            } else {
-//                                // remove vote
-//                                votes.remove(vote)
-//                                secondValue = true
-//                                surveyPair.copy(second = votes)
-//                            }
-//                        }
-//                    } else {
-//                        remoteVote = RemoteVote(
-//                            surveyPair.second.last().id + 1, voteValue
-//                        )
-//                        surveyPair.copy(
-//                            second = surveyPair.second + remoteVote!!
-//                        )
-//                    }
-//                } else surveyPair
-//            }.toMap()
-//        }
-//        return when {
-//            remoteVote != null -> UpdateSurveyVoteResponse.VoteCreated(remoteVote!!)
-//            secondValue -> UpdateSurveyVoteResponse.VoteRemoved
-//            else -> UpdateSurveyVoteResponse.VoteValueChanged
-//        }
+    override suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey = wrapErrors {
+        surveyService.setSurveyVote(
+            SetVoteRequestData(surveyId, voteValue.toRemoteVoteValue())
+        ).toRemoteSurvey()
     }
 
     private inline fun <T> wrapErrors(call: () -> T): T = try {
@@ -162,3 +93,9 @@ private fun UserVotesData.toRemoteUserVotes() = RemoteUserVotes(upvotedSurveyIds
 
 private fun SurveyData.toRemoteSurvey() =
     RemoteSurvey(id, ownerId, data.title, data.desc, upvotedUserIds, downvotedUserIds)
+
+private fun Boolean?.toRemoteVoteValue() = when (this) {
+    true -> "Up"
+    false -> "Down"
+    null -> "None"
+}
