@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.core_impl.db
 
 import android.content.Context
+import androidx.room.Room
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -10,11 +11,14 @@ import ru.babushkinanatoly.core_impl.db.entity.UserVoteEntity
 
 class DbImpl(context: Context) : Db {
 
-    private val _user = MutableStateFlow<UserEntity?>(null)
+    private val db = Room.databaseBuilder(context, UserDb::class.java, "user.db")
+        .fallbackToDestructiveMigration()
+        .build()
+
     private val _userSurveys = MutableStateFlow<List<UserSurveyEntity>>(listOf())
     private val _userVotes = MutableStateFlow<List<UserVoteEntity>>(listOf())
 
-    override fun getUser() = _user
+    override fun getUser() = db.user().getUser()
     override fun getUserSurveys() = _userSurveys
 
     override fun getUserSurvey(id: String) =
@@ -41,7 +45,7 @@ class DbImpl(context: Context) : Db {
         }
     }
 
-    override suspend fun insertUser(user: UserEntity) = _user.update { user }
+    override suspend fun insertUser(user: UserEntity) = db.user().insertUser(user)
 
     override suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) {
         _userSurveys.update { userSurveys }
