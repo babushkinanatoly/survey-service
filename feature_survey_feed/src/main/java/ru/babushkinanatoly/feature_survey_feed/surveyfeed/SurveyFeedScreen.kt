@@ -205,9 +205,20 @@ private fun SurveyItem(
                     style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier.padding(bottom = 20.dp),
                     text = survey.desc,
-                    maxLines = 4
+                    maxLines = 4,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    text = "${stringResource(R.string.upvoted)}: ${survey.upvotes.size}",
+                    maxLines = 1
+                )
+                Text(
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    text = "${stringResource(R.string.downvoted)}: ${survey.downvotes.size}",
+                    maxLines = 1
                 )
             }
         }

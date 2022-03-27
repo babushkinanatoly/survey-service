@@ -6,4 +6,6 @@
     <string name="retry">Retry</string>
     <string name="refresh">Refresh</string>
     <string name="load_more">Load more</string>
+    <string name="upvoted">Upvoted</string>
+    <string name="downvoted">Downvoted</string>
 </resources>
