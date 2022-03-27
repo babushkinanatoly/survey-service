@@ -25,7 +25,7 @@ class DbImpl(context: Context) : Db {
     override suspend fun getUserVote(surveyId: String) =
         _userVotes.value.find { it.surveyRemoteId == surveyId }
 
-    override fun updateUserSurveyTitle(id: String, title: String) {
+    override suspend fun updateUserSurveyTitle(id: String, title: String) {
         _userSurveys.update { surveys ->
             surveys.map {
                 if (it.remoteId == id) it.copy(title = title) else it
@@ -33,7 +33,7 @@ class DbImpl(context: Context) : Db {
         }
     }
 
-    override fun updateUserSurveyDesc(id: String, desc: String) {
+    override suspend fun updateUserSurveyDesc(id: String, desc: String) {
         _userSurveys.update { surveys ->
             surveys.map {
                 if (it.remoteId == id) it.copy(desc = desc) else it
@@ -41,23 +41,23 @@ class DbImpl(context: Context) : Db {
         }
     }
 
-    override fun insertUser(user: UserEntity) = _user.update { user }
+    override suspend fun insertUser(user: UserEntity) = _user.update { user }
 
-    override fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) {
+    override suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) {
         _userSurveys.update { userSurveys }
     }
 
-    override fun insertUserVotes(userVotes: List<UserVoteEntity>) {
+    override suspend fun insertUserVotes(userVotes: List<UserVoteEntity>) {
         _userVotes.update { it + userVotes }
     }
 
-    override fun removeUserVote(surveyId: String) {
+    override suspend fun removeUserVote(surveyId: String) {
         _userVotes.update { userVotes ->
             userVotes.filter { it.surveyRemoteId != surveyId }
         }
     }
 
-    override fun updateUserVote(surveyId: String, value: Boolean) {
+    override suspend fun updateUserVote(surveyId: String, value: Boolean) {
         _userVotes.update { userVotes ->
             userVotes.map { if (it.surveyRemoteId == surveyId) it.copy(value = value) else it }
         }

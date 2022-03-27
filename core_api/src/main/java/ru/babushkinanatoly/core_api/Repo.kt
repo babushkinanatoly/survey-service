@@ -17,6 +17,6 @@ interface Repo {
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: String): Flow<UserSurvey>
 
-    fun updateUserSurveyTitle(id: String, title: String)
-    fun updateUserSurveyDesc(id: String, desc: String)
+    suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult
+    suspend fun updateUserSurveyDesc(id: String, desc: String): SurveyResult
 }

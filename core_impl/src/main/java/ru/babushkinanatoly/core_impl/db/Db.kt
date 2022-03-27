@@ -13,13 +13,13 @@ interface Db {
     suspend fun getUserVotes(): List<UserVoteEntity>
     suspend fun getUserVote(surveyId: String): UserVoteEntity?
 
-    fun updateUserSurveyTitle(id: String, title: String)
-    fun updateUserSurveyDesc(id: String, desc: String)
+    suspend fun insertUser(user: UserEntity)
+    suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
+    suspend fun insertUserVotes(userVotes: List<UserVoteEntity>)
 
-    fun insertUser(user: UserEntity)
-    fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
-    fun insertUserVotes(userVotes: List<UserVoteEntity>)
+    suspend fun updateUserSurveyTitle(id: String, title: String)
+    suspend fun updateUserSurveyDesc(id: String, desc: String)
 
-    fun removeUserVote(surveyId: String)
-    fun updateUserVote(surveyId: String, value: Boolean)
+    suspend fun removeUserVote(surveyId: String)
+    suspend fun updateUserVote(surveyId: String, value: Boolean)
 }

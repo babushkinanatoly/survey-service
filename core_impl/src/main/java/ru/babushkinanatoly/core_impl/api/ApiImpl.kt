@@ -68,6 +68,14 @@ class ApiImpl(private val context: Context) : Api {
         ).toRemoteSurvey()
     }
 
+    override suspend fun updateSurveyTitle(surveyId: String, title: String): RemoteSurvey = wrapErrors {
+        surveyService.setSurveyTitle(surveyId, SetTitleRequestData(title)).toRemoteSurvey()
+    }
+
+    override suspend fun updateSurveyDesc(surveyId: String, desc: String): RemoteSurvey = wrapErrors {
+        surveyService.setSurveyDesc(surveyId, SetDescRequestData(desc)).toRemoteSurvey()
+    }
+
     private inline fun <T> wrapErrors(call: () -> T): T = try {
         call()
     } catch (ex: UnknownHostException) {

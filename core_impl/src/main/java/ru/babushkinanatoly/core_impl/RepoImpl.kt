@@ -69,8 +69,25 @@ class RepoImpl(
 
     override fun getUserSurvey(id: String) = db.getUserSurvey(id).map { it.toUserSurvey() }
 
-    override fun updateUserSurveyTitle(id: String, title: String) = db.updateUserSurveyTitle(id, title)
-    override fun updateUserSurveyDesc(id: String, desc: String) = db.updateUserSurveyDesc(id, desc)
+    override suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult = try {
+        val remoteSurvey = api.updateSurveyTitle(id, title)
+        db.updateUserSurveyTitle(id, title)
+        SurveyResult.Success(
+            remoteSurvey.toSurvey(db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value)
+        )
+    } catch (ex: RemoteException) {
+        SurveyResult.Error(ex.message ?: "Unknown message")
+    }
+
+    override suspend fun updateUserSurveyDesc(id: String, desc: String): SurveyResult = try {
+        val remoteSurvey = api.updateSurveyDesc(id, desc)
+        db.updateUserSurveyDesc(id, desc)
+        SurveyResult.Success(
+            remoteSurvey.toSurvey(db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value)
+        )
+    } catch (ex: RemoteException) {
+        SurveyResult.Error(ex.message ?: "Unknown message")
+    }
 }
 
 private fun UserEntity.toUser() = User(id, email, name)

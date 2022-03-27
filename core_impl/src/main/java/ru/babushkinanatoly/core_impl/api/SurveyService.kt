@@ -27,6 +27,20 @@ interface SurveyService {
     @POST("vote")
     @Headers(REQUIRE_AUTH)
     suspend fun setSurveyVote(@Body data: SetVoteRequestData): SurveyData
+
+    @PUT("survey/{id}")
+    @Headers(REQUIRE_AUTH)
+    suspend fun setSurveyTitle(
+        @Path("id") id: String,
+        @Body data: SetTitleRequestData,
+    ): SurveyData
+
+    @PUT("survey/{id}")
+    @Headers(REQUIRE_AUTH)
+    suspend fun setSurveyDesc(
+        @Path("id") id: String,
+        @Body data: SetDescRequestData,
+    ): SurveyData
 }
 
 data class UserResponseData(
@@ -93,4 +107,12 @@ data class GetUserRequestData(
 data class SetVoteRequestData(
     val surveyId: String,
     val vote: String,
+)
+
+data class SetTitleRequestData(
+    val title: String,
+)
+
+data class SetDescRequestData(
+    val desc: String,
 )

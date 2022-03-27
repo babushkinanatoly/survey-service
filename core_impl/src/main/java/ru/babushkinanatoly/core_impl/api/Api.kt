@@ -9,6 +9,8 @@ interface Api {
     suspend fun getSurvey(surveyId: String): RemoteSurvey
 
     suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey
+    suspend fun updateSurveyTitle(surveyId: String, title: String): RemoteSurvey
+    suspend fun updateSurveyDesc(surveyId: String, desc: String): RemoteSurvey
 }
 
 open class RemoteException(cause: Throwable?, message: String? = null) : RuntimeException(message, cause)
