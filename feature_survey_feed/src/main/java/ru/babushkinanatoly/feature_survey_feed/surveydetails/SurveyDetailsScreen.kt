@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -173,10 +174,11 @@ private fun RowScope.VoteBox(
         textAlign = TextAlign.Center,
         maxLines = 2,
         modifier = Modifier
-            .clickable { onClick() }
             .weight(1f)
             .padding(8.dp)
             .background(if (voted) MaterialTheme.colors.primary else Color.Transparent, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .border(width = 4.dp, color = MaterialTheme.colors.primary, RoundedCornerShape(16.dp))
             .padding(16.dp)
     )
