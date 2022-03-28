@@ -28,6 +28,8 @@ class DbImpl(context: Context) : Db {
     override fun getUserSurveys() = db.userSurvey().getSurveys()
     override fun getUserSurvey(id: String) = db.userSurvey().getSurvey(id)
 
+    override suspend fun deleteUserSurvey(id: String) = db.userSurvey().deleteSurvey(id)
+
     override suspend fun getUserVotes() = db.userVote().getVotes()
     override suspend fun getUserVote(surveyId: String) = db.userVote().getVote(surveyId)
 

@@ -14,7 +14,9 @@ interface Db {
 
     fun getUser(): Flow<UserEntity?>
     fun getUserSurveys(): Flow<List<UserSurveyEntity>>
-    fun getUserSurvey(id: String): Flow<UserSurveyEntity>
+    fun getUserSurvey(id: String): Flow<UserSurveyEntity?>
+
+    suspend fun deleteUserSurvey(id: String)
 
     suspend fun getUserVotes(): List<UserVoteEntity>
     suspend fun getUserVote(surveyId: String): UserVoteEntity?

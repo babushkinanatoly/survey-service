@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,6 +53,14 @@ internal fun UserSurveyDetailsScreen(
                     IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
                     }
+                },
+                actions = {
+                    IconButton(
+                        enabled = !state.processing,
+                        onClick = userSurveyDetailsModel::onDelete
+                    ) {
+                        Icon(imageVector = Icons.Filled.Delete, stringResource(R.string.delete))
+                    }
                 }
             )
             Column(
@@ -88,7 +97,7 @@ internal fun UserSurveyDetailsScreen(
                     )
                 }
             }
-            if (state.updating) {
+            if (state.processing) {
                 SurveyUpdatingProgressBar()
             }
         }
@@ -96,6 +105,7 @@ internal fun UserSurveyDetailsScreen(
     userSurveyDetailsModel.event.consumeAsEffect {
         when (it) {
             is UserSurveyDetailsEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+            UserSurveyDetailsEvent.Deleted -> context.goBack()
         }
     }
 }
@@ -208,24 +218,19 @@ private fun UserSurveyDetailsScreenPreview() {
                         ),
                         titleEditable = false,
                         descEditable = false,
-                        updating = false
+                        processing = false
                     )
                 )
                 override val event: Event<UserSurveyDetailsEvent>
                     get() = TODO("Not yet implemented")
 
-                override fun onTitleEdit() {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onDescEdit() {
-                    TODO("Not yet implemented")
-                }
-
+                override fun onTitleEdit() {}
+                override fun onDescEdit() {}
                 override fun onTitleChange(title: String) {}
                 override fun onDescChange(desc: String) {}
                 override fun onTitleUpdate(title: String) {}
                 override fun onDescUpdate(desc: String) {}
+                override fun onDelete() {}
             }
         )
     }

@@ -45,6 +45,10 @@ interface SurveyService {
     @POST("surveys")
     @Headers(REQUIRE_AUTH)
     suspend fun createSurvey(@Body data: CreateSurveyRequestData): SurveyData
+
+    @DELETE("survey/{id}")
+    @Headers(REQUIRE_AUTH)
+    suspend fun deleteSurvey(@Path("id") id: String)
 }
 
 data class UserResponseData(

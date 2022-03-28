@@ -16,11 +16,14 @@ interface UserSurveyDao {
     fun getSurveys(): Flow<List<UserSurveyEntity>>
 
     @Query("SELECT * FROM user_surveys WHERE remoteId = :id")
-    fun getSurvey(id: String): Flow<UserSurveyEntity>
+    fun getSurvey(id: String): Flow<UserSurveyEntity?>
 
     @Query("UPDATE user_surveys SET title = :title WHERE remoteId = :id")
     suspend fun updateSurveyTitle(id: String, title: String)
 
     @Query("UPDATE user_surveys SET `desc` = :desc WHERE remoteId = :id")
     suspend fun updateSurveyDesc(id: String, desc: String)
+
+    @Query("DELETE FROM user_surveys WHERE remoteId = :id")
+    suspend fun deleteSurvey(id: String)
 }

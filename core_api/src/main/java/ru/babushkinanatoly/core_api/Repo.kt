@@ -13,12 +13,14 @@ interface Repo {
 
     fun getSurveys(scope: CoroutineScope): PagedFeed
 
-    suspend fun getSurvey(surveyId: String): SurveyResult
+    suspend fun getSurvey(id: String): SurveyResult
+
+    suspend fun deleteSurvey(id: String): Boolean
 
     suspend fun updateSurveyVote(surveyId: String, value: Boolean?): SurveyResult
 
     fun getUserSurveys(): Flow<List<UserSurvey>>
-    fun getUserSurvey(id: String): Flow<UserSurvey>
+    fun getUserSurvey(id: String): Flow<UserSurvey?>
 
     suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult
     suspend fun updateUserSurveyDesc(id: String, desc: String): SurveyResult

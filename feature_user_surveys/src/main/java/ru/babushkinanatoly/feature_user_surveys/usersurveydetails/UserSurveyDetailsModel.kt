@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.*
+import ru.babushkinanatoly.feature_user_surveys.R
 
 internal interface UserSurveyDetailsModel {
     val state: StateFlow<UserSurveyDetailsState>
@@ -16,23 +17,25 @@ internal interface UserSurveyDetailsModel {
     fun onDescChange(desc: String)
     fun onTitleUpdate(title: String)
     fun onDescUpdate(desc: String)
+    fun onDelete()
 }
 
 internal data class UserSurveyDetailsState(
     val userSurvey: UserSurvey,
     val titleEditable: Boolean,
     val descEditable: Boolean,
-    val updating: Boolean,
+    val processing: Boolean,
 )
 
 internal sealed class UserSurveyDetailsEvent {
+    object Deleted : UserSurveyDetailsEvent()
     data class Error(val msg: String) : UserSurveyDetailsEvent()
 }
 
 internal class UserSurveyDetailsModelImpl(
     private val surveyId: String,
     private val scope: CoroutineScope,
-    stringRes: StringRes,
+    private val stringRes: StringRes,
     private val repo: Repo,
 ) : UserSurveyDetailsModel {
 
@@ -41,7 +44,7 @@ internal class UserSurveyDetailsModelImpl(
             userSurvey = UserSurvey("0", "", "", listOf(), listOf()),
             titleEditable = false,
             descEditable = false,
-            updating = false
+            processing = false
         )
     )
 
@@ -50,10 +53,10 @@ internal class UserSurveyDetailsModelImpl(
     init {
         scope.launch {
             repo.getUserSurvey(surveyId).collect { userSurvey ->
-                state.update {
-                    it.copy(
-                        userSurvey = userSurvey,
-                        updating = false
+                state.update { state ->
+                    state.copy(
+                        userSurvey = userSurvey ?: state.userSurvey,
+                        processing = false
                     )
                 }
             }
@@ -81,14 +84,14 @@ internal class UserSurveyDetailsModelImpl(
     }
 
     override fun onTitleUpdate(title: String) {
-        state.update { it.copy(updating = true) }
+        state.update { it.copy(processing = true) }
         scope.launch {
             when (val result = repo.updateUserSurveyTitle(state.value.userSurvey.id, title)) {
                 is SurveyResult.Success -> {
                     state.update { it.copy(titleEditable = false) }
                 }
                 is SurveyResult.Error -> {
-                    state.update { it.copy(updating = false) }
+                    state.update { it.copy(processing = false) }
                     event.dispatch(UserSurveyDetailsEvent.Error(result.msg))
                 }
             }
@@ -96,16 +99,28 @@ internal class UserSurveyDetailsModelImpl(
     }
 
     override fun onDescUpdate(desc: String) {
-        state.update { it.copy(updating = true) }
+        state.update { it.copy(processing = true) }
         scope.launch {
             when (val result = repo.updateUserSurveyDesc(state.value.userSurvey.id, desc)) {
                 is SurveyResult.Success -> {
                     state.update { it.copy(descEditable = false) }
                 }
                 is SurveyResult.Error -> {
-                    state.update { it.copy(updating = false) }
+                    state.update { it.copy(processing = false) }
                     event.dispatch(UserSurveyDetailsEvent.Error(result.msg))
                 }
+            }
+        }
+    }
+
+    override fun onDelete() {
+        state.update { it.copy(processing = true) }
+        scope.launch {
+            if (repo.deleteSurvey(surveyId)) {
+                event.dispatch(UserSurveyDetailsEvent.Deleted)
+            } else {
+                state.update { it.copy(processing = false) }
+                event.dispatch(UserSurveyDetailsEvent.Error(stringRes[R.string.error_no_connection]))
             }
         }
     }

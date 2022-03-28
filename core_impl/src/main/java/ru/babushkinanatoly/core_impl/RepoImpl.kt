@@ -52,14 +52,22 @@ class RepoImpl(
 
     override fun getSurveys(scope: CoroutineScope) = PagedFeedImpl(scope = scope, db = db, api = api)
 
-    override suspend fun getSurvey(surveyId: String): SurveyResult = try {
-        val remoteSurvey = api.getSurvey(surveyId)
+    override suspend fun getSurvey(id: String): SurveyResult = try {
+        val remoteSurvey = api.getSurvey(id)
         val survey = remoteSurvey.toSurvey(
             db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value
         )
         SurveyResult.Success(survey)
     } catch (ex: RemoteException) {
         SurveyResult.Error(ex.message ?: "Unknown message")
+    }
+
+    override suspend fun deleteSurvey(id: String): Boolean = try {
+        api.deleteSurvey(id)
+        db.deleteUserSurvey(id)
+        true
+    } catch (ex: RemoteException) {
+        false
     }
 
     override suspend fun updateSurveyVote(surveyId: String, value: Boolean?): SurveyResult = try {
@@ -82,7 +90,7 @@ class RepoImpl(
 
     override fun getUserSurveys() = db.getUserSurveys().map { surveys -> surveys.map { it.toUserSurvey() } }
 
-    override fun getUserSurvey(id: String) = db.getUserSurvey(id).map { it.toUserSurvey() }
+    override fun getUserSurvey(id: String) = db.getUserSurvey(id).map { it?.toUserSurvey() }
 
     override suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult = try {
         val remoteSurvey = api.updateSurveyTitle(id, title)

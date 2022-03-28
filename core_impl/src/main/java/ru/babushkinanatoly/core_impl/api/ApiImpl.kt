@@ -70,6 +70,10 @@ class ApiImpl(private val context: Context) : Api {
         surveyService.getSurvey(surveyId).toRemoteSurvey()
     }
 
+    override suspend fun deleteSurvey(surveyId: String): Unit = wrapErrors {
+        surveyService.deleteSurvey(surveyId)
+    }
+
     override suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey = wrapErrors {
         surveyService.setSurveyVote(
             SetVoteRequestData(surveyId, voteValue.toRemoteVoteValue())

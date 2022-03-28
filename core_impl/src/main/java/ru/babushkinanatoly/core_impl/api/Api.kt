@@ -11,6 +11,8 @@ interface Api {
     suspend fun getSurveys(count: Int, startAfter: String? = null): List<RemoteSurvey>
     suspend fun getSurvey(surveyId: String): RemoteSurvey
 
+    suspend fun deleteSurvey(surveyId: String)
+
     suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey
     suspend fun updateSurveyTitle(surveyId: String, title: String): RemoteSurvey
     suspend fun updateSurveyDesc(surveyId: String, desc: String): RemoteSurvey
