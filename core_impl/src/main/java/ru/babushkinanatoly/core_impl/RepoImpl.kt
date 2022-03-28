@@ -43,6 +43,13 @@ class RepoImpl(
         false
     }
 
+    override suspend fun addSurvey(title: String, desc: String) = try {
+        db.insertUserSurveys(listOf(api.createSurvey(title, desc).toUserSurveyEntity()))
+        true
+    } catch (ex: RemoteException) {
+        false
+    }
+
     override fun getSurveys(scope: CoroutineScope) = PagedFeedImpl(scope = scope, db = db, api = api)
 
     override suspend fun getSurvey(surveyId: String): SurveyResult = try {

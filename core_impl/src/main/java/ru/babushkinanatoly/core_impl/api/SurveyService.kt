@@ -41,6 +41,10 @@ interface SurveyService {
         @Path("id") id: String,
         @Body data: SetDescRequestData,
     ): SurveyData
+
+    @POST("surveys")
+    @Headers(REQUIRE_AUTH)
+    suspend fun createSurvey(@Body data: CreateSurveyRequestData): SurveyData
 }
 
 data class UserResponseData(
@@ -114,5 +118,10 @@ data class SetTitleRequestData(
 )
 
 data class SetDescRequestData(
+    val desc: String,
+)
+
+data class CreateSurveyRequestData(
+    val title: String,
     val desc: String,
 )

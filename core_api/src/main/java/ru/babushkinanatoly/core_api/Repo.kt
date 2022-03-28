@@ -9,6 +9,8 @@ interface Repo {
     suspend fun logIn(userAuthData: UserAuthData): LogInResult
     suspend fun logOut(): Boolean
 
+    suspend fun addSurvey(title: String, desc: String): Boolean
+
     fun getSurveys(scope: CoroutineScope): PagedFeed
 
     suspend fun getSurvey(surveyId: String): SurveyResult
