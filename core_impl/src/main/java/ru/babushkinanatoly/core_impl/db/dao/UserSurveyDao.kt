@@ -12,7 +12,7 @@ interface UserSurveyDao {
     @Insert
     suspend fun insertSurveys(surveys: List<UserSurveyEntity>)
 
-    @Query("SELECT * FROM user_surveys ORDER BY remoteId DESC")
+    @Query("SELECT * FROM user_surveys ORDER BY id DESC")
     fun getSurveys(): Flow<List<UserSurveyEntity>>
 
     @Query("SELECT * FROM user_surveys WHERE remoteId = :id")
