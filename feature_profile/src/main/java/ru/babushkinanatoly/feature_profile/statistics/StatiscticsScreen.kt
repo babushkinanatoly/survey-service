@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_profile
+package ru.babushkinanatoly.feature_profile.statistics
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.NavWorkflow.ProfileWorkflow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.goBack
+import ru.babushkinanatoly.feature_profile.R
 
 @Composable
 fun StatisticsScreen() {

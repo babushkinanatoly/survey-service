@@ -6,6 +6,8 @@ import ru.babushkinanatoly.core_impl.db.entity.UserSurveyEntity
 import ru.babushkinanatoly.core_impl.db.entity.UserVoteEntity
 
 interface Db {
+    suspend fun logOut()
+
     suspend fun insertUser(user: UserEntity)
     suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
     suspend fun insertUserVotes(userVotes: List<UserVoteEntity>)

@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_profile
+package ru.babushkinanatoly.feature_profile.profile
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.feature_profile.R
 
 @Composable
 fun ProfileScreen(

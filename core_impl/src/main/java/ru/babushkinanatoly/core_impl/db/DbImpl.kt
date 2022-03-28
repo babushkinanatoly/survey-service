@@ -12,6 +12,10 @@ class DbImpl(context: Context) : Db {
         .fallbackToDestructiveMigration()
         .build()
 
+    override suspend fun logOut() {
+        db.clearAllTables()
+    }
+
     override suspend fun insertUser(user: UserEntity) = db.user().insertUser(user)
 
     override suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>) =

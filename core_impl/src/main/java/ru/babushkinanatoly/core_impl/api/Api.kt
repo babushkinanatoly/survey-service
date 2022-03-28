@@ -4,6 +4,7 @@ import ru.babushkinanatoly.core_api.UserAuthData
 
 interface Api {
     suspend fun logIn(authData: UserAuthData): LogInResponse
+    suspend fun logOut()
 
     suspend fun getSurveys(count: Int, startAfter: String? = null): List<RemoteSurvey>
     suspend fun getSurvey(surveyId: String): RemoteSurvey

@@ -35,6 +35,14 @@ class RepoImpl(
         LogInResult.CONNECTION_ERROR
     }
 
+    override suspend fun logOut() = try {
+        api.logOut()
+        db.logOut()
+        true
+    } catch (ex: Exception) {
+        false
+    }
+
     override fun getSurveys(scope: CoroutineScope) = PagedFeedImpl(scope = scope, db = db, api = api)
 
     override suspend fun getSurvey(surveyId: String): SurveyResult = try {

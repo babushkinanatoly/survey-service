@@ -7,6 +7,7 @@ interface Repo {
     val currentUser: Flow<User?>
 
     suspend fun logIn(userAuthData: UserAuthData): LogInResult
+    suspend fun logOut(): Boolean
 
     fun getSurveys(scope: CoroutineScope): PagedFeed
 

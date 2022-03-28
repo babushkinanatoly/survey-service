@@ -54,6 +54,10 @@ class ApiImpl(private val context: Context) : Api {
         }
     }
 
+    override suspend fun logOut() {
+        token = null
+    }
+
     override suspend fun getSurveys(count: Int, startAfter: String?): List<RemoteSurvey> = wrapErrors {
         surveyService.getSurveys(count, startAfter).map { it.toRemoteSurvey() }
     }

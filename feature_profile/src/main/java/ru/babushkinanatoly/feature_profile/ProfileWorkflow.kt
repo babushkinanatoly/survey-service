@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.feature_profile
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -8,7 +9,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +22,9 @@ import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.core_api.MutableEvent
+import ru.babushkinanatoly.feature_profile.di.ProfileWorkflowViewModel
+import ru.babushkinanatoly.feature_profile.profile.ProfileScreen
+import ru.babushkinanatoly.feature_profile.statistics.StatisticsScreen
 
 @Composable
 fun ProfileWorkflow(
@@ -27,7 +34,9 @@ fun ProfileWorkflow(
     onSettings: () -> Unit,
     onLogOut: () -> Unit,
 ) {
+    val profileWorkflowModel = viewModel<ProfileWorkflowViewModel>().profileWorkflowComponent.provideModel()
     val navController = rememberNavController()
+    val context = LocalContext.current
     var backEnabled by rememberSaveable { mutableStateOf(true) }
     BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
@@ -39,7 +48,7 @@ fun ProfileWorkflow(
             ProfileScreen(
                 title = profileTitle,
                 onSettings = onSettings,
-                onLogOut = onLogOut,
+                onLogOut = profileWorkflowModel::onLogOut,
                 onStatistics = { navController.navigate(NavWorkflow.ProfileWorkflow.Statistics.route) }
             )
         }
@@ -53,6 +62,14 @@ fun ProfileWorkflow(
         navController.navigate(startDestination.route!!) {
             popUpTo(startDestination.route!!)
             launchSingleTop = true
+        }
+    }
+    profileWorkflowModel.event.consumeAsEffect {
+        when (it) {
+            ProfileWorkflowEvent.LOGGED_OUT -> onLogOut()
+            ProfileWorkflowEvent.ERROR -> {
+                Toast.makeText(context, stringResource(R.string.error_general), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
