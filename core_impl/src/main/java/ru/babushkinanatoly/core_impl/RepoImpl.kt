@@ -25,7 +25,7 @@ class RepoImpl(
 
     override val currentUser = db.getUser()
         .map { it?.toUser() }
-        .stateIn(scope, SharingStarted.WhileSubscribed(), userValue)
+        .stateIn(scope, SharingStarted.Eagerly, userValue)
 
     override suspend fun logIn(userAuthData: UserAuthData): LogInResult = try {
         when (val response = api.logIn(userAuthData)) {
