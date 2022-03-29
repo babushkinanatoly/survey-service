@@ -2,9 +2,10 @@ package ru.babushkinanatoly.core_api
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface Repo {
-    val currentUser: Flow<User?>
+    val currentUser: StateFlow<User?>
 
     suspend fun logIn(userAuthData: UserAuthData): LogInResult
     suspend fun logOut(): Boolean

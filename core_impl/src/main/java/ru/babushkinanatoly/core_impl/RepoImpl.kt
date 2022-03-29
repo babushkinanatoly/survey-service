@@ -1,7 +1,12 @@
 package ru.babushkinanatoly.core_impl
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
 import ru.babushkinanatoly.core_api.*
 import ru.babushkinanatoly.core_impl.api.*
 import ru.babushkinanatoly.core_impl.db.Db
@@ -14,9 +19,13 @@ class RepoImpl(
     private val api: Api,
 ) : Repo {
 
-    private val user = db.getUser()
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-    override val currentUser = user.map { it?.toUser() }
+    private val userValue get() = runBlocking { db.getUser().first() }?.toUser()
+
+    override val currentUser = db.getUser()
+        .map { it?.toUser() }
+        .stateIn(scope, SharingStarted.WhileSubscribed(), userValue)
 
     override suspend fun logIn(userAuthData: UserAuthData): LogInResult = try {
         when (val response = api.logIn(userAuthData)) {

@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -84,6 +84,7 @@ private fun AppBar(
 ) {
     TopAppBar(
         title = { Text(stringResource(NavWorkflow.SurveyFeedWorkflow.SurveyFeed.resId)) },
+        backgroundColor = MaterialTheme.colors.background,
         actions = {
             IconButton(
                 enabled = !refreshing,
@@ -112,8 +113,8 @@ private fun SurveyFeed(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(top = 56.dp)
         ) {
-            items(surveys) { survey ->
-                SurveyItem(survey) { onItem(survey.id) }
+            itemsIndexed(surveys) { index, survey ->
+                SurveyItem(index == 0, survey) { onItem(survey.id) }
             }
             item {
                 if (loadingMore) {
@@ -182,13 +183,17 @@ private fun LoadingError(
 
 @Composable
 private fun SurveyItem(
+    isFirst: Boolean,
     survey: Survey,
     onClick: () -> Unit,
 ) {
     Card(
-        onClick = onClick,
-        backgroundColor = MaterialTheme.colors.primary,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+        modifier = Modifier.padding(
+            top = if (isFirst) 8.dp else 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp
+        ),
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 8.dp,
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.padding(12.dp)

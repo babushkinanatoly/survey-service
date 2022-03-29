@@ -26,6 +26,7 @@ fun StatisticsScreen() {
         Scaffold {
             TopAppBar(
                 title = { Text(title) },
+                backgroundColor = MaterialTheme.colors.background,
                 navigationIcon = {
                     IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))

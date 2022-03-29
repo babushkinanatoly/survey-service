@@ -1,31 +1,43 @@
 package ru.babushkinanatoly.feature_settings
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.Settings
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.goBack
+import ru.babushkinanatoly.feature_settings.di.SettingsViewModel
 
 @Composable
-fun SettingsScreen(
-) {
-    val title = stringResource(Settings.resId)
+fun SettingsScreen() {
+    val model = viewModel<SettingsViewModel>().settingsComponent.provideModel()
+    val state by model.state.collectAsState()
     val context = LocalContext.current
     Surface {
         Scaffold {
             TopAppBar(
-                title = { Text(title) },
+                title = { Text(stringResource(Settings.resId)) },
+                backgroundColor = MaterialTheme.colors.background,
                 navigationIcon = {
                     IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
@@ -34,12 +46,143 @@ fun SettingsScreen(
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 56.dp),
         ) {
-            Text(title)
+            GroupTitle(
+                text = stringResource(R.string.appearance)
+            )
+            SelectableSetting(
+                title = stringResource(R.string.theme),
+                desc = state.darkThemeSettingsDesc,
+                onClick = model::onDarkTheme
+            )
         }
+        if (state.themeSelecting) {
+            ThemeDialog(
+                title = stringResource(R.string.theme),
+                themeValue = state.darkTheme,
+                onFollowSystem = { model.onDarkThemeChange(null) },
+                onLight = { model.onDarkThemeChange(false) },
+                onDark = { model.onDarkThemeChange(true) },
+                onDismiss = model::onDarkThemeDismiss
+            )
+        }
+    }
+}
+
+@Composable
+private fun GroupTitle(
+    text: String,
+) {
+    Text(
+        modifier = Modifier.padding(start = 72.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
+        text = text,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        color = MaterialTheme.colors.primary
+    )
+}
+
+@Composable
+private fun SelectableSetting(
+    title: String,
+    desc: String,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 72.dp, end = 16.dp, top = 16.dp),
+            text = title,
+            fontSize = 16.sp,
+        )
+        Text(
+            modifier = Modifier.padding(start = 72.dp, end = 16.dp, bottom = 16.dp),
+            text = desc,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun ThemeDialog(
+    title: String,
+    themeValue: Boolean?,
+    onFollowSystem: () -> Unit,
+    onDark: () -> Unit,
+    onLight: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(
+                    if (isSystemInDarkTheme() || themeValue == true) {
+                        MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+                    } else {
+                        MaterialTheme.colors.surface
+                    },
+                    RoundedCornerShape(8.dp)
+                )
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            Text(
+                modifier = Modifier.padding(
+                    top = 18.dp, bottom = 12.dp, start = 24.dp, end = 24.dp
+                ),
+                text = title,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+            )
+            Column {
+                ThemeVariant(
+                    text = stringResource(R.string.follow_system),
+                    selected = themeValue == null,
+                    onClick = onFollowSystem
+                )
+                ThemeVariant(
+                    text = stringResource(R.string.light),
+                    selected = themeValue == false,
+                    onClick = onLight
+                )
+                ThemeVariant(
+                    text = stringResource(R.string.dark),
+                    selected = themeValue == true,
+                    onClick = onDark
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeVariant(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
+            selected = selected,
+            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary),
+            onClick = null
+        )
+        Text(
+            text = text,
+            fontSize = 16.sp
+        )
     }
 }
 
@@ -51,7 +194,7 @@ fun SettingsScreen(
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun SettingsScreenPreview() {
+private fun SettingsScreenPreview() {
     SurveyServiceTheme {
         SettingsScreen()
     }

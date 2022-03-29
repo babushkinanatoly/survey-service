@@ -32,6 +32,7 @@ fun ProfileScreen(
             topBar = {
                 TopAppBar(
                     title = { Text(text = title) },
+                    backgroundColor = MaterialTheme.colors.background,
                     actions = {
                         IconButton(onClick = onSettings) {
                             Icon(Icons.Outlined.Settings, stringResource(R.string.settings))

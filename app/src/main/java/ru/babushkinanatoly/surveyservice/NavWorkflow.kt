@@ -39,7 +39,9 @@ fun NavWorkflow(
     val fallbackToProfileRoot = remember { MutableEvent<Unit>() }
     Scaffold(
         bottomBar = {
-            BottomNavigation {
+            BottomNavigation(
+                backgroundColor = MaterialTheme.colors.background
+            ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 AppNavigation.bottomNavItems.forEach { screen ->
@@ -59,6 +61,8 @@ fun NavWorkflow(
                         icon = { GetIcon(screen) },
                         label = { Text(stringResource(screen.resId)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        selectedContentColor = MaterialTheme.colors.primary,
+                        unselectedContentColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                         onClick = {
                             navController.navigateAndPopUpToStart(screen.route)
                             when {

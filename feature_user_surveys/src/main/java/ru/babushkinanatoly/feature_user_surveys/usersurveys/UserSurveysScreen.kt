@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -42,6 +42,7 @@ internal fun UserSurveysScreen(
     Scaffold {
         TopAppBar(
             title = { Text(stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveys.resId)) },
+            backgroundColor = MaterialTheme.colors.background,
             actions = {
                 IconButton(onClick = onNewSurvey) {
                     Icon(imageVector = Icons.Filled.Add, stringResource(R.string.new_survey))
@@ -52,8 +53,12 @@ internal fun UserSurveysScreen(
             state = listState,
             modifier = Modifier.padding(top = 56.dp)
         ) {
-            items(items = state.userSurveys) { userSurvey ->
-                UserSurveyItem(userSurvey) { onItem(it) }
+            itemsIndexed(items = state.userSurveys) { index, userSurvey ->
+                UserSurveyItem(
+                    isFirst = index == 0,
+                    isLast = index == state.userSurveys.size - 1,
+                    userSurvey = userSurvey
+                ) { onItem(it) }
             }
         }
     }
@@ -66,13 +71,21 @@ internal fun UserSurveysScreen(
 
 @Composable
 private fun UserSurveyItem(
+    isFirst: Boolean,
+    isLast: Boolean,
     userSurvey: UserSurvey,
     onClick: (id: String) -> Unit,
 ) {
     Card(
-        onClick = { onClick(userSurvey.id) },
-        backgroundColor = MaterialTheme.colors.primary,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+        modifier = Modifier.padding(
+            top = if (isFirst) 8.dp else 4.dp,
+            bottom = if (isLast) 8.dp else 4.dp,
+            start = 8.dp,
+            end = 8.dp
+        ),
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 8.dp,
+        onClick = { onClick(userSurvey.id) }
     ) {
         Column(
             modifier = Modifier

@@ -67,6 +67,7 @@ private fun AppBar(
 ) {
     TopAppBar(
         title = { Text(stringResource(R.string.survey_details)) },
+        backgroundColor = MaterialTheme.colors.background,
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))

@@ -49,6 +49,7 @@ internal fun UserSurveyDetailsScreen(
         Scaffold {
             TopAppBar(
                 title = { Text(stringResource(R.string.survey_details)) },
+                backgroundColor = MaterialTheme.colors.background,
                 navigationIcon = {
                     IconButton(onClick = { context.goBack() }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))

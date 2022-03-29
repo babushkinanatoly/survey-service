@@ -1,25 +1,24 @@
 package ru.babushkinanatoly.surveyservice
 
 import android.app.Application
-import kotlinx.coroutines.flow.first
-import ru.babushkinanatoly.core.DaggerRepoComponent
-import ru.babushkinanatoly.core.DaggerStringResComponent
-import ru.babushkinanatoly.core.RepoProvider
-import ru.babushkinanatoly.core.StringResProvider
+import ru.babushkinanatoly.core.*
 import ru.babushkinanatoly.surveyservice.di.DaggerAppComponent
 
 @Suppress("unused")
-class App : Application(), RepoProvider, StringResProvider {
+class App : Application(), RepoProvider, StringResProvider, SettingsProvider {
 
     private val appComponent by lazy {
         DaggerAppComponent.factory().create(
             DaggerRepoComponent.factory().create(this),
-            DaggerStringResComponent.factory().create(this)
+            DaggerStringResComponent.factory().create(this),
+            DaggerSettingsComponent.factory().create(this)
         )
     }
 
+    val appTheme by lazy { provideSettings().darkTheme }
+    val loggedIn get() = provideRepo().currentUser.value != null
+
     override fun provideRepo() = appComponent.provideRepo()
     override fun provideStringRes() = appComponent.provideStringRes()
-
-    suspend fun loggedIn() = provideRepo().currentUser.first() != null
+    override fun provideSettings() = appComponent.provideSettings()
 }
