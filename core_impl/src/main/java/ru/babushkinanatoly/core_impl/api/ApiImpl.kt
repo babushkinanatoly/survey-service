@@ -6,6 +6,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.babushkinanatoly.core_api.UserAuthData
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class ApiImpl(private val context: Context) : Api {
@@ -98,6 +99,8 @@ class ApiImpl(private val context: Context) : Api {
         } else {
             throw RemoteException(ex, "Non 2XX response: ${ex.code()}")
         }
+    } catch (ex: SocketTimeoutException) {
+        throw RemoteException(ex, "Server not responding")
     }
 }
 
