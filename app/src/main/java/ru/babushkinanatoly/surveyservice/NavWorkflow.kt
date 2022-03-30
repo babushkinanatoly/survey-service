@@ -1,6 +1,8 @@
 package ru.babushkinanatoly.surveyservice
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.*
@@ -79,7 +81,10 @@ fun NavWorkflow(
         NavHost(
             navController,
             startDestination = NavWorkflow.SurveyFeedWorkflow.route,
-            Modifier.padding(innerPadding)
+            Modifier
+                .padding(innerPadding)
+                .consumedWindowInsets(innerPadding)
+                .imePadding()
         ) {
             composable(NavWorkflow.SurveyFeedWorkflow.route) {
                 SurveyFeedWorkflow(fallbackToSurveyFeedRoot)

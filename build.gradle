@@ -9,6 +9,7 @@ buildscript {
                 "-Xopt-in=androidx.compose.runtime.ExperimentalComposeApi",
                 "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
                 "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xopt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
                 "-Xopt-in=com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi",
                 "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
                 "-Xopt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
