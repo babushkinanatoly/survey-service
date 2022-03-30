@@ -37,8 +37,7 @@ internal fun SurveyDetailsScreen(
     val state by surveyDetailsModel.state.collectAsState()
     val context = LocalContext.current
     Surface {
-        Scaffold {
-            AppBar { context.goBack() }
+        Scaffold(topBar = { AppBar { context.goBack() } }) {
             when (state) {
                 is SurveyDetailsState.Data -> {
                     val data = state as SurveyDetailsState.Data
@@ -85,7 +84,7 @@ private fun SurveyDetails(
 ) {
     Column(
         modifier = Modifier
-            .padding(top = 56.dp, start = 8.dp, end = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -142,7 +141,7 @@ private fun LoadingError(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 56.dp, start = 24.dp, end = 24.dp)
+            .padding(start = 24.dp, end = 24.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -191,7 +190,6 @@ private fun SurveyDetailsProgressBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 56.dp)
             .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
             .pointerInput(Unit) {}
     ) {

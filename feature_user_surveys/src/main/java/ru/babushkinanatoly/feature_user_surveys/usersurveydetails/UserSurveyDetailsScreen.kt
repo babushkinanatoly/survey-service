@@ -45,28 +45,37 @@ internal fun UserSurveyDetailsScreen(
 ) {
     val state by userSurveyDetailsModel.state.collectAsState()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     Surface {
-        Scaffold {
-            TopAppBar(
-                title = { Text(stringResource(R.string.survey_details)) },
-                backgroundColor = MaterialTheme.colors.background,
-                navigationIcon = {
-                    IconButton(onClick = { context.goBack() }) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.survey_details)) },
+                    backgroundColor = MaterialTheme.colors.background,
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                focusManager.clearFocus()
+                                context.goBack()
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            enabled = !state.processing,
+                            onClick = userSurveyDetailsModel::onDelete
+                        ) {
+                            Icon(imageVector = Icons.Filled.Delete, stringResource(R.string.delete))
+                        }
                     }
-                },
-                actions = {
-                    IconButton(
-                        enabled = !state.processing,
-                        onClick = userSurveyDetailsModel::onDelete
-                    ) {
-                        Icon(imageVector = Icons.Filled.Delete, stringResource(R.string.delete))
-                    }
-                }
-            )
+                )
+            }
+        ) {
             Column(
                 modifier = Modifier
-                    .padding(top = 56.dp, start = 8.dp, end = 8.dp)
+                    .padding(start = 8.dp, end = 8.dp)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -117,7 +126,6 @@ private fun SurveyUpdatingProgressBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 56.dp)
             .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
             .pointerInput(Unit) {}
     ) {

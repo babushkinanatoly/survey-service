@@ -38,6 +38,7 @@ fun ProfileWorkflow(
     val navController = rememberNavController()
     val context = LocalContext.current
     var backEnabled by rememberSaveable { mutableStateOf(true) }
+    val errorMsg = stringResource(R.string.error_general)
     BackHandler(enabled = backEnabled) { onBack() }
     NavHost(
         navController,
@@ -68,7 +69,7 @@ fun ProfileWorkflow(
         when (it) {
             ProfileWorkflowEvent.LOGGED_OUT -> onLogOut()
             ProfileWorkflowEvent.ERROR -> {
-                Toast.makeText(context, stringResource(R.string.error_general), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
             }
         }
     }

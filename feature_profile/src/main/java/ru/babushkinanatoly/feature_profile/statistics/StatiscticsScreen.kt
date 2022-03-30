@@ -23,23 +23,26 @@ fun StatisticsScreen() {
     val title = stringResource(ProfileWorkflow.Statistics.resId)
     val context = LocalContext.current
     Surface {
-        Scaffold {
-            TopAppBar(
-                title = { Text(title) },
-                backgroundColor = MaterialTheme.colors.background,
-                navigationIcon = {
-                    IconButton(onClick = { context.goBack() }) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(title) },
+                    backgroundColor = MaterialTheme.colors.background,
+                    navigationIcon = {
+                        IconButton(onClick = { context.goBack() }) {
+                            Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+                        }
                     }
-                }
-            )
-        }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                )
+            }
         ) {
-            Text(title)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(title)
+            }
         }
     }
 }

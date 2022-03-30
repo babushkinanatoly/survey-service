@@ -41,6 +41,8 @@ fun AuthScreen(
     val authModel = viewModel<AuthViewModel>().authComponent.provideModel()
     val state by authModel.state.collectAsState()
     val context = LocalContext.current
+    val signUpText = stringResource(R.string.sign_up)
+    val focusManager = LocalFocusManager.current
     Surface {
         CompositionLocalProvider(
             LocalOverScrollConfiguration provides null
@@ -49,54 +51,51 @@ fun AuthScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
+                    .imePadding()
+                    .systemBarsPadding()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val focusManager = LocalFocusManager.current
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                )
                 Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AuthHeader(
-                        text = stringResource(R.string.auth_header)
+                    AuthHeader(text = stringResource(R.string.auth_header))
+                    EmailField(
+                        text = state.email,
+                        error = state.emailError,
+                        isError = state.emailError.isNotBlank(),
+                        onValueChange = authModel::onEmailChange
                     )
-                }
-                EmailField(
-                    text = state.email,
-                    error = state.emailError,
-                    isError = state.emailError.isNotBlank(),
-                    onValueChange = authModel::onEmailChange
-                )
-                PasswordField(
-                    text = state.password,
-                    error = state.passwordError,
-                    isError = state.passwordError.isNotBlank(),
-                    onValueChange = authModel::onPasswordChange
-                )
-                AuthButton(
-                    text = stringResource(R.string.log_in),
-                    enabled = state.loginEnabled,
-                    onClick = {
-                        focusManager.clearFocus()
-                        authModel.onLogIn()
-                    }
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val signUpText = stringResource(R.string.sign_up)
-                    AuthFooter(
-                        text = stringResource(R.string.auth_footer),
-                        clickableText = signUpText,
+                    PasswordField(
+                        text = state.password,
+                        error = state.passwordError,
+                        isError = state.passwordError.isNotBlank(),
+                        onValueChange = authModel::onPasswordChange
+                    )
+                    AuthButton(
+                        text = stringResource(R.string.log_in),
+                        enabled = state.loginEnabled,
                         onClick = {
-                            Toast.makeText(context, signUpText, Toast.LENGTH_SHORT).show()
+                            focusManager.clearFocus()
+                            authModel.onLogIn()
                         }
                     )
                 }
+                AuthFooter(
+                    modifier = Modifier.padding(24.dp),
+                    text = stringResource(R.string.auth_footer),
+                    clickableText = signUpText,
+                    onClick = {
+                        focusManager.clearFocus()
+                        Toast.makeText(context, signUpText, Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
             if (state.loading) {
                 AuthProgressBar()
@@ -122,24 +121,27 @@ private fun AuthHeader(text: String) {
 
 @Composable
 private fun AuthFooter(
+    modifier: Modifier = Modifier,
     text: String,
     clickableText: String,
     onClick: () -> Unit,
 ) {
-    Text(
-        modifier = Modifier.padding(top = 24.dp),
-        fontSize = 14.sp,
-        text = text
-    )
-    Text(
-        modifier = Modifier
-            .padding(bottom = 24.dp)
-            .clickable { onClick() },
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        color = MaterialTheme.colors.primary,
-        text = clickableText
-    )
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            fontSize = 14.sp,
+            text = text
+        )
+        Text(
+            modifier = Modifier.clickable { onClick() },
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            color = MaterialTheme.colors.primary,
+            text = clickableText
+        )
+    }
 }
 
 @Composable
@@ -272,6 +274,7 @@ private fun AuthProgressBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
             .pointerInput(Unit) {}
     ) {

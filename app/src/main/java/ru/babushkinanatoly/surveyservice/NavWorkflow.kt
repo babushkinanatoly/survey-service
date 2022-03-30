@@ -2,6 +2,7 @@ package ru.babushkinanatoly.surveyservice
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,10 +39,9 @@ fun NavWorkflow(
     val fallbackToUserSurveysRoot = remember { MutableEvent<Unit>() }
     val fallbackToProfileRoot = remember { MutableEvent<Unit>() }
     Scaffold(
+        modifier = Modifier.systemBarsPadding(),
         bottomBar = {
-            BottomNavigation(
-                backgroundColor = MaterialTheme.colors.background
-            ) {
+            BottomNavigation(backgroundColor = MaterialTheme.colors.background) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 AppNavigation.bottomNavItems.forEach { screen ->

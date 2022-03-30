@@ -36,16 +36,22 @@ fun NewSurveyScreen() {
     val context = LocalContext.current
     val errorMsg = stringResource(R.string.error_no_connection)
     Surface {
-        Scaffold {
-            TopBar(
-                createEnabled = state.createEnabled,
-                onBack = { context.goBack() },
-                onCreate = model::onCreate
-            )
+        Scaffold(
+            modifier = Modifier
+                .systemBarsPadding()
+                .imePadding(),
+            topBar = {
+                AppBar(
+                    createEnabled = state.createEnabled,
+                    onBack = { context.goBack() },
+                    onCreate = model::onCreate
+                )
+            }
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 60.dp, start = 18.dp, end = 18.dp, bottom = 8.dp)
+                    .padding(top = 4.dp, start = 18.dp, end = 18.dp, bottom = 8.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -95,7 +101,7 @@ private fun NewSurveyProgressBar() {
 }
 
 @Composable
-private fun TopBar(
+private fun AppBar(
     createEnabled: Boolean,
     onBack: () -> Unit,
     onCreate: () -> Unit,

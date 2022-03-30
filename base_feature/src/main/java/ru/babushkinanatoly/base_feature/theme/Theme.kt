@@ -5,6 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -32,14 +34,21 @@ fun SurveyServiceTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
+    val systemUiController = rememberSystemUiController()
+
+    systemUiController.apply {
+        setStatusBarColor(
+            color = if (darkTheme) StatusBarDark else Color.Transparent,
+            darkIcons = !darkTheme,
+        )
+        setNavigationBarColor(
+            color = Color.Transparent,
+            darkIcons = !darkTheme,
+        )
     }
 
     MaterialTheme(
-        colors = colors,
+        colors = if (darkTheme) DarkColorPalette else LightColorPalette,
         typography = Typography,
         shapes = Shapes,
         content = content

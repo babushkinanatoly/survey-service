@@ -48,11 +48,15 @@ internal fun SurveyFeedScreen(
     val coroutineScope = rememberCoroutineScope()
     val surveysState = rememberLazyListState()
     val context = LocalContext.current
-    Scaffold(scaffoldState = scaffoldState) {
-        AppBar(
-            refreshing = state.refreshing,
-            onRefresh = surveyFeedModel::refresh
-        )
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            AppBar(
+                refreshing = state.refreshing,
+                onRefresh = surveyFeedModel::refresh
+            )
+        }
+    ) {
         SurveyFeed(
             surveys = state.surveys,
             listState = surveysState,
@@ -109,9 +113,8 @@ private fun SurveyFeed(
         LoadingError { onRetry() }
     } else {
         LazyColumn(
-            state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 56.dp)
+            state = listState
         ) {
             itemsIndexed(surveys) { index, survey ->
                 SurveyItem(index == 0, survey) { onItem(survey.id) }
@@ -141,7 +144,6 @@ private fun FeedProgressBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 56.dp)
             .background(MaterialTheme.colors.surface.copy(alpha = ContentAlpha.medium))
             .pointerInput(Unit) {}
     ) {
@@ -156,7 +158,7 @@ private fun LoadingError(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 56.dp, start = 24.dp, end = 24.dp)
+            .padding(start = 24.dp, end = 24.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

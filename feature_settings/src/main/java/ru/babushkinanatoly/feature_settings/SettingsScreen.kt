@@ -34,40 +34,40 @@ fun SettingsScreen() {
     val state by model.state.collectAsState()
     val context = LocalContext.current
     Surface {
-        Scaffold {
-            TopAppBar(
-                title = { Text(stringResource(Settings.resId)) },
-                backgroundColor = MaterialTheme.colors.background,
-                navigationIcon = {
-                    IconButton(onClick = { context.goBack() }) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+        Scaffold(
+            modifier = Modifier.systemBarsPadding(),
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(Settings.resId)) },
+                    backgroundColor = MaterialTheme.colors.background,
+                    navigationIcon = {
+                        IconButton(onClick = { context.goBack() }) {
+                            Icon(imageVector = Icons.Filled.ArrowBack, stringResource(R.string.back))
+                        }
                     }
-                }
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 56.dp),
+                )
+            }
         ) {
-            GroupTitle(
-                text = stringResource(R.string.appearance)
-            )
-            SelectableSetting(
-                title = stringResource(R.string.theme),
-                desc = state.darkThemeSettingsDesc,
-                onClick = model::onDarkTheme
-            )
-        }
-        if (state.themeSelecting) {
-            ThemeDialog(
-                title = stringResource(R.string.theme),
-                themeValue = state.darkTheme,
-                onFollowSystem = { model.onDarkThemeChange(null) },
-                onLight = { model.onDarkThemeChange(false) },
-                onDark = { model.onDarkThemeChange(true) },
-                onDismiss = model::onDarkThemeDismiss
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                GroupTitle(
+                    text = stringResource(R.string.appearance)
+                )
+                SelectableSetting(
+                    title = stringResource(R.string.theme),
+                    desc = state.darkThemeSettingsDesc,
+                    onClick = model::onDarkTheme
+                )
+            }
+            if (state.themeSelecting) {
+                ThemeDialog(
+                    title = stringResource(R.string.theme),
+                    darkTheme = state.darkTheme,
+                    onFollowSystem = { model.onDarkThemeChange(null) },
+                    onLight = { model.onDarkThemeChange(false) },
+                    onDark = { model.onDarkThemeChange(true) },
+                    onDismiss = model::onDarkThemeDismiss
+                )
+            }
         }
     }
 }
@@ -113,7 +113,7 @@ private fun SelectableSetting(
 @Composable
 private fun ThemeDialog(
     title: String,
-    themeValue: Boolean?,
+    darkTheme: Boolean?,
     onFollowSystem: () -> Unit,
     onDark: () -> Unit,
     onLight: () -> Unit,
@@ -123,7 +123,7 @@ private fun ThemeDialog(
         Column(
             modifier = Modifier
                 .background(
-                    if (isSystemInDarkTheme() || themeValue == true) {
+                    if (isSystemInDarkTheme() || darkTheme == true) {
                         MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
                     } else {
                         MaterialTheme.colors.surface
@@ -143,17 +143,17 @@ private fun ThemeDialog(
             Column {
                 ThemeVariant(
                     text = stringResource(R.string.follow_system),
-                    selected = themeValue == null,
+                    selected = darkTheme == null,
                     onClick = onFollowSystem
                 )
                 ThemeVariant(
                     text = stringResource(R.string.light),
-                    selected = themeValue == false,
+                    selected = darkTheme == false,
                     onClick = onLight
                 )
                 ThemeVariant(
                     text = stringResource(R.string.dark),
-                    selected = themeValue == true,
+                    selected = darkTheme == true,
                     onClick = onDark
                 )
             }

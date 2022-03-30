@@ -47,6 +47,7 @@ internal class SettingsModelImpl(
         state.update {
             it.copy(
                 darkTheme = value,
+                darkThemeSettingsDesc = value.toDarkThemeSettingsDesc(),
                 themeSelecting = false
             )
         }

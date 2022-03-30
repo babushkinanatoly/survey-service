@@ -39,20 +39,20 @@ internal fun UserSurveysScreen(
     val state by userSurveysModel.state.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    Scaffold {
-        TopAppBar(
-            title = { Text(stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveys.resId)) },
-            backgroundColor = MaterialTheme.colors.background,
-            actions = {
-                IconButton(onClick = onNewSurvey) {
-                    Icon(imageVector = Icons.Filled.Add, stringResource(R.string.new_survey))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(NavWorkflow.UserSurveysWorkflow.UserSurveys.resId)) },
+                backgroundColor = MaterialTheme.colors.background,
+                actions = {
+                    IconButton(onClick = onNewSurvey) {
+                        Icon(imageVector = Icons.Filled.Add, stringResource(R.string.new_survey))
+                    }
                 }
-            }
-        )
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.padding(top = 56.dp)
-        ) {
+            )
+        }
+    ) {
+        LazyColumn(state = listState) {
             itemsIndexed(items = state.userSurveys) { index, userSurvey ->
                 UserSurveyItem(
                     isFirst = index == 0,
