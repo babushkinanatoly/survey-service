@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ fun NewSurveyScreen() {
     val model = viewModel<NewSurveyViewModel>().newSurveyComponent.provideModel()
     val state by model.state.collectAsState()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val errorMsg = stringResource(R.string.error_no_connection)
     Surface {
         Scaffold(
@@ -43,8 +45,14 @@ fun NewSurveyScreen() {
             topBar = {
                 AppBar(
                     createEnabled = state.createEnabled,
-                    onBack = { context.goBack() },
-                    onCreate = model::onCreate
+                    onBack = {
+                        focusManager.clearFocus()
+                        context.goBack()
+                    },
+                    onCreate = {
+                        focusManager.clearFocus()
+                        model.onCreate()
+                    }
                 )
             }
         ) {
