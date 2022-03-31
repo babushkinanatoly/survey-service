@@ -2,4 +2,5 @@
 <resources>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="user_surveys_empty_view">You don\'t have any surveys yet, try creating a new one</string>
 </resources>
