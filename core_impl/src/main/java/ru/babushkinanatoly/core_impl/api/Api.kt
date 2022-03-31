@@ -1,8 +1,10 @@
 package ru.babushkinanatoly.core_impl.api
 
 import ru.babushkinanatoly.core_api.UserLogInData
+import ru.babushkinanatoly.core_api.UserSignUpData
 
 interface Api {
+    suspend fun signUp(userSignUpData: UserSignUpData): SignUpResponse
     suspend fun logIn(logInData: UserLogInData): LogInResponse
     suspend fun logOut()
 
@@ -30,6 +32,11 @@ sealed class LogInResponse {
     ) : LogInResponse()
 
     object InvalidCredentials : LogInResponse()
+}
+
+sealed class SignUpResponse {
+    data class Success(val user: RemoteUser) : SignUpResponse()
+    object UserAlreadyExists : SignUpResponse()
 }
 
 data class RemoteUser(

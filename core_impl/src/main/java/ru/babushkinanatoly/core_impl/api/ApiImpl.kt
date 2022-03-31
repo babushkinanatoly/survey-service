@@ -6,6 +6,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.babushkinanatoly.core_api.UserLogInData
+import ru.babushkinanatoly.core_api.UserSignUpData
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -44,6 +45,21 @@ class ApiImpl(private val context: Context) : Api {
             context.getSharedPreferences("user", Context.MODE_PRIVATE).edit()
                 .putString("token", value).apply()
         }
+
+    override suspend fun signUp(userSignUpData: UserSignUpData): SignUpResponse = wrapErrors {
+        try {
+            surveyService.createUser(
+                CreateUserRequestData(
+                    password = userSignUpData.password,
+                    data = userSignUpData.toUserData()
+                )
+            ).apply {
+                this@ApiImpl.token = token
+            }.toSignUpResponse()
+        } catch (ex: HttpException) {
+            if (ex.code() == 500) SignUpResponse.UserAlreadyExists else throw RemoteException(ex)
+        }
+    }
 
     override suspend fun logIn(logInData: UserLogInData): LogInResponse = wrapErrors {
         try {
@@ -104,6 +120,11 @@ class ApiImpl(private val context: Context) : Api {
     }
 }
 
+private fun UserResponseData.toSignUpResponse(): SignUpResponse {
+    val remoteUser = profileData.userData.toRemoteUser()
+    return SignUpResponse.Success(remoteUser)
+}
+
 private fun UserResponseData.toLogInResponse(): LogInResponse {
     val remoteUser = profileData.userData.toRemoteUser()
     val remoteUserVotes = profileData.userVotesData.toRemoteUserVotes()
@@ -111,6 +132,7 @@ private fun UserResponseData.toLogInResponse(): LogInResponse {
     return LogInResponse.Success(remoteUser, remoteUserVotes, remoteUserSurveys)
 }
 
+private fun UserSignUpData.toUserData() = UserData(name, email, age, sex, country)
 private fun UserData.toRemoteUser() = RemoteUser(email, name, age, sex, countryCode)
 private fun UserVotesData.toRemoteUserVotes() = RemoteUserVotes(upvotedSurveyIds, downvotedSurveyIds)
 

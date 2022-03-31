@@ -24,6 +24,10 @@ enum class LogInResult {
     OK, INVALID_CREDENTIALS, CONNECTION_ERROR
 }
 
+enum class SignUpResult {
+    OK, USER_ALREADY_EXISTS, CONNECTION_ERROR
+}
+
 sealed class SurveyResult {
     data class Success(val survey: Survey) : SurveyResult()
     data class Error(val msg: String) : SurveyResult()

@@ -27,6 +27,18 @@ class RepoImpl(
         .map { it?.toUser() }
         .stateIn(scope, SharingStarted.Eagerly, userValue)
 
+    override suspend fun signUp(userSignUpData: UserSignUpData): SignUpResult = try {
+        when (val response = api.signUp(userSignUpData)) {
+            is SignUpResponse.Success -> {
+                db.insertUser(response.user.toUserEntity())
+                SignUpResult.OK
+            }
+            SignUpResponse.UserAlreadyExists -> SignUpResult.USER_ALREADY_EXISTS
+        }
+    } catch (ex: RemoteException) {
+        SignUpResult.CONNECTION_ERROR
+    }
+
     override suspend fun logIn(userLogInData: UserLogInData): LogInResult = try {
         when (val response = api.logIn(userLogInData)) {
             is LogInResponse.Success -> {

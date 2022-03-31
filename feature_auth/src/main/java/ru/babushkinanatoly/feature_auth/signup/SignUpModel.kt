@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.*
 import ru.babushkinanatoly.feature_auth.R
 
@@ -86,14 +87,19 @@ internal class SignUpModelImpl(
 
     override fun onSignUp() {
         state.update { it.copy(loading = true) }
-//        scope.launch {
-//            if (repo.signUn(signUpData)) {
-//                event.dispatch(SignUpEvent.Success)
-//            } else {
-//                event.dispatch(SignUpEvent.Error(stringRes[R.string.error_no_connection]))
-//                state.update { it.copy(loading = false) }
-//            }
-//        }
+        scope.launch {
+            val signUpEvent = when (repo.signUp(signUpData)) {
+                SignUpResult.OK -> SignUpEvent.Success
+                SignUpResult.USER_ALREADY_EXISTS ->
+                    SignUpEvent.Error(stringRes[R.string.error_user_already_exists])
+                SignUpResult.CONNECTION_ERROR ->
+                    SignUpEvent.Error(stringRes[R.string.error_no_connection])
+            }
+            event.dispatch(signUpEvent)
+            if (signUpEvent !is SignUpEvent.Success) {
+                state.update { it.copy(loading = false) }
+            }
+        }
     }
 
     override fun onAge() {

@@ -10,6 +10,9 @@ interface SurveyService {
         private const val REQUIRE_AUTH = "$AUTH_HEADER: true"
     }
 
+    @POST("signup")
+    suspend fun createUser(@Body data: CreateUserRequestData): UserResponseData
+
     @POST("signin")
     suspend fun getUser(@Body data: GetUserRequestData): UserResponseData
 
@@ -105,6 +108,11 @@ data class SurveyMainData(
     val title: String,
     @field:Json(name = "desc")
     val desc: String,
+)
+
+data class CreateUserRequestData(
+    val password: String,
+    val data: UserData,
 )
 
 data class GetUserRequestData(
