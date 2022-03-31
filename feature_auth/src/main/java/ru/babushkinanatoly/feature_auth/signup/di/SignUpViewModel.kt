@@ -1,4 +1,4 @@
-package ru.babushkinanatoly.feature_auth.di
+package ru.babushkinanatoly.feature_auth.signup.di
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
 
-internal class AuthViewModel(app: Application) : AndroidViewModel(app) {
+internal class SignUpViewModel(app: Application) : AndroidViewModel(app) {
 
-    val authComponent = DaggerAuthComponent.factory()
+    val signUpComponent = DaggerSignUpComponent.factory()
         .create(viewModelScope, (app as StringResProvider), (app as RepoProvider))
 }

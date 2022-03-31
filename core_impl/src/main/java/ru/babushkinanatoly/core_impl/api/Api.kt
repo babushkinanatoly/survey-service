@@ -1,9 +1,9 @@
 package ru.babushkinanatoly.core_impl.api
 
-import ru.babushkinanatoly.core_api.UserAuthData
+import ru.babushkinanatoly.core_api.UserLogInData
 
 interface Api {
-    suspend fun logIn(authData: UserAuthData): LogInResponse
+    suspend fun logIn(logInData: UserLogInData): LogInResponse
     suspend fun logOut()
 
     suspend fun createSurvey(title: String, desc: String): RemoteSurvey

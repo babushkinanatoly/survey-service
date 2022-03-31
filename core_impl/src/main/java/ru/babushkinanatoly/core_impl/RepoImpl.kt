@@ -27,8 +27,8 @@ class RepoImpl(
         .map { it?.toUser() }
         .stateIn(scope, SharingStarted.Eagerly, userValue)
 
-    override suspend fun logIn(userAuthData: UserAuthData): LogInResult = try {
-        when (val response = api.logIn(userAuthData)) {
+    override suspend fun logIn(userLogInData: UserLogInData): LogInResult = try {
+        when (val response = api.logIn(userLogInData)) {
             is LogInResponse.Success -> {
                 db.insertUserSurveys(response.userSurveys.map { it.toUserSurveyEntity() })
                 db.insertUserVotes(

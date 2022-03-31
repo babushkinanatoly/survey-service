@@ -14,7 +14,9 @@ open class AppNavigation(val route: String, @StringRes val resId: Int) {
     }
 
     private object ScreenRoutes {
-        const val auth = "auth"
+        const val authWorkflow = "authworkflow"
+        const val logIn = "login"
+        const val signUp = "signup"
         const val newSurvey = "newsurvey"
         const val settings = "settings"
         const val navWorkflow = "navworkflow"
@@ -30,7 +32,11 @@ open class AppNavigation(val route: String, @StringRes val resId: Int) {
     }
 
     sealed class Screen(screenRoute: String, screenResId: Int) : AppNavigation(screenRoute, screenResId) {
-        object Auth : Screen(ScreenRoutes.auth, R.string.auth)
+        object AuthWorkflow : Screen(ScreenRoutes.authWorkflow, R.string.auth) {
+            object LogIn : Screen(ScreenRoutes.logIn, R.string.log_in)
+            object SignUp : Screen(ScreenRoutes.signUp, R.string.sign_up)
+        }
+
         object NewSurvey : Screen(ScreenRoutes.newSurvey, R.string.new_survey)
         object Settings : Screen(ScreenRoutes.settings, R.string.settings)
 

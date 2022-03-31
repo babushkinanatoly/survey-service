@@ -6,9 +6,18 @@ data class User(
     val name: String,
 )
 
-data class UserAuthData(
+data class UserLogInData(
     val email: String,
     val password: String,
+)
+
+data class UserSignUpData(
+    val name: String,
+    val email: String,
+    val password: String,
+    val age: Int,
+    val sex: String,
+    val country: String,
 )
 
 enum class LogInResult {

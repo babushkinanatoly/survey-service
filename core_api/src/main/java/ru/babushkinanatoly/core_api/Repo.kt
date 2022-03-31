@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface Repo {
     val currentUser: StateFlow<User?>
 
-    suspend fun logIn(userAuthData: UserAuthData): LogInResult
+    suspend fun logIn(userLogInData: UserLogInData): LogInResult
     suspend fun logOut(): Boolean
 
     suspend fun addSurvey(title: String, desc: String): Boolean

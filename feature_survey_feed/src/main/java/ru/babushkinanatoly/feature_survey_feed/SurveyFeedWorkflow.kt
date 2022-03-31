@@ -71,7 +71,7 @@ fun SurveyFeedWorkflow(
 )
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-fun SurveyFeedWorkflowPreview() {
+private fun SurveyFeedWorkflowPreview() {
     SurveyServiceTheme {
         Scaffold {
             SurveyFeedWorkflow(MutableEvent())

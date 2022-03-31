@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.*
-import ru.babushkinanatoly.feature_auth.AuthScreen
+import ru.babushkinanatoly.feature_auth.AuthWorkflow
 import ru.babushkinanatoly.feature_new_survey.NewSurveyScreen
 import ru.babushkinanatoly.feature_settings.SettingsScreen
 
@@ -14,12 +14,12 @@ fun SurveyServiceApp(loggedIn: Boolean) {
     val navController = rememberNavController()
     NavHost(
         navController,
-        startDestination = if (!loggedIn) Auth.route else NavWorkflow.route,
+        startDestination = if (!loggedIn) AuthWorkflow.route else NavWorkflow.route,
     ) {
-        composable(Auth.route) {
-            AuthScreen {
+        composable(AuthWorkflow.route) {
+            AuthWorkflow {
                 navController.navigate(NavWorkflow.route) {
-                    popUpTo(Auth.route) {
+                    popUpTo(AuthWorkflow.route) {
                         inclusive = true
                     }
                 }
@@ -30,7 +30,7 @@ fun SurveyServiceApp(loggedIn: Boolean) {
                 onNewSurvey = { navController.navigate(NewSurvey.route) },
                 onSettings = { navController.navigate(Settings.route) },
                 onLogOut = {
-                    navController.navigate(Auth.route) {
+                    navController.navigate(AuthWorkflow.route) {
                         popUpTo(NavWorkflow.route) {
                             inclusive = true
                         }

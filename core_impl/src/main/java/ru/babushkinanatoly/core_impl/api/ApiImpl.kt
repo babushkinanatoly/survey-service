@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import ru.babushkinanatoly.core_api.UserAuthData
+import ru.babushkinanatoly.core_api.UserLogInData
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -45,9 +45,9 @@ class ApiImpl(private val context: Context) : Api {
                 .putString("token", value).apply()
         }
 
-    override suspend fun logIn(authData: UserAuthData): LogInResponse = wrapErrors {
+    override suspend fun logIn(logInData: UserLogInData): LogInResponse = wrapErrors {
         try {
-            surveyService.getUser(GetUserRequestData(authData.email, authData.password)).apply {
+            surveyService.getUser(GetUserRequestData(logInData.email, logInData.password)).apply {
                 this@ApiImpl.token = token
             }.toLogInResponse()
         } catch (ex: HttpException) {

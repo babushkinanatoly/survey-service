@@ -1,23 +1,23 @@
-package ru.babushkinanatoly.feature_auth.di
+package ru.babushkinanatoly.feature_auth.login.di
 
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.CoroutineScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
-import ru.babushkinanatoly.feature_auth.AuthModel
+import ru.babushkinanatoly.feature_auth.login.LogInModel
 
-@AuthScope
+@LogInScope
 @Component(
     dependencies = [
         RepoProvider::class,
         StringResProvider::class
     ],
-    modules = [AuthModule::class]
+    modules = [LogInModule::class]
 )
-internal interface AuthComponent {
+internal interface LogInComponent {
 
-    fun provideModel(): AuthModel
+    fun provideModel(): LogInModel
 
     @Component.Factory
     interface Factory {
@@ -26,6 +26,6 @@ internal interface AuthComponent {
             @BindsInstance scope: CoroutineScope,
             stringResProvider: StringResProvider,
             repoProvider: RepoProvider,
-        ): AuthComponent
+        ): LogInComponent
     }
 }

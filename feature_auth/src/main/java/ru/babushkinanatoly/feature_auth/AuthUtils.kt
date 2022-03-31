@@ -1,117 +1,34 @@
 package ru.babushkinanatoly.feature_auth
 
-import android.content.res.Configuration
-import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
-import ru.babushkinanatoly.base_feature.util.consumeAsEffect
-import ru.babushkinanatoly.feature_auth.di.AuthViewModel
 
 @Composable
-fun AuthScreen(
-    onLogInSuccess: () -> Unit,
-) {
-    val authModel = viewModel<AuthViewModel>().authComponent.provideModel()
-    val state by authModel.state.collectAsState()
-    val context = LocalContext.current
-    val signUpText = stringResource(R.string.sign_up)
-    val focusManager = LocalFocusManager.current
-    Surface {
-        CompositionLocalProvider(
-            LocalOverScrollConfiguration provides null
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp)
-                    .imePadding()
-                    .systemBarsPadding()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AuthHeader(text = stringResource(R.string.auth_header))
-                    EmailField(
-                        text = state.email,
-                        error = state.emailError,
-                        isError = state.emailError.isNotBlank(),
-                        onValueChange = authModel::onEmailChange
-                    )
-                    PasswordField(
-                        text = state.password,
-                        error = state.passwordError,
-                        isError = state.passwordError.isNotBlank(),
-                        onValueChange = authModel::onPasswordChange
-                    )
-                    AuthButton(
-                        text = stringResource(R.string.log_in),
-                        enabled = state.loginEnabled,
-                        onClick = {
-                            focusManager.clearFocus()
-                            authModel.onLogIn()
-                        }
-                    )
-                }
-                AuthFooter(
-                    modifier = Modifier.padding(24.dp),
-                    text = stringResource(R.string.auth_footer),
-                    clickableText = signUpText,
-                    onClick = {
-                        focusManager.clearFocus()
-                        Toast.makeText(context, signUpText, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            }
-            if (state.loading) {
-                AuthProgressBar()
-            }
-        }
-    }
-    authModel.event.consumeAsEffect {
-        when (it) {
-            is LogInEvent.Error -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
-            LogInEvent.Success -> onLogInSuccess()
-        }
-    }
-}
-
-@Composable
-private fun AuthHeader(text: String) {
+fun AuthHeader(text: String) {
     Text(
         modifier = Modifier.padding(vertical = 24.dp),
         fontWeight = FontWeight.Bold,
@@ -120,7 +37,7 @@ private fun AuthHeader(text: String) {
 }
 
 @Composable
-private fun AuthFooter(
+fun AuthFooter(
     modifier: Modifier = Modifier,
     text: String,
     clickableText: String,
@@ -145,8 +62,44 @@ private fun AuthFooter(
 }
 
 @Composable
-private fun EmailField(
+fun EmailField(
     text: String,
+    error: String,
+    isError: Boolean,
+    onValueChange: (String) -> Unit,
+) {
+    CommonField(
+        text = text,
+        leadingImage = Icons.Default.Email,
+        placeholder = stringResource(R.string.email),
+        error = error,
+        isError = isError,
+        onValueChange = onValueChange
+    )
+}
+
+@Composable
+fun NameField(
+    text: String,
+    error: String,
+    isError: Boolean,
+    onValueChange: (String) -> Unit,
+) {
+    CommonField(
+        text = text,
+        leadingImage = Icons.Default.Person,
+        placeholder = stringResource(R.string.name),
+        error = error,
+        isError = isError,
+        onValueChange = onValueChange
+    )
+}
+
+@Composable
+private fun CommonField(
+    text: String,
+    leadingImage: ImageVector,
+    placeholder: String,
     error: String,
     isError: Boolean,
     onValueChange: (String) -> Unit,
@@ -160,14 +113,14 @@ private fun EmailField(
             value = text,
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Email,
+                    imageVector = leadingImage,
                     contentDescription = null,
                     tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
                 )
             },
             isError = isError,
             onValueChange = { onValueChange(it) },
-            placeholder = { Text(stringResource(R.string.email)) },
+            placeholder = { Text(placeholder) },
             singleLine = true
         )
         ErrorText(
@@ -178,7 +131,7 @@ private fun EmailField(
 }
 
 @Composable
-private fun PasswordField(
+fun PasswordField(
     text: String,
     error: String,
     isError: Boolean,
@@ -251,7 +204,7 @@ private fun ErrorText(
 }
 
 @Composable
-private fun AuthButton(
+fun AuthButton(
     text: String,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -269,7 +222,7 @@ private fun AuthButton(
 }
 
 @Composable
-private fun AuthProgressBar() {
+fun AuthProgressBar() {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -282,18 +235,41 @@ private fun AuthProgressBar() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    widthDp = 320,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "AuthScreenPreviewDark"
-)
-@Preview(showBackground = true, widthDp = 320)
 @Composable
-private fun AuthScreenPreview() {
-    SurveyServiceTheme {
-        Scaffold {
-            AuthScreen {}
+fun AuthDropDownMenu(
+    modifier: Modifier = Modifier,
+    expanded: Boolean,
+    selectedItem: String,
+    label: String,
+    items: List<String>,
+    onMenu: () -> Unit,
+    onItem: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ExposedDropdownMenuBox(
+        modifier = modifier,
+        expanded = expanded,
+        onExpandedChange = { onMenu() }
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedItem,
+            singleLine = true,
+            onValueChange = {},
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            modifier = Modifier.requiredHeightIn(max = 160.dp),
+            expanded = expanded,
+            onDismissRequest = onDismiss
+        ) {
+            items.forEach {
+                DropdownMenuItem(onClick = { onItem(it) }) {
+                    Text(it)
+                }
+            }
         }
     }
 }
