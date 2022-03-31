@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.surveyservice
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,8 +11,9 @@ import ru.babushkinanatoly.feature_new_survey.NewSurveyScreen
 import ru.babushkinanatoly.feature_settings.SettingsScreen
 
 @Composable
-fun SurveyServiceApp(loggedIn: Boolean) {
+fun SurveyServiceApp() {
     val navController = rememberNavController()
+    val loggedIn = (LocalContext.current.applicationContext as App).loggedIn
     NavHost(
         navController,
         startDestination = if (!loggedIn) AuthWorkflow.route else NavWorkflow.route,

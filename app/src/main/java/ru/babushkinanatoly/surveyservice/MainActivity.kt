@@ -17,10 +17,9 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val darkTheme by (applicationContext as App).darkTheme.collectAsState()
-            val loggedIn = (applicationContext as App).loggedIn
             SurveyServiceTheme(darkTheme = darkTheme ?: isSystemInDarkTheme()) {
                 Surface {
-                    SurveyServiceApp(loggedIn)
+                    SurveyServiceApp()
                 }
             }
         }
