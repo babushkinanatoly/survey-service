@@ -31,19 +31,16 @@ internal enum class NewSurveyEvent {
 
 internal class NewSurveyModelImpl(
     private val scope: CoroutineScope,
-    stringRes: StringRes,
+    private val stringRes: StringRes,
     private val repo: Repo,
 ) : NewSurveyModel {
-
-    private val titleError = stringRes[R.string.error_title_format]
-    private val descError = stringRes[R.string.error_desc_format]
 
     override val state = MutableStateFlow(
         NewSurveyState(
             title = "",
             desc = "",
-            titleError = titleError,
-            descError = descError,
+            titleError = "",
+            descError = "",
             creating = false
         )
     )
@@ -54,7 +51,7 @@ internal class NewSurveyModelImpl(
         state.update {
             it.copy(
                 title = title,
-                titleError = if (isTitleValid(title)) "" else titleError
+                titleError = if (isTitleValid(title)) "" else stringRes[R.string.error_title_format]
             )
         }
     }
@@ -63,7 +60,7 @@ internal class NewSurveyModelImpl(
         state.update {
             it.copy(
                 desc = desc,
-                descError = if (isDescValid(desc)) "" else descError
+                descError = if (isDescValid(desc)) "" else stringRes[R.string.error_desc_format]
             )
         }
     }
