@@ -2,7 +2,7 @@ package ru.babushkinanatoly.core_impl
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,46 +12,51 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
 import ru.babushkinanatoly.core_api.Settings
-import ru.babushkinanatoly.core_impl.SettingsImpl.PreferencesKeys.DARK_THEME
+import ru.babushkinanatoly.core_api.Settings.AppTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme.*
+import ru.babushkinanatoly.core_impl.SettingsImpl.PreferencesKeys.APP_THEME
 
 class SettingsImpl(private val context: Context) : Settings {
 
     companion object {
         private const val USER_PREFS_NAME = "user"
+        private const val THEME_DARK = "dark"
+        private const val THEME_LIGHT = "light"
+        private const val THEME_FOLLOW_SYSTEM = "follow_system"
     }
 
     private object PreferencesKeys {
-        val DARK_THEME = intPreferencesKey("prefs.dark_theme")
+        val APP_THEME = stringPreferencesKey("prefs.app_theme")
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
     private val Context.dataStore by preferencesDataStore(USER_PREFS_NAME)
 
-    private val darkThemeValue
+    private val appThemeValue
         get() = runBlocking {
             context.dataStore.data.first()
-        }[DARK_THEME]?.toDarkThemeValue() ?: false
+        }[APP_THEME]?.toAppThemeValue() ?: FOLLOW_SYSTEM
 
-    override val darkTheme = context.dataStore.data
-        .map { it[DARK_THEME]?.toDarkThemeValue() ?: false }
-        .stateIn(scope, SharingStarted.WhileSubscribed(), darkThemeValue)
+    override val appTheme = context.dataStore.data
+        .map { it[APP_THEME]?.toAppThemeValue() ?: FOLLOW_SYSTEM }
+        .stateIn(scope, SharingStarted.WhileSubscribed(), appThemeValue)
 
-    override suspend fun setDarkTheme(value: Boolean?) {
+    override suspend fun setAppTheme(appTheme: AppTheme) {
         context.dataStore.edit {
-            it[DARK_THEME] = value.toDarkThemePref()
+            it[APP_THEME] = appTheme.toAppThemePref()
         }
     }
-}
 
-private fun Boolean?.toDarkThemePref() = when (this) {
-    true -> 1
-    false -> -1
-    null -> 0
-}
+    private fun AppTheme.toAppThemePref() = when (this) {
+        DARK -> THEME_DARK
+        LIGHT -> THEME_LIGHT
+        FOLLOW_SYSTEM -> THEME_FOLLOW_SYSTEM
+    }
 
-private fun Int.toDarkThemeValue() = when (this) {
-    1 -> true
-    -1 -> false
-    0 -> null
-    else -> error("Unexpected dark theme pref: $this")
+    private fun String.toAppThemeValue() = when (this) {
+        THEME_DARK -> DARK
+        THEME_LIGHT -> LIGHT
+        THEME_FOLLOW_SYSTEM -> FOLLOW_SYSTEM
+        else -> error("Unexpected app theme pref: $this")
+    }
 }

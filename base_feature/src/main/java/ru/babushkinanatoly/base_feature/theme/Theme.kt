@@ -1,12 +1,14 @@
 package ru.babushkinanatoly.base_feature.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import ru.babushkinanatoly.base_feature.util.isDarkTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme.FOLLOW_SYSTEM
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -31,24 +33,24 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun SurveyServiceTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppTheme = FOLLOW_SYSTEM,
     content: @Composable () -> Unit,
 ) {
+    val isDarkTheme = appTheme.isDarkTheme()
     val systemUiController = rememberSystemUiController()
 
     systemUiController.apply {
         setStatusBarColor(
-            color = if (darkTheme) StatusBarDark else Color.Transparent,
-            darkIcons = !darkTheme,
+            color = if (isDarkTheme) StatusBarDark else Color.Transparent,
+            darkIcons = !isDarkTheme,
         )
         setNavigationBarColor(
             color = Color.Transparent,
-            darkIcons = !darkTheme,
+            darkIcons = !isDarkTheme,
         )
     }
-
     MaterialTheme(
-        colors = if (darkTheme) DarkColorPalette else LightColorPalette,
+        colors = if (isDarkTheme) DarkColorPalette else LightColorPalette,
         typography = Typography,
         shapes = Shapes,
         content = content

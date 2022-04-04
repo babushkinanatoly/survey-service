@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
 import ru.babushkinanatoly.core_api.Event
+import ru.babushkinanatoly.core_api.Settings.AppTheme
 
 fun NavBackStackEntry.requireString(key: String) =
     requireNotNull(arguments).getString(key) ?: error("No value found for this key: $key")
@@ -32,3 +34,8 @@ fun Context.findActivity(): Activity? {
     }
     return null
 }
+
+@Composable
+fun AppTheme.isDarkTheme() = if (this == AppTheme.FOLLOW_SYSTEM) {
+    isSystemInDarkTheme()
+} else this == AppTheme.DARK

@@ -15,7 +15,7 @@ class App : Application(), RepoProvider, StringResProvider, SettingsProvider {
         )
     }
 
-    val darkTheme by lazy { provideSettings().darkTheme }
+    val appTheme by lazy { provideSettings().appTheme }
     val loggedIn get() = provideRepo().currentUser.value != null
 
     override fun provideRepo() = appComponent.provideRepo()

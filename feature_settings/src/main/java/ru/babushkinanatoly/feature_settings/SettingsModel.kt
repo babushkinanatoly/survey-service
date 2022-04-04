@@ -6,18 +6,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.Settings
+import ru.babushkinanatoly.core_api.Settings.AppTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme.*
 import ru.babushkinanatoly.core_api.StringRes
 
 internal interface SettingsModel {
     val state: StateFlow<SettingsState>
-    fun onDarkTheme()
-    fun onDarkThemeDismiss()
-    fun onDarkThemeChange(value: Boolean?)
+    fun onAppTheme()
+    fun onAppThemeDismiss()
+    fun onAppThemeChange(appTheme: AppTheme)
 }
 
 internal data class SettingsState(
-    val darkTheme: Boolean?,
-    val darkThemeSettingsDesc: String,
+    val appTheme: AppTheme,
+    val appThemeSettingsDesc: String,
     val themeSelecting: Boolean,
 )
 
@@ -29,36 +31,43 @@ internal class SettingsModelImpl(
 
     override val state = MutableStateFlow(
         SettingsState(
-            darkTheme = settings.darkTheme.value,
-            darkThemeSettingsDesc = settings.darkTheme.value.toDarkThemeSettingsDesc(),
+            appTheme = settings.appTheme.value,
+            appThemeSettingsDesc = settings.appTheme.value.toAppThemeSettingsDesc(),
             themeSelecting = false
         )
     )
 
-    override fun onDarkTheme() {
+    init {
+        scope.launch {
+            settings.appTheme.collect { theme ->
+                state.update {
+                    it.copy(
+                        appTheme = theme,
+                        appThemeSettingsDesc = theme.toAppThemeSettingsDesc(),
+                        themeSelecting = false
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onAppTheme() {
         state.update { it.copy(themeSelecting = true) }
     }
 
-    override fun onDarkThemeDismiss() {
+    override fun onAppThemeDismiss() {
         state.update { it.copy(themeSelecting = false) }
     }
 
-    override fun onDarkThemeChange(value: Boolean?) {
-        state.update {
-            it.copy(
-                darkTheme = value,
-                darkThemeSettingsDesc = value.toDarkThemeSettingsDesc(),
-                themeSelecting = false
-            )
-        }
+    override fun onAppThemeChange(appTheme: AppTheme) {
         scope.launch {
-            settings.setDarkTheme(value)
+            settings.setAppTheme(appTheme)
         }
     }
 
-    private fun Boolean?.toDarkThemeSettingsDesc() = when (this) {
-        true -> stringRes[R.string.dark]
-        false -> stringRes[R.string.light]
-        null -> stringRes[R.string.follow_system]
+    private fun AppTheme.toAppThemeSettingsDesc() = when (this) {
+        DARK -> stringRes[R.string.dark]
+        LIGHT -> stringRes[R.string.light]
+        FOLLOW_SYSTEM -> stringRes[R.string.follow_system]
     }
 }

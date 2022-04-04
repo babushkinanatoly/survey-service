@@ -3,7 +3,6 @@ package ru.babushkinanatoly.feature_settings
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -26,6 +25,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.Settings
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.goBack
+import ru.babushkinanatoly.base_feature.util.isDarkTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme
+import ru.babushkinanatoly.core_api.Settings.AppTheme.*
 import ru.babushkinanatoly.feature_settings.di.SettingsViewModel
 
 @Composable
@@ -54,18 +56,18 @@ fun SettingsScreen() {
                 )
                 SelectableSetting(
                     title = stringResource(R.string.theme),
-                    desc = state.darkThemeSettingsDesc,
-                    onClick = model::onDarkTheme
+                    desc = state.appThemeSettingsDesc,
+                    onClick = model::onAppTheme
                 )
             }
             if (state.themeSelecting) {
                 ThemeDialog(
                     title = stringResource(R.string.theme),
-                    darkTheme = state.darkTheme,
-                    onFollowSystem = { model.onDarkThemeChange(null) },
-                    onLight = { model.onDarkThemeChange(false) },
-                    onDark = { model.onDarkThemeChange(true) },
-                    onDismiss = model::onDarkThemeDismiss
+                    appTheme = state.appTheme,
+                    onFollowSystem = { model.onAppThemeChange(FOLLOW_SYSTEM) },
+                    onLight = { model.onAppThemeChange(LIGHT) },
+                    onDark = { model.onAppThemeChange(DARK) },
+                    onDismiss = model::onAppThemeDismiss
                 )
             }
         }
@@ -113,7 +115,7 @@ private fun SelectableSetting(
 @Composable
 private fun ThemeDialog(
     title: String,
-    darkTheme: Boolean?,
+    appTheme: AppTheme,
     onFollowSystem: () -> Unit,
     onDark: () -> Unit,
     onLight: () -> Unit,
@@ -123,7 +125,7 @@ private fun ThemeDialog(
         Column(
             modifier = Modifier
                 .background(
-                    if (isSystemInDarkTheme() || darkTheme == true) {
+                    if (appTheme.isDarkTheme()) {
                         MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
                     } else {
                         MaterialTheme.colors.surface
@@ -143,17 +145,17 @@ private fun ThemeDialog(
             Column {
                 ThemeVariant(
                     text = stringResource(R.string.follow_system),
-                    selected = darkTheme == null,
+                    selected = appTheme == FOLLOW_SYSTEM,
                     onClick = onFollowSystem
                 )
                 ThemeVariant(
                     text = stringResource(R.string.light),
-                    selected = darkTheme == false,
+                    selected = appTheme == LIGHT,
                     onClick = onLight
                 )
                 ThemeVariant(
                     text = stringResource(R.string.dark),
-                    selected = darkTheme == true,
+                    selected = appTheme == DARK,
                     onClick = onDark
                 )
             }
