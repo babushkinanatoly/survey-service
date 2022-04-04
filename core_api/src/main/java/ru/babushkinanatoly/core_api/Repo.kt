@@ -23,6 +23,7 @@ interface Repo {
 
     fun getUserSurveys(): Flow<List<UserSurvey>>
     fun getUserSurvey(id: String): Flow<UserSurvey?>
+    fun getUserVotes(): Flow<List<Boolean>>
 
     suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult
     suspend fun updateUserSurveyDesc(id: String, desc: String): SurveyResult

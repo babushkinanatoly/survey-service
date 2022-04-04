@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="surveys_created">Surveys created</string>
+    <string name="upvotes_overall">Upvotes overall</string>
+    <string name="downvotes_overall">Downvotes overall</string>
+</resources>

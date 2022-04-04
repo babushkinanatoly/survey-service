@@ -2,6 +2,7 @@ package ru.babushkinanatoly.core_impl
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.MutableEvent
@@ -35,7 +36,7 @@ class PagedFeedImpl(
         // TODO: Catch all exceptions wrapped in api
         scope.launch {
             try {
-                val userVotes = db.getUserVotes()
+                val userVotes = db.getUserVotes().first()
                 val surveys = api.getSurveys(surveysCount).map { remoteSurvey ->
                     remoteSurvey.toSurvey(
                         userVotes.find { it.surveyRemoteId == remoteSurvey.id }?.value
@@ -65,7 +66,7 @@ class PagedFeedImpl(
                 // TODO: Catch all exceptions wrapped in api
                 scope.launch {
                     try {
-                        val userVotes = db.getUserVotes()
+                        val userVotes = db.getUserVotes().first()
                         val currentSurveys = (status.value as PagedFeed.Status.LoadingMore).surveys
                         val newSurveys = api.getSurveys(count, startAfter).map { remoteSurvey ->
                             remoteSurvey.toSurvey(

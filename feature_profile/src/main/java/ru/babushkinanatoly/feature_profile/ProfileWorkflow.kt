@@ -22,6 +22,7 @@ import ru.babushkinanatoly.core_api.MutableEvent
 import ru.babushkinanatoly.feature_profile.profile.ProfileScreen
 import ru.babushkinanatoly.feature_profile.profile.di.ProfileViewModel
 import ru.babushkinanatoly.feature_profile.statistics.StatisticsScreen
+import ru.babushkinanatoly.feature_profile.statistics.di.StatisticsViewModel
 
 @Composable
 fun ProfileWorkflow(
@@ -48,7 +49,7 @@ fun ProfileWorkflow(
         }
         composable(ProfileWorkflow.Statistics.route) {
             backEnabled = false
-            StatisticsScreen()
+            StatisticsScreen(viewModel<StatisticsViewModel>().statisticsComponent.provideModel())
         }
     }
     fallbackToRoot.consumeAsEffect {

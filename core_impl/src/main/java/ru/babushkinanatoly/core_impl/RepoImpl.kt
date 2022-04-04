@@ -76,7 +76,7 @@ class RepoImpl(
     override suspend fun getSurvey(id: String): SurveyResult = try {
         val remoteSurvey = api.getSurvey(id)
         val survey = remoteSurvey.toSurvey(
-            db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value
+            db.getUserVotes().first().find { it.surveyRemoteId == remoteSurvey.id }?.value
         )
         SurveyResult.Success(survey)
     } catch (ex: RemoteException) {
@@ -102,7 +102,7 @@ class RepoImpl(
         }
         SurveyResult.Success(
             remoteSurvey.toSurvey(
-                db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value
+                db.getUserVotes().first().find { it.surveyRemoteId == remoteSurvey.id }?.value
             )
         )
     } catch (ex: RemoteException) {
@@ -113,11 +113,15 @@ class RepoImpl(
 
     override fun getUserSurvey(id: String) = db.getUserSurvey(id).map { it?.toUserSurvey() }
 
+    override fun getUserVotes() = db.getUserVotes().map { votes -> votes.map { it.value } }
+
     override suspend fun updateUserSurveyTitle(id: String, title: String): SurveyResult = try {
         val remoteSurvey = api.updateSurveyTitle(id, title)
         db.updateUserSurveyTitle(id, title)
         SurveyResult.Success(
-            remoteSurvey.toSurvey(db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value)
+            remoteSurvey.toSurvey(
+                db.getUserVotes().first().find { it.surveyRemoteId == remoteSurvey.id }?.value
+            )
         )
     } catch (ex: RemoteException) {
         SurveyResult.Error(ex.message ?: "Unknown message")
@@ -127,7 +131,9 @@ class RepoImpl(
         val remoteSurvey = api.updateSurveyDesc(id, desc)
         db.updateUserSurveyDesc(id, desc)
         SurveyResult.Success(
-            remoteSurvey.toSurvey(db.getUserVotes().find { it.surveyRemoteId == remoteSurvey.id }?.value)
+            remoteSurvey.toSurvey(
+                db.getUserVotes().first().find { it.surveyRemoteId == remoteSurvey.id }?.value
+            )
         )
     } catch (ex: RemoteException) {
         SurveyResult.Error(ex.message ?: "Unknown message")
