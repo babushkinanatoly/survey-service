@@ -1,23 +1,23 @@
-package ru.babushkinanatoly.feature_profile.di
+package ru.babushkinanatoly.feature_profile.profile.di
 
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.CoroutineScope
 import ru.babushkinanatoly.core.RepoProvider
 import ru.babushkinanatoly.core.StringResProvider
-import ru.babushkinanatoly.feature_profile.ProfileWorkflowModel
+import ru.babushkinanatoly.feature_profile.profile.ProfileModel
 
-@ProfileWorkflowScope
+@ProfileScope
 @Component(
     dependencies = [
         RepoProvider::class,
         StringResProvider::class
     ],
-    modules = [ProfileWorkflowModule::class]
+    modules = [ProfileModule::class]
 )
-internal interface ProfileWorkflowComponent {
+internal interface ProfileComponent {
 
-    fun provideModel(): ProfileWorkflowModel
+    fun provideModel(): ProfileModel
 
     @Component.Factory
     interface Factory {
@@ -26,6 +26,6 @@ internal interface ProfileWorkflowComponent {
             @BindsInstance scope: CoroutineScope,
             stringResProvider: StringResProvider,
             repoProvider: RepoProvider,
-        ): ProfileWorkflowComponent
+        ): ProfileComponent
     }
 }

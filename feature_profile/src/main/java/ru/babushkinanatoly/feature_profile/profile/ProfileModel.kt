@@ -1,33 +1,33 @@
-package ru.babushkinanatoly.feature_profile
+package ru.babushkinanatoly.feature_profile.profile
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.babushkinanatoly.core_api.*
 
-internal interface ProfileWorkflowModel {
-    val event: Event<ProfileWorkflowEvent>
+internal interface ProfileModel {
+    val event: Event<ProfileEvent>
     fun onLogOut()
 }
 
-internal enum class ProfileWorkflowEvent {
+internal enum class ProfileEvent {
     LOGGED_OUT, ERROR
 }
 
-internal class ProfileWorkflowModelImpl(
+internal class ProfileModelImpl(
     private val scope: CoroutineScope,
     stringRes: StringRes,
     private val repo: Repo,
-) : ProfileWorkflowModel {
+) : ProfileModel {
 
-    override val event = MutableEvent<ProfileWorkflowEvent>()
+    override val event = MutableEvent<ProfileEvent>()
 
     override fun onLogOut() {
         scope.launch(Dispatchers.Default) {
             if (repo.logOut()) {
-                event.dispatch(ProfileWorkflowEvent.LOGGED_OUT)
+                event.dispatch(ProfileEvent.LOGGED_OUT)
             } else {
-                event.dispatch(ProfileWorkflowEvent.ERROR)
+                event.dispatch(ProfileEvent.ERROR)
             }
         }
     }

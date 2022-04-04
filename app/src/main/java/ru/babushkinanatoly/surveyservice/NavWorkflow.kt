@@ -91,7 +91,7 @@ fun NavWorkflow(
             }
             composable(NavWorkflow.UserSurveysWorkflow.route) {
                 UserSurveysWorkflow(
-                    fallbackToUserSurveysRoot,
+                    fallbackToRoot = fallbackToUserSurveysRoot,
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },
@@ -100,8 +100,7 @@ fun NavWorkflow(
             }
             composable(NavWorkflow.ProfileWorkflow.route) {
                 ProfileWorkflow(
-                    fallbackToProfileRoot,
-                    stringResource(NavWorkflow.ProfileWorkflow.Profile.resId),
+                    fallbackToRoot = fallbackToProfileRoot,
                     onBack = {
                         navController.navigateAndPopUpToStart(navController.graph.findStartDestination().route!!)
                     },
