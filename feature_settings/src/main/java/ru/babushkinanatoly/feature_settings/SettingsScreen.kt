@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.babushkinanatoly.base_feature.AppNavigation.Screen.Settings
+import ru.babushkinanatoly.base_feature.theme.DialogDark
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
 import ru.babushkinanatoly.base_feature.util.goBack
 import ru.babushkinanatoly.base_feature.util.isDarkTheme
@@ -126,7 +127,7 @@ private fun ThemeDialog(
             modifier = Modifier
                 .background(
                     if (appTheme.isDarkTheme()) {
-                        MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+                        DialogDark
                     } else {
                         MaterialTheme.colors.surface
                     },
