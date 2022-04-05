@@ -64,6 +64,15 @@ class RepoImpl(
         false
     }
 
+    override suspend fun updateUser(profileData: UserProfileData): Boolean = try {
+        currentUser.value?.let {
+            db.updateUser(api.updateUser(profileData).toUserEntity(it.id))
+        }
+        true
+    } catch (ex: RemoteException) {
+        false
+    }
+
     override suspend fun addSurvey(title: String, desc: String) = try {
         db.insertUserSurveys(listOf(api.createSurvey(title, desc).toUserSurveyEntity()))
         true
@@ -140,10 +149,10 @@ class RepoImpl(
     }
 }
 
-private fun UserEntity.toUser() = User(id, email, name)
+private fun UserEntity.toUser() = User(id, email, name, age, sex, countryCode)
 private fun UserSurveyEntity.toUserSurvey() = UserSurvey(remoteId, title, desc, upvotedUserIds, downvotedUserIds)
 private fun String.toUserVoteEntity(value: Boolean) = UserVoteEntity(0, this, value)
-private fun RemoteUser.toUserEntity() = UserEntity(0, email, name, age, sex, countryCode)
+private fun RemoteUser.toUserEntity(id: Long = 0) = UserEntity(id, email, name, age, sex, countryCode)
 
 private fun RemoteSurvey.toUserSurveyEntity() =
     UserSurveyEntity(0, id, title, desc, upvotedUserIds, downvotedUserIds)

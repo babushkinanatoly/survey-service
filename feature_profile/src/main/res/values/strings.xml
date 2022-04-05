@@ -3,4 +3,6 @@
     <string name="surveys_created">Surveys created</string>
     <string name="upvotes_overall">Upvotes overall</string>
     <string name="downvotes_overall">Downvotes overall</string>
+    <string name="save">Save</string>
+    <string name="clear">Clear</string>
 </resources>

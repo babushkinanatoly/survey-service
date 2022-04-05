@@ -5,12 +5,11 @@
         <item>Female</item>
     </string-array>
     <string-array name="country_values">
-        <item>RU</item>
-        <item>US</item>
-        <item>ES</item>
-        <item>IT</item>
-        <item>FR</item>
-        <item>DE</item>
+        <item>ru</item>
+        <item>us</item>
+        <item>es</item>
+        <item>it</item>
+        <item>de</item>
     </string-array>
     <string-array name="age_values">
         <item>1</item>

@@ -24,6 +24,8 @@ class DbImpl(context: Context) : Db {
     override suspend fun insertUserVotes(userVotes: List<UserVoteEntity>) =
         db.userVote().insertVotes(userVotes)
 
+    override suspend fun updateUser(user: UserEntity) = db.user().updateUser(user)
+
     override fun getUser() = db.user().getUser()
     override fun getUserSurveys() = db.userSurvey().getSurveys()
     override fun getUserSurvey(id: String) = db.userSurvey().getSurvey(id)

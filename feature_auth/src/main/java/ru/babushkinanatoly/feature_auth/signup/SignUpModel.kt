@@ -19,7 +19,7 @@ internal interface SignUpModel {
     fun onSexChange(sex: String)
     fun onSexDismiss()
     fun onCountry()
-    fun onCountryChange(country: String)
+    fun onCountryCodeChange(countryCode: String)
     fun onCountryDismiss()
     fun onNameChange(name: String)
     fun onEmailChange(email: String)
@@ -34,7 +34,7 @@ internal data class SignUpState(
     val ageSelecting: Boolean,
     val sex: String,
     val sexSelecting: Boolean,
-    val country: String,
+    val countryCode: String,
     val countrySelecting: Boolean,
     val nameError: String,
     val emailError: String,
@@ -62,7 +62,7 @@ internal class SignUpModelImpl(
             password = state.value.password,
             age = state.value.age.toInt(),
             sex = state.value.sex,
-            country = state.value.country
+            country = state.value.countryCode
         )
 
     override val state = MutableStateFlow(
@@ -74,7 +74,7 @@ internal class SignUpModelImpl(
             ageSelecting = false,
             sex = "Male",
             sexSelecting = false,
-            country = "RU",
+            countryCode = "ru",
             countrySelecting = false,
             nameError = "",
             emailError = "",
@@ -140,10 +140,10 @@ internal class SignUpModelImpl(
         state.update { it.copy(countrySelecting = !it.countrySelecting) }
     }
 
-    override fun onCountryChange(country: String) {
+    override fun onCountryCodeChange(countryCode: String) {
         state.update {
             it.copy(
-                country = country,
+                countryCode = countryCode,
                 countrySelecting = false
             )
         }

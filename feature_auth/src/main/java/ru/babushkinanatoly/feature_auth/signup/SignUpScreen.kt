@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.StateFlow
 import ru.babushkinanatoly.base_feature.theme.SurveyServiceTheme
+import ru.babushkinanatoly.base_feature.util.DropDownMenu
 import ru.babushkinanatoly.base_feature.util.consumeAsEffect
 import ru.babushkinanatoly.core_api.Event
 import ru.babushkinanatoly.feature_auth.*
@@ -80,7 +81,7 @@ internal fun SignUpScreen(
                         onValueChange = signUpModel::onPasswordChange
                     )
                     Row {
-                        AuthDropDownMenu(
+                        DropDownMenu(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(top = 8.dp, bottom = 24.dp, end = 8.dp),
@@ -92,7 +93,7 @@ internal fun SignUpScreen(
                             onItem = signUpModel::onAgeChange,
                             onDismiss = signUpModel::onAgeDismiss
                         )
-                        AuthDropDownMenu(
+                        DropDownMenu(
                             modifier = Modifier
                                 .weight(1.5f)
                                 .padding(top = 8.dp, bottom = 24.dp, start = 4.dp, end = 4.dp),
@@ -104,16 +105,16 @@ internal fun SignUpScreen(
                             onItem = signUpModel::onSexChange,
                             onDismiss = signUpModel::onSexDismiss
                         )
-                        AuthDropDownMenu(
+                        DropDownMenu(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(top = 8.dp, bottom = 24.dp, start = 8.dp),
                             expanded = state.countrySelecting,
                             label = stringResource(R.string.country),
-                            selectedItem = state.country,
+                            selectedItem = state.countryCode,
                             items = countries,
                             onMenu = signUpModel::onCountry,
-                            onItem = signUpModel::onCountryChange,
+                            onItem = signUpModel::onCountryCodeChange,
                             onDismiss = signUpModel::onCountryDismiss
                         )
                     }
@@ -177,7 +178,7 @@ private fun AuthScreenPreview() {
                     override fun onSexChange(sex: String) {}
                     override fun onSexDismiss() {}
                     override fun onCountry() {}
-                    override fun onCountryChange(country: String) {}
+                    override fun onCountryCodeChange(countryCode: String) {}
                     override fun onCountryDismiss() {}
                     override fun onNameChange(name: String) {}
                     override fun onEmailChange(email: String) {}

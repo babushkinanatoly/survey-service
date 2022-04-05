@@ -6,6 +6,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.babushkinanatoly.core_api.UserLogInData
+import ru.babushkinanatoly.core_api.UserProfileData
 import ru.babushkinanatoly.core_api.UserSignUpData
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -91,6 +92,10 @@ class ApiImpl(private val context: Context) : Api {
         surveyService.deleteSurvey(surveyId)
     }
 
+    override suspend fun updateUser(profileData: UserProfileData): RemoteUser = wrapErrors {
+        surveyService.updateUser(profileData.toUpdateUserRequestData()).toRemoteUser()
+    }
+
     override suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey = wrapErrors {
         surveyService.setSurveyVote(
             SetVoteRequestData(surveyId, voteValue.toRemoteVoteValue())
@@ -133,6 +138,7 @@ private fun UserResponseData.toLogInResponse(): LogInResponse {
 }
 
 private fun UserSignUpData.toUserData() = UserData(name, email, age, sex, country)
+private fun UserProfileData.toUpdateUserRequestData() = UpdateUserRequestData(name, age, sex, countryCode)
 private fun UserData.toRemoteUser() = RemoteUser(email, name, age, sex, countryCode)
 private fun UserVotesData.toRemoteUserVotes() = RemoteUserVotes(upvotedSurveyIds, downvotedSurveyIds)
 

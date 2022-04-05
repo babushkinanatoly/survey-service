@@ -12,6 +12,8 @@ interface Db {
     suspend fun insertUserSurveys(userSurveys: List<UserSurveyEntity>)
     suspend fun insertUserVotes(userVotes: List<UserVoteEntity>)
 
+    suspend fun updateUser(user: UserEntity)
+
     fun getUser(): Flow<UserEntity?>
     fun getUserSurveys(): Flow<List<UserSurveyEntity>>
     fun getUserSurvey(id: String): Flow<UserSurveyEntity?>

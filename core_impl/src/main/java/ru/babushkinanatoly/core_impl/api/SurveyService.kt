@@ -16,6 +16,10 @@ interface SurveyService {
     @POST("signin")
     suspend fun getUser(@Body data: GetUserRequestData): UserResponseData
 
+    @PUT("profile")
+    @Headers(REQUIRE_AUTH)
+    suspend fun updateUser(@Body data: UpdateUserRequestData): UserData
+
     @GET("feed")
     @Headers(REQUIRE_AUTH)
     suspend fun getSurveys(
@@ -118,6 +122,13 @@ data class CreateUserRequestData(
 data class GetUserRequestData(
     val email: String,
     val password: String,
+)
+
+data class UpdateUserRequestData(
+    val name: String,
+    val age: Int,
+    val sex: String,
+    val countryCode: String,
 )
 
 data class SetVoteRequestData(

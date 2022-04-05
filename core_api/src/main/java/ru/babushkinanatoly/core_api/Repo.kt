@@ -11,6 +11,8 @@ interface Repo {
     suspend fun logIn(userLogInData: UserLogInData): LogInResult
     suspend fun logOut(): Boolean
 
+    suspend fun updateUser(profileData: UserProfileData): Boolean
+
     suspend fun addSurvey(title: String, desc: String): Boolean
 
     fun getSurveys(scope: CoroutineScope): PagedFeed

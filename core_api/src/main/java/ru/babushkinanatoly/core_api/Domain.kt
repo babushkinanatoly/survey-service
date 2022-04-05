@@ -4,6 +4,9 @@ data class User(
     val id: Long,
     val email: String,
     val name: String,
+    val age: Int,
+    val sex: String,
+    val country: String,
 )
 
 data class UserLogInData(
@@ -18,6 +21,13 @@ data class UserSignUpData(
     val age: Int,
     val sex: String,
     val country: String,
+)
+
+data class UserProfileData(
+    val name: String,
+    val age: Int,
+    val sex: String,
+    val countryCode: String,
 )
 
 enum class LogInResult {

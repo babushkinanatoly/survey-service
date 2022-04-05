@@ -1,6 +1,7 @@
 package ru.babushkinanatoly.core_impl.api
 
 import ru.babushkinanatoly.core_api.UserLogInData
+import ru.babushkinanatoly.core_api.UserProfileData
 import ru.babushkinanatoly.core_api.UserSignUpData
 
 interface Api {
@@ -14,6 +15,8 @@ interface Api {
     suspend fun getSurvey(surveyId: String): RemoteSurvey
 
     suspend fun deleteSurvey(surveyId: String)
+
+    suspend fun updateUser(profileData: UserProfileData): RemoteUser
 
     suspend fun updateSurveyVote(surveyId: String, voteValue: Boolean?): RemoteSurvey
     suspend fun updateSurveyTitle(surveyId: String, title: String): RemoteSurvey
