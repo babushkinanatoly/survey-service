@@ -2,6 +2,8 @@
 
 Application for creating online surveys and polls
 
+[API docs](https://documenter.getpostman.com/view/9466539/UVsTphNP#intro)
+
 ## Functionality
 
 - Authentication (sign in/sign up)
