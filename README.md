@@ -2,6 +2,8 @@
 
 Application for creating online surveys and polls
 
+[See presentation slides](https://docs.google.com/presentation/d/1xPSwXY4WkAnKL6hkgch7TD6iBpJsJ2OXKqChXQcrGoQ/edit?usp=sharing)
+
 [API docs](https://documenter.getpostman.com/view/9466539/UVsTphNP#intro)
 
 ## Functionality
